@@ -15,6 +15,7 @@ import Chat from '../pages/ChatV1/Chat';
 import ErrorPage from '../pages/ErrorPage/ErrorPage';
 import SuccessPage from '../pages/SuccessPage/SuccessPage';
 import ForOwner from '../pages/ForOwner/ForOwner';
+import Guide from '../pages/Guide/Guide';
 
 
 export const publicRoutes = [
@@ -29,6 +30,8 @@ export const publicRoutes = [
     { path: "/error404", element: <ErrorPage /> },
     { path: "/success", element: <SuccessPage /> },
     { path: "/chat", element: <Chat /> },
+    { path: "/guide", element: <Guide /> },
+
     //{ path: "/login-google", element: <GoogleLogin />,
     // { path: "/user/payment", element: <UserPayment /> },
     // { path: "/user/profile", element: <UserProfile /> },

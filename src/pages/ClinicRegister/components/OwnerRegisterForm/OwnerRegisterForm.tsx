@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Button, Form, FormGroup, Label, Input, FormFeedback } from 'reactstrap';
+import { Row, Col, Button, FormGroup, Label, Input, FormFeedback } from 'reactstrap';
 import { ClinicRegistrationModel, setClinicRegistrationModel } from '../../../../utils/interfaces/ClinicRegister/Clinic';
 import styles from './OwnerRegisterForm.module.css';
 // import { handleOwnerRegister } from '../../../../utils/api/ClinicRegister';

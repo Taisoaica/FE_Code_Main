@@ -7,8 +7,6 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { Button, Link } from '@mui/material';
-import axios, { AxiosRequestConfig } from 'axios';
-import { connection_path } from '../../constants/developments';
 import { useNavigate } from 'react-router-dom';
 
 import { handleLogout } from '../../utils/api/AuthenticateUtils';
@@ -58,7 +56,7 @@ const Header = () => {
             <Link href="/"><img src="/Logo.png" alt="Logo" style={{ height: '70px' }} /></Link>
             <Box sx={{ display: 'flex', gap: .5 }}>
               <Button variant='text' sx={{ color: ' #00aeeb', fontWeight: 'bold' }}>Tư vấn trực tuyến</Button>
-              <Button variant='text' sx={{ color: ' #00aeeb', fontWeight: 'bold' }}>Quy trình</Button>
+              <Button variant='text' href='/guide' sx={{ color: ' #00aeeb', fontWeight: 'bold' }}>Quy trình</Button>
               <Button variant="text" href='/for-owner' sx={{ color: ' #00aeeb', fontWeight: 'bold' }}>Dành cho chủ phòng khám</Button>
             </Box>
             <Box>

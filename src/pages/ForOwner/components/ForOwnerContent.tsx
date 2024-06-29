@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Divider, Button } from '@mui/material';
+import { Box, Divider, Button } from '@mui/material';
 import styles from './ForOwnerContent.module.css';
 import Hero from './Hero/Hero';
 
@@ -20,7 +20,7 @@ const ForOwnerContent: React.FC = () => {
                     <Box className={styles.content1}>
                         <Box>
                             <Box className={styles.imageBox}>
-                                <img src="../../../../public/icon/hospital.png" alt="placeholder" />
+                                <img src="/icon/hospital.png" alt="placeholder" />
                             </Box>
                             <Box sx={{ fontSize: '22px', fontWeight: 700 }}>
                                 Quản lí phòng khám
@@ -31,7 +31,7 @@ const ForOwnerContent: React.FC = () => {
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
                             <Box className={styles.imageBox}>
-                                <img src="../../../../public/icon/analytics.png" alt="placeholder" />
+                                <img src="/icon/analytics.png" alt="placeholder" />
                             </Box>
                             <Box sx={{ fontSize: '22px', fontWeight: 700 }}>
                                 Báo cáo thống kê
@@ -42,7 +42,7 @@ const ForOwnerContent: React.FC = () => {
                         </Box>
                         <Box>
                             <Box>
-                                <img src="../../../../public/icon/folder.png" alt="placeholder" />
+                                <img src="/icon/folder.png" alt="placeholder" />
                             </Box>
                             <Box sx={{ fontSize: '22px', fontWeight: 700 }}>
                                 Bảo mật thông tin
@@ -54,7 +54,7 @@ const ForOwnerContent: React.FC = () => {
 
                         <Box>
                             <Box className={styles.imageBox}>
-                                <img src="../../../../public/icon/team-management.png" alt="placeholder" />
+                                <img src="/icon/team-management.png" alt="placeholder" />
                             </Box>
                             <Box sx={{ fontSize: '22px', fontWeight: 700 }}>
                                 Quản lí bệnh nhân
@@ -87,7 +87,7 @@ const ForOwnerContent: React.FC = () => {
                     <Box sx={{ gridColumn: 1 }}></Box>
                     <Box className={styles.stackedBoxesContainer}>
                         <Box className={styles.secImageBox}>
-                            <img src="../../../../public/icon/calendar.png" />
+                            <img src="/icon/calendar.png" />
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 <Box>
                                     <Box sx={{ fontWeight: 700, fontSize: '30px' }}>
@@ -104,7 +104,7 @@ const ForOwnerContent: React.FC = () => {
                         </Box>
                         <Divider sx={{ backgroundColor: 'black', width: '90%', margin: '1em auto' }} />
                         <Box className={styles.secImageBox}>
-                            <img src="../../../../public/icon/help-desk.png" />
+                            <img src="/icon/help-desk.png" />
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 <Box>
                                     <Box sx={{ fontWeight: 700, fontSize: '30px' }}>
@@ -120,7 +120,7 @@ const ForOwnerContent: React.FC = () => {
                         </Box>
                         <Divider sx={{ backgroundColor: 'black', width: '90%', margin: '1em auto' }} />
                         <Box className={styles.secImageBox}>
-                            <img src="../../../../public/icon/bell.png" />
+                            <img src="/icon/bell.png" />
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 <Box>
                                     <Box sx={{ fontWeight: 700, fontSize: '30px' }}>

@@ -1,5 +1,4 @@
 // src/FeaturesAndBenefits.js
-import React from 'react';
 import { Container, Grid, Typography, Box } from '@mui/material';
 import { Security, Speed, Accessibility } from '@mui/icons-material';
 

@@ -51,8 +51,9 @@ const SignUpForm = () => {
   const [email, setEmail] = React.useState("");
 
   const validateUsername = (inputUsername: string): boolean => {
-    //  const regex = /^[A-Za-z](?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z0-9_]{7,29}$/
-    const regex = /^(?=[A-Za-z])(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z0-9_]{8,30}$/
+    const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z][A-Za-z0-9_]{7,29}$/
+  
+    //const regex = /^(?=[A-Za-z])(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z0-9_]{8,30}$/
     return regex.test(inputUsername);
   };
 

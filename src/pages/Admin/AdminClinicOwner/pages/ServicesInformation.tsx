@@ -9,7 +9,6 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
-
 import { mainListItems } from "../components/listItems";
 import styles from "./ServicesInformation.module.css";
 
@@ -29,31 +28,29 @@ import {
     Input,
 } from "reactstrap";
 import ServiceList from "../components/ServiceList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ClinicServiceRegistrationModel, getClinicServices, addClinicService } from "../../../../utils/api/ClinicOwnerUtils";
+import { ClinicServiceCategoryModel, getAllCategories } from "../../../../utils/api/SystemAdminUtils";
 
 const drawerWidth: number = 240;
+
+
+interface ClinicServiceInfoModel {
+    clinicServiceId: string;
+    name: string;
+    description: string;
+    price: number;
+    clinicId: number;
+    categoryId: number;
+    available: boolean;
+    removed: boolean;
+}
 
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
 }
 
-interface Service {
-    serviceId: string;
-    serviceName: string;
-    price: number;
-    description: string;
-    duration?: number;
-}
-
-
-const serviceList: Service[] = [
-    { serviceId: '1', serviceName: 'Khám tổng quát', price: 500000, description: 'Kiểm tra sức khỏe tổng thể' },
-    { serviceId: '2', serviceName: 'Trám răng', price: 300000, description: 'Trám răng sâu, răng vỡ' },
-    { serviceId: '3', serviceName: 'Nhổ răng', price: 200000, description: 'Nhổ răng sữa, răng khôn' },
-    { serviceId: '4', serviceName: 'Lấy cao răng', price: 150000, description: 'Vệ sinh răng miệng, loại bỏ cao răng' },
-    { serviceId: '5', serviceName: 'Chỉnh nha', price: 5000000, description: 'Niềng răng, chỉnh sửa khớp cắn' },
-];
 
 
 
@@ -100,48 +97,84 @@ const Drawer = styled(MuiDrawer, {
         }),
     },
 }));
-
 const ServicesInformation = () => {
     const [open, setOpen] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
-    const [formData, setFormData] = useState({
-        serviceId: '',
+    const [serviceList, setServiceList] = useState<ClinicServiceInfoModel[]>([]);
+    const [formData, setFormData] = useState<ClinicServiceRegistrationModel>({
+        serviceCategory: 0,
         serviceName: '',
-        price: 0,
-        description: '',
+        serviceDescription: '',
+        servicePrice: 0,
+        clinicId: 1,
     });
+    const [categories, setCategories] = useState<ClinicServiceCategoryModel[]>([]);
 
-    const toggleDrawer = () => {
-        setOpen(!open);
-    };
+    useEffect(() => {
+        // Fetch clinic services on component mount
+        const fetchClinicServices = async () => {
+            try {
+                const services = await getClinicServices(1); // Replace with your clinicId
+                setServiceList(services);
+            } catch (error) {
+                console.error('Failed to fetch clinic services:', error);
+                // Handle error state or display error message
+            }
+        };
+
+        // Fetch categories on component mount
+        const fetchCategories = async () => {
+            try {
+                const categories = await getAllCategories();
+                setCategories(categories);
+            } catch (error) {
+                console.error('Failed to fetch categories:', error);
+                // Handle error state or display error message
+            }
+        };
+
+        fetchClinicServices();
+        fetchCategories();
+    }, []); // Empty dependency array means it runs once on mount
 
     const toggleModal = () => {
         setModalOpen(!modalOpen);
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const category = parseInt(e.target.value);
+        console.log(category);
+        setFormData({ ...formData, serviceCategory: category });
+    };
+
+    const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(formData);
-        setFormData({
-            serviceId: '',
-            serviceName: '',
-            price: 0,
-            description: '',
-        });
-        toggleModal();
+        try {
+            await addClinicService(formData);
+            const updatedServices = await getClinicServices(1);
+            setServiceList(updatedServices);
+            toggleModal();
+        } catch (error) {
+            console.error('Failed to add service:', error);
+            // Handle error state or display error message
+        }
+    };
+
+    const toggleDrawer = () => {
+        setOpen(!open);
     };
 
     return (
-        <Box sx={{ display: "flex", height: '100%' }}>
+        <Box sx={{ display: 'flex', height: '100%' }}>
             <AppBar position="absolute" open={open}>
                 <Toolbar
                     sx={{
-                        pr: "24px",
+                        pr: '24px',
                     }}
                 >
                     <IconButton
@@ -150,19 +183,13 @@ const ServicesInformation = () => {
                         aria-label="open drawer"
                         onClick={toggleDrawer}
                         sx={{
-                            marginRight: "36px",
-                            ...(open && { display: "none" }),
+                            marginRight: '36px',
+                            ...(open && { display: 'none' }),
                         }}
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography
-                        component="h1"
-                        variant="h6"
-                        color="inherit"
-                        noWrap
-                        sx={{ flexGrow: 1 }}
-                    >
+                    <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
                         Trang dịch vụ
                     </Typography>
                 </Toolbar>
@@ -170,9 +197,9 @@ const ServicesInformation = () => {
             <Drawer variant="permanent" open={open}>
                 <Toolbar
                     sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "flex-end",
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
                         px: [1],
                     }}
                 >
@@ -181,105 +208,110 @@ const ServicesInformation = () => {
                     </IconButton>
                 </Toolbar>
                 <Divider />
-                <List component="nav">
-                    {mainListItems}
-                </List>
+                <List component="nav">{mainListItems}</List>
             </Drawer>
             <Box
                 component="main"
                 sx={{
                     backgroundColor: (theme) =>
-                        theme.palette.mode === "light"
-                            ? theme.palette.grey[100]
-                            : theme.palette.grey[900],
+                        theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.grey[900],
                     flexGrow: 1,
                     marginTop: 5.5,
                     color: '#0d47a1',
                     background: 'linear-gradient(to left, #e3f2fd, #f8fbff)',
-                    height: '100vh'
+                    height: '100vh',
                 }}
             >
-                <div className={styles.mainContainer} >
+                <div className={styles.mainContainer}>
                     <div className={styles.tableContainer}>
-                        {/* Table component */}
                         <table className={styles.table}>
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Tên dịch vụ</th>
                                     <th>Giá</th>
                                     <th>Mô tả</th>
-                                    <th>
-                                        <Box className={styles.tooltip}>
-                                            Hành động
-                                            <span className={styles.tooltiptext}>Chỉnh sửa hoặc xóa</span>
-                                            <span className={styles.tooltipicon}>i</span>
-                                        </Box>
-                                    </th>
+
                                 </tr>
                             </thead>
                             <tbody>
-                                {serviceList.map((service: Service) => (
-                                    <tr key={service.serviceId} className={styles.tableRow}>
-                                        <td>{service.serviceId}</td>
-                                        <td>{service.serviceName}</td>
+                                {serviceList.map((service) => (
+                                    <tr key={service.clinicServiceId} className={styles.tableRow}>
+                                        <td>{service.name}</td>
                                         <td>{service.price}</td>
                                         <td>{service.description}</td>
-                                        <td>
-                                            <div className={styles.actionsContainer}>
-                                                <button className={styles.editButton}>Sửa</button>
-                                                <button className={styles.deleteButton}>Xóa</button>
-                                            </div>
-                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
                     {/* Button to trigger modal */}
-                    <Button color="primary" onClick={toggleModal}>Thêm dịch vụ</Button>
+                    <Button color="primary" onClick={toggleModal}>
+                        Thêm dịch vụ
+                    </Button>
+
+                    {/* Modal for adding service */}
+                    <Modal isOpen={modalOpen} toggle={toggleModal} centered>
+                        <ModalHeader toggle={toggleModal}>Thêm dịch vụ</ModalHeader>
+                        <ModalBody>
+                            <form onSubmit={handleFormSubmit}>
+                                <FormGroup>
+                                    <Label for="serviceCategory">Danh mục dịch vụ</Label>
+                                    <select
+                                        name="serviceCategory"
+                                        id="serviceCategory"
+                                        value={formData.serviceCategory}
+                                        onChange={handleCategoryChange}
+                                    >
+                                        <option value={0}>Chọn danh mục</option>
+                                        {categories.map((category) => (
+                                            <option key={category.id} value={category.id}>
+                                                {category.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="serviceName">Tên dịch vụ</Label>
+                                    <Input
+                                        type="text"
+                                        name="serviceName"
+                                        id="serviceName"
+                                        value={formData.serviceName}
+                                        onChange={handleInputChange}
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="servicePrice">Giá</Label>
+                                    <Input
+                                        type="number"
+                                        name="servicePrice"
+                                        id="servicePrice"
+                                        value={formData.servicePrice}
+                                        onChange={handleInputChange}
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="serviceDescription">Mô tả</Label>
+                                    <Input
+                                        type="textarea"
+                                        name="serviceDescription"
+                                        id="serviceDescription"
+                                        value={formData.serviceDescription}
+                                        onChange={handleInputChange}
+                                    />
+                                </FormGroup>
+                                <Button type="submit" color="primary">
+                                    Lưu
+                                </Button>
+                            </form>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="secondary" onClick={toggleModal}>
+                                Hủy
+                            </Button>
+                        </ModalFooter>
+                    </Modal>
                 </div>
-                <Modal isOpen={modalOpen} toggle={toggleModal} centered>
-                    <ModalHeader toggle={toggleModal}>Thêm dịch vụ</ModalHeader>
-                    <ModalBody>
-                        <form onSubmit={handleFormSubmit}>
-                            <FormGroup>
-                                <Label for="serviceName">Tên dịch vụ</Label>
-                                <Input
-                                    type="text"
-                                    name="serviceName"
-                                    id="serviceName"
-                                    value={formData.serviceName}
-                                    onChange={handleInputChange}
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="price">Giá</Label>
-                                <Input
-                                    type="number"
-                                    name="price"
-                                    id="price"
-                                    value={formData.price}
-                                    onChange={handleInputChange}
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="description">Mô tả</Label>
-                                <Input
-                                    type="textarea"
-                                    name="description"
-                                    id="description"
-                                    value={formData.description}
-                                    onChange={handleInputChange}
-                                />
-                            </FormGroup>
-                            <Button type="submit" color="primary">Lưu</Button>
-                        </form>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="secondary" onClick={toggleModal}>Hủy</Button>
-                    </ModalFooter>
-                </Modal>
             </Box>
         </Box>
     );

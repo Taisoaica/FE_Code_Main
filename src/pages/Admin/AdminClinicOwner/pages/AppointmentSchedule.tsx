@@ -182,8 +182,6 @@ export default function AppointmentSchedule() {
     setIsDialogOpen(false);
   };
 
-
-
   function getStatusStyle(status: string) {
     switch (status) {
       case 'Hoạt động':

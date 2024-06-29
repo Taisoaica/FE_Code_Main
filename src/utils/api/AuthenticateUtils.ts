@@ -74,7 +74,10 @@ export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navig
 
 export const handleLogout = async (navigate: (path: string) => void) => {
     const accessToken = localStorage.getItem('accessToken');
-    //var refreshToken = localStorage.getItem('refreshToken');
+
+    var refreshToken = localStorage.getItem('refreshToken');
+
+
 
     if (!accessToken) {
         console.error('Access token not found in localStorage');
@@ -83,9 +86,9 @@ export const handleLogout = async (navigate: (path: string) => void) => {
 
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    console.log('Logout successful');
     navigate('/');
 };
+
 
 
 

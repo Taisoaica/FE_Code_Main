@@ -1,19 +1,43 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { clinicServices } from '../../../../utils/mockData'
 import styles from './ServiceList.module.css'
-import {SetBookingInformation } from '../../../../utils/interfaces/interfaces';
+import { SetBookingInformation } from '../../../../utils/interfaces/interfaces';
+import { ClinicServiceInfoModel, handleGetAllService } from '../../../../utils/api/BookingRegister';
+import { useParams } from 'react-router-dom';
 
-interface ServiceListProps  {
-    setFormData: SetBookingInformation,    
+interface ServiceListProps {
+    setFormData: SetBookingInformation,
     onStepComplete: () => void,
 }
 
-const ServiceList = ({ setFormData, onStepComplete} : ServiceListProps) => {
+const ServiceList = ({ setFormData, onStepComplete }: ServiceListProps) => {
+    const [clinicServices, setClinicServices] = useState<ClinicServiceInfoModel[]>([]);
+    const { clinicId } = useParams<{ clinicId?: string }>(); 
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                if (clinicId) {
+                    const parsedClinicId = parseInt(clinicId, 10);
+                    const services = await handleGetAllService(parsedClinicId);
+                    setClinicServices(services);
+                }
+            } catch (error) {
+                console.error('Failed to fetch clinic services:', error);
+            }
+        };
 
-    const handleServiceClick = (serviceId: string) => { 
-        setFormData(prevState => ({ ...prevState, service: serviceId, serviceName: clinicServices.find(service => service.serviceId === serviceId)?.serviceName || ''}));
+        fetchServices();
+    }, []);
+
+    const handleServiceClick = (serviceId: string) => {
+        console.log('Service clicked:', serviceId);
+        setFormData(prevState => ({
+            ...prevState,
+            serviceId: serviceId,
+            serviceName: clinicServices.find(service => service.clinicServiceId === serviceId)?.name || ''
+        }));
         onStepComplete();
-    }
+    };
 
     return (
         <div className={styles.container}>
@@ -23,23 +47,19 @@ const ServiceList = ({ setFormData, onStepComplete} : ServiceListProps) => {
             <div className={styles.contentBox}>
                 <div className={styles.toolbar}>
                     <div className={styles.searchbar}>
-                        <input type="text" placeholder="Tìm kiếm dịch vụ"
-                            className={styles.searchInput}
-                        />
+                        <input type="text" placeholder="Tìm kiếm dịch vụ" className={styles.searchInput} />
                     </div>
                 </div>
                 <div className={styles.list}>
                     {clinicServices.map((service) => (
-                        <div key={service.serviceId} className={styles.item} onClick={() => handleServiceClick(service.serviceId)}>
-                            {service.serviceName}
+                        <div key={service.clinicServiceId} className={styles.item} onClick={() => handleServiceClick(service.clinicServiceId)}>
+                            {service.name}
                         </div>
                     ))}
                 </div>
             </div>
-
         </div>
-
-    )
+    );
 }
 
 export default ServiceList

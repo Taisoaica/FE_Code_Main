@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import styles from './Profile.module.css'
 import SimpleButton from '../../../../components/User/Components/Buttons/SimpleButton';
-import { default_data, UserInfo } from '../../../../utils/interfaces/User/UserDefinition';
+import { default_data, IUserAccount, UserInfo } from '../../../../utils/interfaces/User/UserDefinition';
 import { getUserData } from '../../../../utils/api/UserAccountUtils';
 
 
@@ -12,7 +12,7 @@ interface ProfileProps {
 
 const Profile = ({ setActiveIndex }: ProfileProps) => {
 
-    const [data, setData]: [UserInfo | null, Dispatch<SetStateAction<UserInfo>>] = useState(default_data);
+    const [data, setData]: [IUserAccount | null, Dispatch<SetStateAction<IUserAccount>>] = useState(default_data);
 
     type AvatarState = {
         file: File | null;
@@ -37,7 +37,7 @@ const Profile = ({ setActiveIndex }: ProfileProps) => {
 
     const fetchUserData = () => {
         try {
-            getUserData().then((user: UserInfo) => {
+            getUserData().then((user: IUserAccount) => {
                 setData(user);
             });
         } catch (error) {

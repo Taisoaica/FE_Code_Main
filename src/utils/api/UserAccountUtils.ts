@@ -1,12 +1,12 @@
-import { UserInfo } from "../interfaces/User/UserDefinition"
+import { IUserAccount } from "../interfaces/User/UserDefinition"
 import { connection_path } from "../../constants/developments"
 import axios from "axios";
 
+export const getUserData = async (): Promise<IUserAccount> => {
+    const api_url: string = connection_path.base_url + connection_path.user.customer ;
+    const token = localStorage.getItem('accessToken');
 
-
-
-export const getUserData = async (): Promise<UserInfo> => {
-    const api_url: string = connection_path.base_url + connection_path.user.customer;
+    console.log(token, "token")
 
     const config = {
         method: 'GET',
@@ -21,51 +21,33 @@ export const getUserData = async (): Promise<UserInfo> => {
         const response = await axios(config);
         console.log('response:', response)
         if (response.status === 200) {
-            const user: UserInfo = response.data.content;
+            const user: IUserAccount = response.data.content;
+            console.log(user, "api")
             console.log('Fetch user data successfully');
             return user;
         } else {
             console.log('Failed to fetch user');
-            return {} as UserInfo;
+            return {} as IUserAccount;
         }
     } catch (error) {
         console.error('Error fetching user:', error);
-        return {} as UserInfo;
+        return {} as IUserAccount;
     }
 }
 
 
+export const putUserData = async (userData: IUserAccount) => {
+    const userId = localStorage.getItem('id');
 
-export interface UserInfoToSend {
-    id: number;
-    username: string;
-    passwordHash: string;
-    salt: string;
-    email: string;
-    phone: string;
-    fullname: string;
-    role: string;
-    isActive: boolean;
-    isRemoved: boolean;
-    joinedDate: string;
-    customerId: number;
-    birthdate: string;
-    sex: string;
-    insurance: string;
-    dentistId: number;
-    clinicId: number;
-    isOwner: boolean;
-}
-
-export const putUserData = async (userData: UserInfoToSend) => {
-    const api_url: string = connection_path.base_url + connection_path.user.customer_update;
+    const api_url: string = `${connection_path.base_url}${connection_path.user.customer_update}`;
 
     const config = {
         method: "PUT",
         url: api_url,
         data: userData,
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
         },
     }
 

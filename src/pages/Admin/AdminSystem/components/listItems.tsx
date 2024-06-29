@@ -15,12 +15,17 @@ const sidebarData: {
 }[] = [
     {
       title: "Người dùng",
-      path: "/system-admin/user",
+      path: "/system-admin",
       icon: PeopleIcon
     },
     {
       title: "Phòng khám",
       path: "/system-admin/clinic",
+      icon: MedicalServicesIcon
+    },
+    {
+      title: "Dịch vụ",
+      path: "/system-admin/service",
       icon: MedicalServicesIcon
     },
   ]

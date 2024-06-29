@@ -9,7 +9,12 @@ import { Accordion, Box, Checkbox, Dialog, DialogContent, FormControlLabel, Typo
 import styles from './Calendar.module.css';
 import './CalendarOne.css'
 import TimeSlots from '../TimeSlots/TimeSlots';
-import { BookingInformation, SetBookingInformation, TimeSlot } from '../../../../utils/interfaces/interfaces';
+import { BookingInformation, SetBookingInformation } from '../../../../utils/interfaces/interfaces';
+import { TimeSlot } from '../../../../utils/interfaces/Booking/BookingDefinition';
+
+import { ClinicSlotInfoModel } from '../../../../utils/interfaces/ClinicRegister/Clinic';
+import { getAllClinicSlots } from '../../../../utils/api/ClinicOwnerUtils';
+import { DayCellMountArg } from '@fullcalendar/core/index.js';
 
 interface CalendarFormProps {
   formData: BookingInformation,
@@ -17,53 +22,67 @@ interface CalendarFormProps {
   onStepComplete: () => void
 }
 
+// const getWeekdaysWithSlots = (clinicSlots: ClinicSlotInfoModel[][]): Set<number> => {
+//   const weekdaysWithSlots = new Set<number>();
+
+//   clinicSlots.forEach((slots, weekdayIndex) => {
+//     if (slots && slots.length > 0) {
+//       weekdaysWithSlots.add(weekdayIndex);
+//     }
+//   });
+
+//   return weekdaysWithSlots;
+// };
+
 export default function BasicDateCalendar({ formData, setFormData, onStepComplete }: CalendarFormProps) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isRecurring, setIsRecurring] = useState(false);
+  const [clinicSlots, setClinicSlots] = useState<ClinicSlotInfoModel[][]>([]);
+
+
+  useEffect(() => {
+    const fetchClinicSlots = async () => {
+      try {
+        const slots = await getAllClinicSlots();
+        setClinicSlots(slots);
+        console.log(slots)
+      } catch (error) {
+        console.error('Error fetching clinic slots:', error);
+      }
+    };
+
+    fetchClinicSlots();
+  }, []);
+
 
   const today = new Date();
 
-  const events = [
-    {
-      allDay: true,
-      start: formData.date,
-      end: formData.date,
-      backgroundColor: "#1BF045",
-      display: "background",
-      opacity: 0,
-      type: "1",
-    },
 
-    {
-      allDay: true,
-      start: '2024-06-26',
-      end: '2024-06-26',
-      backgroundColor: "#EA1700",
-      display: "background",
-      opacity: 0,
-      type: "2",
-    },
-
-  ];
 
   const handleDateClick = (event: DateClickArg) => {
-
-    // Debuging purposes
-    console.log('old date:', formData.date);
-    console.log('new date: ', event.dateStr);
-
     let is_available = true;
-    //useEffect fetch data
-    events.forEach((value,) => { if (value.start == event.dateStr) { is_available = false } });
 
-    // Actual Form data setting.
-    if (is_available) {
-      setFormData(prevState => ({ ...prevState, date: event.dateStr }));
-      setSelectedDate(event.dateStr);
-      setIsDialogOpen(true);
+    const weekdayIndex = event.date.getDay();
+    if (clinicSlots.length > 0) {
+      if (!clinicSlots[weekdayIndex] || clinicSlots[weekdayIndex].length === 0) {
+        is_available = false;
+      }
     }
-    console.log('new date:', formData.date);
+    if(!is_available) return;
+
+    setFormData(prevState => ({ ...prevState, date: event.dateStr }));
+    setSelectedDate(event.dateStr);
+    setIsDialogOpen(true);
+  };
+
+  const getDayClasses = (date: Date) => {
+    const weekdayIndex = date.getDay();
+    if (clinicSlots.length > 0) {
+      if (!clinicSlots[weekdayIndex] || clinicSlots[weekdayIndex].length === 0) {
+        return 'no-slots';
+      }
+    }
+    return '';
   };
 
   const handleCloseDialog = () => {
@@ -75,10 +94,20 @@ export default function BasicDateCalendar({ formData, setFormData, onStepComplet
     onStepComplete();
   };
 
-  const handleIsRecurringChange = () => {
-    setIsRecurring(!isRecurring);
-    setFormData(prevState => ({ ...prevState, is_repeated: isRecurring ? 0 : 1 }));
+  const getWeekdayDate = (weekday: number): string => {
+    const today = new Date();
+    const dayOffset = (weekday - today.getDay() + 7) % 7;
+    const targetDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + dayOffset);
+    return targetDate.toISOString().split('T')[0];
   };
+
+
+
+  const hasSlots = (date: Date) => {
+    const weekdayIndex = date.getDay();
+    return clinicSlots[weekdayIndex] && clinicSlots[weekdayIndex].length > 0;
+  };
+
 
   //Custom title for the calendar
   //-----------------------------------------------------------------------------------
@@ -109,25 +138,26 @@ export default function BasicDateCalendar({ formData, setFormData, onStepComplet
   const handleDatesSet = (dateInfo: { start: Date }) => {
     updateTitle(dateInfo);
   };
-  //-----------------------------------------------------------------------------------
 
-  // =============================== fetching available dates  ===============================
-  // useEffect( () => {
-  //   // Get data about available dates.
-  //   const params = {clinic: formData.clinic, size: 31, start: today};
-  //   const url = connection_path.base_url + connection_path.api + connection_path.booking.available_date
-  //   axios.get(url, {params})
-  //   .then(response => {
-  //     response.data.map((days, index) => {
-  //       events.push({allDay: true, start: days.date, end: days.date, backgroundColor: "#EA1700", display: "background", opacity: 0, type: "2"})
-  //     });
-  //   })
-  //   .catch((error) => {
-  //     // Do some error catching here
-  //   })
-  // });
-  // =========================================================================================
+  // const dayCellDidMount = (info: DayCellMountArg, weekdaysWithSlots: Set<number>) => {
+  //   const today = new Date();
+  //   const date = new Date(info.date);
 
+  //   // Skip days of other months and past days
+  //   if (info.isOther || date < today) {
+  //     return;
+  //   }
+
+  //   const weekdayIndex = date.getDay();
+  //   if (clinicSlots.length > 0) {
+  //     console.log(`Checking clinic slots for weekday ${weekdayIndex}:`, clinicSlots[weekdayIndex]);
+  //     if (!clinicSlots[weekdayIndex] || clinicSlots[weekdayIndex].length === 0) {
+  //       if (!weekdaysWithSlots.has(weekdayIndex)) {
+  //         info.el.classList.add('no-slots');
+  //       }
+  //     }
+  //   }
+  // };
 
   return (
     <Box className={styles.container}>
@@ -148,13 +178,17 @@ export default function BasicDateCalendar({ formData, setFormData, onStepComplet
               center: 'title',
               right: 'next'
             }}
+
             fixedWeekCount={false}
             showNonCurrentDates={false}
             dateClick={(event) => handleDateClick(event)}
+            dayCellClassNames={(dateInfo) => getDayClasses(dateInfo.date)}
             validRange={{
-              start: today.toISOString().split('T')[0]
+              start: today.toISOString().split('T')[0],
             }}
-            events={events}
+            // events={events}
+            firstDay={0}
+            // dayCellDidMount={(info) => dayCellDidMount(info, weekdaysWithSlots)}
           />
         </div>
       </Box>
@@ -170,8 +204,8 @@ export default function BasicDateCalendar({ formData, setFormData, onStepComplet
         </Box>
 
         <Box className={styles.legendItem}>
-          <FontAwesomeIcon icon={faCircle} className={styles.legendIcon} style={{ color: "#EA1700" }} />
-          <Typography variant="body2" className={styles.legendText}>Ngày đã đầy lịch</Typography>
+          <FontAwesomeIcon icon={faCircle} className={styles.legendIcon} style={{ color: "#ffe3df" }} />
+          <Typography variant="body2" className={styles.legendText}>Ngày không có lịch</Typography>
         </Box>
       </Box>
 
@@ -196,6 +230,7 @@ export default function BasicDateCalendar({ formData, setFormData, onStepComplet
               setFormData={setFormData}
               onClose={handleCloseDialog}
               onSlotSelect={handleSlotSelected}
+              date={selectedDate}
             />
           </DialogContent>
         )}

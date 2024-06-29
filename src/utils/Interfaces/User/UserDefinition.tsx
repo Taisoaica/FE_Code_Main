@@ -1,7 +1,7 @@
-export interface UserStatus{
+export interface UserStatus {
     state_number: number,
     message?: string,
-  }
+}
 
 export interface Payment {
     creditInfo: string | null,
@@ -11,7 +11,7 @@ export interface Payment {
 
 
 export interface UserInfo {
-    id: string,
+    id: number,
     username: string,
     fullname?: string | null,
     phone?: string | null,
@@ -19,25 +19,56 @@ export interface UserInfo {
     birthdate?: string | null,
     email: string | null,
     insurance?: string | null,
+    customerId: number,
     profilePicture?: string | null,
     joinedDate?: Date | null,
     status: UserStatus | null,
     // payment_info?: Payment[] | null,
 }
 
-export const default_data: UserInfo = 
+
+export interface IUserAccount {
+    id?: number,
+    username: string,
+    passwordHash: '',
+    salt: "",
+    email?: string,
+    phone?: string,
+    fullname?: string,
+    role?: string,
+    isActive?: boolean,
+    isRemoved?: boolean,
+    joinedDate?: string,
+    customerId?: number,
+    birthdate?: string,
+    sex?: string,
+    insurance?: string,
+    dentistId?: number,
+    clinicId?: number,
+    isOwner?: boolean,
+    status?: UserStatus,
+}
+
+export const default_data: IUserAccount =
 {
-    "id": "0",
-    "username": "--",
-    "fullname": null,
-    "phone": null,
-    "sex": null,
-    "birthdate": null,
-    "email": null,
-    "insurance": null,
-    "profilePicture": null,
-    "status": null,
-    // "payment_info": [{creditInfo: null, creditValue: null, creditValid: null}],
+    "id": 0,
+    "username": "",
+    "passwordHash": "",
+    "salt": "",
+    "fullname": "",
+    "phone": "",
+    "sex": "",
+    "birthdate": "",
+    "email": "",
+    "insurance": "",
+    "customerId": 0,
+    "dentistId": 0,
+    "clinicId": 0,
+    "isOwner": false,
+    "isActive": false,
+    "role": "",
+    "isRemoved": false,
+    "joinedDate": ""
 }
 
 export interface UserRegistrationModel {
@@ -46,4 +77,5 @@ export interface UserRegistrationModel {
     email?: string;
     clinicOwner?: boolean;
     clinic?: number | null;
- }
+}
+

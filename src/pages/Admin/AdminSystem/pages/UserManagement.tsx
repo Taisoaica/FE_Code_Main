@@ -12,15 +12,11 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems } from "../components/listItems";
 import styles from "./UserManagement.module.css";
-import { UsersToDisplay } from "../../../../utils/api/SystemAdminUtils";
-import { useEffect, useState } from "react";
-import { UserRegistrationModel } from "../../../../utils/interfaces/User/UserDefinition";
-//-------------------------------API Call---------------------------------
-import { getUsers, registerUser, setUserStatus } from '../../../../utils/api/SystemAdminUtils';
-//-------------------------------Diaglog---------------------------------
-import ConfirmationDialog from "../components/ConfirmationDialog";
+import { UserInfoModel, getAllUsers } from "../../../../utils/api/SystemAdminUtils";
 import UserModal from "../components/UserModal";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { MenuItem, Select } from "@mui/material";
 
 
 const drawerWidth: number = 240;
@@ -77,95 +73,35 @@ const defaultTheme = createTheme();
 
 
 const UserManagement = () => {
-    const navigator = useNavigate();
+    const [users, setUsers] = useState<UserInfoModel[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string>('');
+
 
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
         setOpen(!open);
     };
-
-    //----------------------------------------------------------------------
-    //State variable
-    const [users, setUsers] = useState<UsersToDisplay[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [confirmOpen, setConfirmOpen] = useState(false); 
-    const [selectedUserId, setSelectedUserId] = useState<number | null>(null); 
-    const [filteredUsers, setFilteredUsers] = useState<UsersToDisplay[]>([]);
-    const [filterRole, setFilterRole] = useState<string>('');
-    //----------------------------------------------------------------------
-   
-    //----------------------------------------------------------------------
-    //Action handlers
-    const openModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
-
-    const openConfirmDialog = (userId: number) => {
-        setSelectedUserId(userId);
-        setConfirmOpen(true);
-    };
-
-    const closeConfirmDialog = () => {
-        setConfirmOpen(false);
-        setSelectedUserId(null); // Reset selected user id
-    };
-
-    const onTableRowClick = (userId: number) => { 
-        navigator(`/system-admin/user/${userId}`);
-    }
-    //----------------------------------------------------------------------
-
-    //----------------------------------------------------------------------
-    //Fetch data
     const fetchUsers = async () => {
+        setLoading(true);
         try {
-            const usersData = await getUsers();
-            setUsers(usersData);
+            const data = await getAllUsers();
+            if (typeof data === 'string') {
+                setError(data);
+            } else {
+                setUsers(data);
+            }
         } catch (error) {
-            console.error('Error fetching users:', error);
+            setError(error as string);
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchUsers();
     }, []);
-    //----------------------------------------------------------------------
 
-
-    //----------------------------------------------------------------------
-    //API calls
-    const handleRegisterUser = async (formData: UserRegistrationModel) => {
-        try {
-            await registerUser(formData);
-            await fetchUsers(); 
-            setIsModalOpen(false); 
-        } catch (error) {
-            console.error('Error registering user:', error);
-        }
-    };
-
-    const handleButtonClick = async (userId : number, status: boolean | null) => {
-        try {
-            openConfirmDialog(userId); 
-        } catch (error) {
-            console.error('Error updating user status:', error);
-        }
-    };
-
-    const confirmAction = async () => {
-        try {
-            await setUserStatus(selectedUserId!, users.find(user => user.id === selectedUserId)?.status || null); 
-            await fetchUsers();
-            closeConfirmDialog();
-        } catch (error) {
-            console.error('Error confirming action:', error);
-        }
-    };
-    //----------------------------------------------------------------------
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -237,26 +173,18 @@ const UserManagement = () => {
                                     <input type="text" placeholder="Tìm kiếm người dùng" className={styles.searchInput} />
                                     <button className={styles.searchButton}>Tìm kiếm</button>
                                 </Box>
-                                <Box className={styles.utilities}>
-                                    <select className={styles.filterSelect}>
-                                        <option value="">Filter</option>
-                                        <option value="role1">Role 1</option>
-                                        <option value="role2">Role 2</option>
-                                    </select>
-                                    <button className={styles.addButton} onClick={openModal}>
-                                        Thêm người dùng
-                                    </button>
-                                </Box>
                             </Box>
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
                                         <th>ID</th>
                                         <th>Username</th>
-                                        <th>Email</th>
-                                        <th>Số điện thoại</th>
                                         <th>Ngày tạo</th>
                                         <th>Role</th>
+                                        <th>Fullname</th>
+                                        <th>Dentist ID</th>
+                                        <th>Clinic ID</th>
+                                        <th>IsOwner</th>
                                         <th>
                                             <Box className={styles.tooltip}>
                                                 Trạng thái
@@ -267,28 +195,37 @@ const UserManagement = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {users.map((user) => (
-                                        <tr key={user.id} className={styles.tableRow} >
-                                            <td>{user.id}</td>
-                                            <td>{user.username}</td>
-                                            <td>{user.email}</td>
-                                            <td>{user.phone}</td>
-                                            <td>{user.joinedDate ? user.joinedDate.toString() : ""}</td>
-                                            <td>{user.gender}</td>
-                                            <td>
-                                                <button
-                                                    className={`${styles.statusButton} ${user.status ? styles.active : styles.inactive}`}
-                                                    onClick={() => handleButtonClick(user.id, user.status)}
-                                                >                    
-                                                    {user.status ? 'Hoạt động' : 'Ngừng hoạt động'}
-                                                </button>
-                                            </td>
+                                    {loading ? (
+                                        <tr>
+                                            <td colSpan={16}>Loading...</td>
                                         </tr>
-                                    ))}
+                                    ) : error ? (
+                                        <tr>
+                                            <td colSpan={16}>Error: {error}</td>
+                                        </tr>
+                                    ) : (
+                                        users.map((user) => (
+                                            <tr key={user.id} className={styles.tableRow}>
+                                                <td>{user.id}</td>
+                                                <td>{user.username}</td>
+                                                <td>{user.joinedDate ? user.joinedDate.toString() : ""}</td>
+                                                <td>{user.role}</td>
+                                                <td>{user.fullname}</td>
+                                                <td>{user.dentistId}</td>
+                                                <td>{user.clinicId}</td>
+                                                <td>{user.isOwner ? 'Yes' : 'No'}</td>
+                                                <td>
+                                                    <button
+                                                        className={`${styles.statusButton} ${user.isActive ? styles.active : styles.inactive}`}
+                                                    >
+                                                        {user.isActive ? 'Hoạt động' : 'Ngừng hoạt động'}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                                 </tbody>
                             </table>
-                            <UserModal isOpen={isModalOpen} onClose={closeModal} onRegister={handleRegisterUser} />
-                            <ConfirmationDialog open={confirmOpen} onClose={closeConfirmDialog} onConfirm={confirmAction} />
                         </div>
                     </Box>
                 </Box>

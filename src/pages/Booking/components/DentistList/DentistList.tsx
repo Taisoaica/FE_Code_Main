@@ -1,28 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './DentistList.module.css';
 import { SetBookingInformation } from '../../../../utils/interfaces/interfaces';
+import { getAllDentist, DentistInfoViewModel } from '../../../../utils/api/BookingRegister';
 
 interface DentistListProps {
     setFormData: SetBookingInformation;
     onStepComplete: () => void;
 }
 
-// src/utils/mockDentists.ts
-const dentists = [
-    { dentistId: '1', dentistName: 'Dr. John Doe', specialty: 'Orthodontist' },
-    { dentistId: '2', dentistName: 'Dr. Jane Smith', specialty: 'Periodontist' },
-    { dentistId: '3', dentistName: 'Dr. Emily Johnson', specialty: 'Endodontist' },
-];
-
-
 const DentistList = ({ setFormData, onStepComplete }: DentistListProps) => {
-    const handleDentistClick = (dentistId: string) => {
-        setFormData(prevState => ({
-            ...prevState,
-            dentist: dentistId,
-            dentistName: dentists.find(dentist => dentist.dentistId === dentistId)?.dentistName || '',
-        }));
-        onStepComplete();
+    const [dentistList, setDentistList] = useState<DentistInfoViewModel[]>([]);
+
+    useEffect(() => {
+        const fetchDentists = async () => {
+            try {
+                const dentists = await getAllDentist('1');
+                setDentistList(dentists);
+            } catch (error) {
+                console.error('Error fetching dentists:', error);
+                // Handle error fetching data
+            }
+        };
+
+        fetchDentists();
+    }, []);
+
+    const handleDentistClick = (dentistId: number) => {
+        const selectedDentist = dentistList.find(dentist => dentist.dentistId === dentistId);
+        if (selectedDentist) {
+            setFormData(prevState => ({
+                ...prevState,
+                dentist: selectedDentist.dentistId.toString(),
+                dentistName: selectedDentist.fullname,
+            }));
+            onStepComplete();
+        }
     };
 
     return (
@@ -31,16 +43,10 @@ const DentistList = ({ setFormData, onStepComplete }: DentistListProps) => {
                 <div className={styles.heading}>Chọn Nha Sĩ</div>
             </div>
             <div className={styles.contentBox}>
-                {/* <div className={styles.toolbar}>
-                    <div className={styles.searchbar}>
-                        <input type="text" placeholder="Tìm kiếm nha sĩ" className={styles.searchInput} />
-                    </div>
-                </div> */}
                 <div className={styles.list}>
-                    {dentists.map((dentist) => (
+                    {dentistList.map((dentist) => (
                         <div key={dentist.dentistId} className={styles.item} onClick={() => handleDentistClick(dentist.dentistId)}>
-                            <div className={styles.dentistName}>{dentist.dentistName}</div>
-                            <div className={styles.specialty}>{dentist.specialty}</div>
+                            <div className={styles.dentistName}>{dentist.fullname}</div>
                         </div>
                     ))}
                 </div>

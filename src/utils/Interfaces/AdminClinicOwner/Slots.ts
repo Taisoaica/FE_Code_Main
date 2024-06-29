@@ -1,21 +1,27 @@
-export interface slot{
-    timeslots: string[]
+export interface ClinicRegistrationModel {
+    ClinicId: number;
+    SlotId: number;
+    Weekday: number;
+    MaxTreatment: number;
+    MaxCheckUp: number;
 }
 
-export const slots = [
-    "7:30-8:00",
-    "8:00-8:30",
-    "8:30-9:00",
-    "9:00-9:30",
-    "9:30-10:00",
-    "10:00-10:30",
-    "10:30-11:00",
-    "11:00-11:30",
-    "13:30-14:00",
-    "14:00-14:30",
-    "14:30-15:00",
-    "15:00-15:30",
-    "15:30-16:00",
-    "16:00-16:30",
-    "16:30-17:00",
-];
+export interface ClinicSlotRegistrationModel {
+    SlotId: number;
+    clinicSlotId: number;
+    clinicId: number;
+    weekday: number;
+    maxCheckup: number;
+    maxTreatment: number;
+}
+
+
+export enum Weekdays {
+    Sunday = 0,
+    Monday = 1,
+    Tuesday = 2,
+    Wednesday = 3,
+    Thursday = 4,
+    Friday = 5,
+    Saturday = 6,
+}

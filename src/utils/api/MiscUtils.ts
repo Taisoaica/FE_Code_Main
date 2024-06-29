@@ -1,26 +1,26 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { connection_path } from '../../constants/developments';
-import { ClinicToDisplay } from '../interfaces/ClinicRegister/Clinic';
+import { ClinicInfoModel, ClinicToDisplay } from '../interfaces/ClinicRegister/Clinic';
 
-export const getClinicById = async (clinicId: string): Promise<ClinicToDisplay> => {
-    const api_url = connection_path.base_url + connection_path.clinic.get_clinic_general_info + clinicId;
-
+export async function getClinicInformation(id: string): Promise<ClinicInfoModel | null> {
+    const api_url = connection_path.base_url + connection_path.clinic.get_clinic_general_info + id;
+    const configuration: AxiosRequestConfig = {
+        method: 'GET',
+        url: api_url,
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            'Content-Type': 'application/json' // Set content type as JSON
+        }
+    }
     try {
-        const response: AxiosResponse = await axios.get(api_url);
-
+        const response: AxiosResponse = await axios(configuration);
         if (response.status === 200) {
-            const clinicData: ClinicToDisplay = response.data.Content;
-
-            return clinicData;
-
-        } else {
-            throw new Error('Failed to get clinic information');
+            return response.data.content as ClinicInfoModel;
         }
+        return null; // Handle non-200 status codes if needed
     } catch (error) {
-        if (error instanceof Error) {
-            console.error(error.message);
-        }
-        throw error;
+        console.error('Error fetching clinic information:', error);
+        return null;
     }
 }
 

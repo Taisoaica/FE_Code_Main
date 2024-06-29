@@ -112,7 +112,7 @@ const ClinicInfo = () => {
         <div className={styles.headerContainer}>
           <div className={styles.imgBox}>
             <label htmlFor="file-input">
-              <img src={logo} alt="Upload Icon" />
+              <img src={logo} />
             </label>
             <input
               style={{ cursor: 'pointer' }}
@@ -162,7 +162,7 @@ const ClinicInfo = () => {
                   type="textarea"
                   value={textAreaContent}
                   onChange={handleTextAreaChange}
-                  onDoubleClick={handleInputDoubleClick} 
+                  onDoubleClick={handleInputDoubleClick}
                 />
                 <Dialog
                   open={isDesDialogOpen}
@@ -198,18 +198,20 @@ const ClinicInfo = () => {
             Chỉnh sửa
           </Button>
         </div>
-        <div className={styles.gallery}>
-          <div>Hình ảnh trong carousel</div>
-          <div className={styles.imgContainer}>
-            {images.map((imgSrc, index) => (
-              <div key={index} className={styles.imageWrapper}>
-                <img src={imgSrc} alt={`Uploaded ${index}`} className={styles.uploadedImg} />
-              </div>
-            ))}
-          </div>
+        <div className={styles.galleryContainer}>
           <div className={styles.imageUploadContainer}>
-            <div className={styles.uploadTitle}>Upload Images</div>
+            <div className={styles.uploadTitle}>Đăng tải ảnh</div>
             <ImageUpload />
+          </div>
+          <div className={styles.gallery}>
+            <div>Hình ảnh trong carousel</div>
+            <div className={styles.imgContainer}>
+              {images.map((imgSrc, index) => (
+                <div key={index} className={styles.imageWrapper}>
+                  <img src={imgSrc} alt={`Uploaded ${index}`} className={styles.uploadedImg} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

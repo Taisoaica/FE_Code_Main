@@ -1,16 +1,12 @@
-export interface dentistAccounts {
-    image : string,
-    name: string,
-    status: string,
+export interface DentistInfoViewModel {
+    dentistId: number;
+    fullname: string;
+    username: string;
+    email: string;
+    phone: string;
+    isActive: boolean;
+    joinedDate: Date | null; // DateTime? is nullable, so Date | null in TypeScript
+    clinicId: number | null; // int? is nullable, so number | null in TypeScript
+    isOwner: boolean;
 }
-export const dentistAccounts = [
-    { image: "", name: "Nguyễn Văn A", status: "active" },
-    { image: "", name: "Nguyễn Văn B", status: "inactive" },
-    { image: "", name: "Nguyễn Văn C", status: "inactive" },
-    { image: "", name: "Nguyễn Văn D", status: "active" },
-    { image: "", name: "Nguyễn Văn E", status: "active" },
-    { image: "", name: "Nguyễn Văn F", status: "inactive"},
-    { image: "", name: 'Nguyễn Văn G', status: 'active' },
-    { image: "", name: 'Nguyễn Văn H', status: 'active' },
-    { image: "", name: 'Nguyễn Văn I', status: 'active' },
-]
+    

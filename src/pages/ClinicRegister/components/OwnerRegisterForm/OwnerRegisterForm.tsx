@@ -67,15 +67,15 @@ const OwnerRegisterForm = ({ formData, setFormData, onStepComplete }: BasicFormP
     };
 
     const handleSubmit = async (event: React.FormEvent) => {
-        if (validate()) {
-            onStepComplete();
-            setFormData({
-                ...formData,
-                OwnerUserName: localFormData?.OwnerUserName,
-                OwnerPassword: localFormData?.OwnerPassword,
-                OwnerEmail: localFormData?.OwnerEmail
-            });
-        }
+        // if (validate()) {
+        onStepComplete();
+        setFormData({
+            ...formData,
+            OwnerUserName: localFormData?.OwnerUserName,
+            OwnerPassword: localFormData?.OwnerPassword,
+            OwnerEmail: localFormData?.OwnerEmail
+        });
+        //        }
     }
 
     return (

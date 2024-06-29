@@ -1,5 +1,5 @@
 import styles from './UserAccount.module.css';
-import { default_data, UserInfo } from '../../../../utils/interfaces/User/UserDefinition';
+import { default_data, IUserAccount } from '../../../../utils/interfaces/User/UserDefinition';
 import { Dispatch, SetStateAction, useLayoutEffect, useState } from 'react';
 import SimpleButton from '../../../../components/User/Components/Buttons/SimpleButton';
 import StatusBadge from '../../../../components/User/StatusBadge/StatusBadge';
@@ -8,101 +8,33 @@ import ChangePassword from '../../../../components/User/Layouts/ChangePassword/C
 import { getUserData, putUserData } from '../../../../utils/api/UserAccountUtils';
 
 
-export interface UserInfoToSend {
-    id: number;
-    username: string;
-    passwordHash: string;
-    salt: string;
-    email: string;
-    phone: string;
-    fullname: string;
-    role: string;
-    isActive: boolean;
-    isRemoved: boolean;
-    joinedDate: string;
-    customerId: number;
-    birthdate: string;
-    sex: string;
-    insurance: string;
-    dentistId: number;
-    clinicId: number;
-    isOwner: boolean;
-}
-
-
-
-const transformUserInfoToSend = (userInfo: UserInfo): UserInfoToSend => {
-    return {
-        id: Number(userInfo.id),
-        username: userInfo.username,
-        passwordHash: '',
-        salt: '',
-        email: userInfo.email || '',
-        phone: userInfo.phone || '',
-        fullname: userInfo.fullname || '',
-        role: 'Customer',
-        isActive: true,
-        isRemoved: false,
-        joinedDate: '',
-        customerId: 1,
-        birthdate: userInfo.birthdate || '',
-        sex: userInfo.sex || '',
-        insurance: userInfo.insurance || '',
-        dentistId: 0,
-        clinicId: 0,
-        isOwner: false
-    };
-};
-
-const transformUserInfoFromSend = (userInfoToSend: UserInfoToSend): UserInfo => {
-    return {
-        id: userInfoToSend.id.toString(),
-        username: userInfoToSend.username,
-        fullname: userInfoToSend.fullname || null,
-        phone: userInfoToSend.phone || null,
-        sex: userInfoToSend.sex || null,
-        birthdate: userInfoToSend.birthdate || null,
-        email: userInfoToSend.email || null,
-        insurance: userInfoToSend.insurance || null,
-        profilePicture: null,
-        joinedDate: userInfoToSend.joinedDate ? new Date(userInfoToSend.joinedDate) : null,
-        status: null
-    };
-};
-
 
 const UserAccount = () => {
-    const [userData, setUserData]: [UserInfo, Dispatch<SetStateAction<UserInfo>>] = useState(default_data);
+    const [userData, setUserData]: [IUserAccount, Dispatch<SetStateAction<IUserAccount>>] = useState(default_data);
     const [disabled, setDisabled]: [boolean, Dispatch<SetStateAction<boolean>>] = useState(true);
-
-
-    const data: UserInfoToSend = {
-        id: 11,
-        username: userData.username,
-        passwordHash: '',
-        salt: '',
-        email: userData.email || '',
-        phone: userData.phone || '',
-        fullname: userData.fullname || '',
-        role: "Customer",
-        isActive: true,
-        isRemoved: false,
-        joinedDate: '',
-        customerId: 1,
-        birthdate: userData.birthdate || '',
-        sex: userData.sex || '',
-        insurance: userData.insurance || '',
-        dentistId: 0,
-        clinicId: 0,
-        isOwner: false,
-    };
+    const [userDataToSend, setUserDataToSend]: [IUserAccount, Dispatch<SetStateAction<IUserAccount>>] = useState(default_data);
 
     const saveUserData = async () => {
+        const userId = localStorage.getItem('id');
+        const dataToSend = {
+            ...default_data,
+            ...userData,
+            joinedDate: userData.joinedDate ? new Date(userData.joinedDate).toISOString() : "",
+        };
+        if (userId !== null) {
+            dataToSend.id = parseInt(userId, 10); // Explicitly use base 10 for parsing
+        } else {
+            // Handle invalid or missing IDs gracefully
+            console.warn("Invalid or missing user ID in localStorage.");
+
+            // Option 1: Set a default or fallback value
+            // dataToSend.id = 0; // Or some other sensible default
+
+            // Option 2: Remove the 'id' property if it's problematic
+            delete dataToSend.id;
+        }
         try {
-            const transformedData = transformUserInfoToSend(userData);
-            const updatedUser = await putUserData(transformedData);
-            const transformedUpdatedUser = transformUserInfoFromSend(updatedUser);
-            setUserData(transformedUpdatedUser);
+            await putUserData(dataToSend)
             setDisabled(true);
         } catch (error) {
             console.error('Error updating user data:', error);
@@ -110,8 +42,13 @@ const UserAccount = () => {
     };
 
     const updateUserData = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = event.currentTarget;
-        setUserData(prevData => ({ ...prevData, [name]: value }));
+        const { name, value, type } = event.currentTarget;
+        if (type === 'radio') {
+            setUserData(prevData => ({ ...prevData, [name]: value }));
+        } else {
+            setUserData(prevData => ({ ...prevData, [name]: value }));
+        }
+        console.log(userData);
     };
 
     const changePicture = () => {
@@ -121,13 +58,19 @@ const UserAccount = () => {
     const fetchUserData = async () => {
         try {
             const usersData = await getUserData();
-            setUserData(usersData);
+            console.log(usersData);
+            const normalizedData = {
+                ...usersData,
+                insurance: usersData.insurance || '',
+            };
+            setUserData(normalizedData);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
     };
 
     useLayoutEffect(() => {
+        console.log(userData);
         fetchUserData();
     }, []);
 
@@ -139,7 +82,7 @@ const UserAccount = () => {
                     <div className={styles.ProfileInfo}>
                         <div className={styles.ProfileImagePlaceholder}>
                             <span className={styles.ProfileImage}>
-                                <img src={userData.profilePicture ?? ImagePlaceholder} onClick={changePicture} alt="Profile" />
+                                <img src={ImagePlaceholder} onClick={changePicture} alt="Profile" />
                             </span>
                             <span className={styles.ProfileGeneralInfo}>
                                 <h2>{userData.fullname ?? "--"}</h2>

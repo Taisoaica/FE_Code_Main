@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styles from './UserModal.module.css'; 
-import { registerUser } from '../../../../utils/api/SystemAdminUtils';
 
 interface UserModalProps {
     isOpen: boolean;
@@ -31,7 +30,6 @@ const UserModal = ({ isOpen, onClose, onRegister }: UserModalProps) => {
         e.preventDefault();
         console.log('Form submitted with:', formData);
         setFormData(initialFormData);
-        registerUser(formData);
         onRegister(formData);
         onClose();
     };

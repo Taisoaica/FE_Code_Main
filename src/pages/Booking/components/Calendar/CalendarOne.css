@@ -97,3 +97,8 @@
     color: #1da1f3;
     font-weight: 600;
 }
+
+.no-slots {
+    background-color: #ffe3df;
+    pointer-events: none;
+}

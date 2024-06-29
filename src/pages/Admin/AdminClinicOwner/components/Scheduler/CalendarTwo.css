@@ -136,4 +136,27 @@
 
 .custom-event-class {
     cursor: pointer;
-  }
+}
+
+
+.calendar-two .fc-daygrid-day-frame {
+    display: flex;
+    padding: 8px;
+    justify-content: center;
+    align-items: center;
+}
+
+.calendar-two .fc-timegrid-slot-label-frame {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.calendar-two .fc-timegrid-slot-lane {
+    padding: 10px;
+    text-align: left;
+}
+
+.calendar-two .fc-timegrid-slot-lane {
+    padding: 10px;
+    text-align: left;
+}

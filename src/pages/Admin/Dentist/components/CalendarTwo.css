@@ -1,0 +1,139 @@
+/* General Calendar Styles */
+.calendar-two .fc-theme-standard .fc-scrollgrid,
+.calendar-two .fc-theme-standard .fc-scrollgrid-section-body {
+    background-color: white;
+}
+
+.calendar-two .fc-daygrid-day-selected {
+    background-color: #dbeaff;
+    border-color: #dee2e6;
+}
+
+
+.calendar-two .fc-timegrid-divider {
+    display: none;
+}
+
+.calendar-two .fc .fc-button {
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    margin-right: 0.35rem;
+    margin-bottom: 0.5rem;
+}
+
+.calendar-two .fc .fc-daygrid-day-number {
+    color: black;
+    text-decoration: none;
+}
+
+.calendar-two .fc .fc-col-header-cell-cushion {
+    padding: 0.5rem;
+    color: black;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.calendar-two .fc .fc-daygrid-day.fc-day-today {
+    background-color: #dbeaff;
+    color: black;
+    border-color: #dee2e6;
+}
+
+.calendar-two .fc-daygrid-day-frame {
+    display: flex;
+    padding: 8px;
+    justify-content: center;
+    align-items: center;
+}
+
+.calendar-two .fc-state-highlight {
+    background-color: #a0a0a0;
+}
+
+.calendar-two .fc table {
+    height: auto;
+}
+
+.calendar-two .fc-daygrid-day {
+    height: calc(100% / 7);
+    cursor: pointer;
+}
+
+/* Toolbar Styles */
+.calendar-two .fc-toolbar {
+    margin: 0 auto;
+    width: 100%;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.calendar-two .fc-header-toolbar .fc-toolbar-chunk {
+    padding: 10px;
+}
+
+.calendar-two .fc-toolbar-title {
+    color: #1da1f3;
+    font-weight: 600;
+}
+
+/* Button Styles */
+.calendar-two .fc-header-toolbar .fc-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    margin-right: 0.35rem;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.calendar-two .fc-header-toolbar .fc-button:hover,
+.calendar-two .fc-header-toolbar .fc-button:focus {
+    background-color: #0056b3;
+    outline: none;
+}
+
+.calendar-two .fc-header-toolbar .fc-prev-button,
+.calendar-two .fc-header-toolbar .fc-next-button,
+.calendar-two .fc-header-toolbar .fc-today-button {
+    background-color: #249dec;
+}
+
+.calendar-two .fc-header-toolbar .fc-prev-button:hover,
+.calendar-two .fc-header-toolbar .fc-next-button:hover,
+.calendar-two .fc-header-toolbar .fc-today-button:hover {
+    background-color: #1a7bb8;
+}
+
+/* View Buttons */
+.calendar-two .fc-header-toolbar .fc-button-group .fc-button {
+    margin-right: 0.35rem;
+    background-color: #007bff;
+}
+
+.calendar-two .fc-header-toolbar .fc-button-group .fc-button:hover {
+    background-color: #0056b3;
+}
+
+/* Specific Button Styling */
+.calendar-two .fc-header-toolbar .fc-prev-button,
+.calendar-two .fc-header-toolbar .fc-next-button {
+    margin: 0;
+    padding: 0;
+    font-size: 24px;
+    line-height: 24px;
+}
+
+.calendar-two .fc-header-toolbar .fc-today-button {
+    color: white;
+}
+
+.custom-event-class {
+    cursor: pointer;
+  }

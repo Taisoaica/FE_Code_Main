@@ -172,3 +172,8 @@ th {
     font-weight: bold;
     margin-left: 5px;
 }
+
+.verifiedButton {
+    background-color: #4caf50; /* Example background color for verified clinics */
+    color: white; /* Text color */
+}

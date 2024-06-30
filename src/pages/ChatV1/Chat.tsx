@@ -2,7 +2,6 @@ import "./Chat.css";
 import Chatting from "../ChatV1/component/chat/Chatting";
 import Detail from "../ChatV1/component/detail/Detail"
 import List from "../ChatV1/component/list/List"
-import Header from '../../components/Header/Header.1';
 import { AppBar, Box, Button, Container, Link, Toolbar, Typography } from '@mui/material';
 
 

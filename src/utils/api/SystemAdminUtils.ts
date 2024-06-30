@@ -119,6 +119,7 @@ export const getAllClinics = async (page: number = 1): Promise<ClinicInfoModel[]
         }
     };
 
+
     try {
         const response: AxiosResponse = await axios(configuration);
         if (response.status === 200) {

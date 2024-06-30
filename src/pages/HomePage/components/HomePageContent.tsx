@@ -1,7 +1,5 @@
-import { SearchIcon } from "@chakra-ui/icons";
-import { Box, Button, IconButton, InputBase, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import Carousel from "../../../components/Carousel/Carousel";
-import { clinicData } from "../../../utils/mockData";
 import Accordion from "./Accordion/Accordion";
 import FeaturesAndBenefits from "./FeatureAndBenefits/FeatureAndBenefits";
 import { useNavigate } from 'react-router-dom';

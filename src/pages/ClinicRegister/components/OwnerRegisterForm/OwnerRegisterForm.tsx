@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Button, Form, FormGroup, Label, Input, FormFeedback } from 'reactstrap';
+import { Row, Col, Button, FormGroup, Label, Input, FormFeedback } from 'reactstrap';
 import { ClinicRegistrationModel, setClinicRegistrationModel } from '../../../../utils/interfaces/ClinicRegister/Clinic';
 import styles from './OwnerRegisterForm.module.css';
-import { handleOwnerRegister } from '../../../../utils/api/ClinicRegister';
-import { Email, Password } from '@mui/icons-material';
+// import { handleOwnerRegister } from '../../../../utils/api/ClinicRegister';
+// import { Email, Password } from '@mui/icons-material';
 
 interface BasicFormProps {
     formData: ClinicRegistrationModel;
@@ -33,7 +33,7 @@ const OwnerRegisterForm = ({ formData, setFormData, onStepComplete }: BasicFormP
             newErrors.OwnerUserName = 'Tên đăng nhập là bắt buộc.';
             isValid = false;
         } else if (
-            !/^[a-zA-Z][a-zA-Z0-9]{7,29}$/.test(localFormData.OwnerUserName)
+            !/^(?=[A-Za-z])(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z0-9_]{8,30}/.test(localFormData.OwnerUserName)
         ) {
             newErrors.OwnerUserName =
                 'Tên đăng nhập phải bắt đầu bằng một ký tự chữ cái, có từ 8 đến 30 ký tự, và bao gồm ít nhất một chữ hoa, một chữ thường hoặc một số.';

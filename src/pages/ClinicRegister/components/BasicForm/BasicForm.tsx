@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ClinicRegistrationModel, setClinicRegistrationModel } from '../../../../utils/interfaces/ClinicRegister/Clinic';
-import { Container, Row, Col, Button, Form, FormGroup, Label, Input, FormFeedback } from 'reactstrap';
+import { Row, Col, Button, Form, FormGroup, Label, Input, FormFeedback } from 'reactstrap';
 import styles from './BasicForm.module.css';
 
 interface BasicFormProps {

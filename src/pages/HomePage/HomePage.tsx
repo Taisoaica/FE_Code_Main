@@ -1,4 +1,3 @@
-import Hero from "../../components/Hero/Hero";
 import UserLayout from "../../components/UserLayout";
 import HomePageContent from "./components/HomePageContent";
 

@@ -1,23 +1,23 @@
-import { Button, Box, Checkbox, Link, Divider, Typography, TextField, } from "@mui/material";
+import { Button, Box, Checkbox, Link, Divider, TextField, } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useNavigate } from "react-router-dom";
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { useEffect } from "react";
 import { connection_path } from "../../../constants/developments";
-import { GoogleCredentialResponse, GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import * as React from "react";
 import { InputAdornment, IconButton } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import styles from "./LoginForm.module.css";
 
-import { handleLogin } from "../../../utils/api/AuthenticateUtils";
+import { handleLogin, handleGoogleOnSuccess, handleGoogleOnFailure } from "../../../utils/api/AuthenticateUtils";
 import { ArrowBack } from "@mui/icons-material";
 
 const LoginForm = () => {
   const navigate = useNavigate();
 
-  const handleBack = () => { 
+  const handleBack = () => {
     navigate(-1);
   }
 
@@ -68,33 +68,33 @@ const LoginForm = () => {
       });
   }
 
-  const handleGoogleOnSuccess = async (response: GoogleCredentialResponse) => {
-    const api_url: string =
-      connection_path.base_url + connection_path.auth.googleAuth;
-    const configuration: AxiosRequestConfig = {
-      method: "POST",
-      url: api_url,
-      data: { googleToken: response.credential },
-      headers: { "Content-Type": "application/json" },
-    };
-    const axiosResponse: AxiosResponse<{
-      accessToken: string;
-      refreshToken: string;
-      error: string;
-      message: string;
-    }> = await axios(configuration);
+  // const handleGoogleOnSuccess = async (response: GoogleCredentialResponse) => {
+  //   const api_url: string =
+  //     connection_path.base_url + connection_path.auth.googleAuth;
+  //   const configuration: AxiosRequestConfig = {
+  //     method: "POST",
+  //     url: api_url,
+  //     data: { googleToken: response.credential },
+  //     headers: { "Content-Type": "application/json" },
+  //   };
+  //   const axiosResponse: AxiosResponse<{
+  //     accessToken: string;
+  //     refreshToken: string;
+  //     error: string;
+  //     message: string;
+  //   }> = await axios(configuration);
 
-    console.log(axiosResponse);
+  //   console.log(axiosResponse);
 
-    if (axiosResponse.data.accessToken !== undefined) {
-      localStorage.setItem("accessToken", axiosResponse.data.accessToken);
-      localStorage.setItem("refreshToken", axiosResponse.data.refreshToken);
-      navigate("/");
-    }
-  };
-  const handleGoogleOnFailure = () => {
-    navigate("/error404")
-  };
+  //   if (axiosResponse.data.accessToken !== undefined) {
+  //     localStorage.setItem("accessToken", axiosResponse.data.accessToken);
+  //     localStorage.setItem("refreshToken", axiosResponse.data.refreshToken);
+  //     navigate("/");
+  //   }
+  // };
+  // const handleGoogleOnFailure = () => {
+  //   navigate("/error404")
+  // };
 
   //#   Kiểm tra xem người dùng đã login hay chưa (nên có ở các trang / component yêu cầu phải login)
   useEffect(() => {
@@ -117,9 +117,10 @@ const LoginForm = () => {
   });
 
 
-  
+
   //add eye icon into the password field
   const [showPassword, setShowPassword] = React.useState(false);
+
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -129,13 +130,14 @@ const LoginForm = () => {
     event.preventDefault();
   };
 
+  
 
   return (
     <Box
       component="form"
       onSubmit={(event) => handleLogin(event, navigate)}
       noValidate
-      // className={styles.form}
+    // className={styles.form}
     >
       <Box className={styles.buttonBox}>
         <button type="button" className={styles.backButton} onClick={handleBack}>
@@ -152,7 +154,7 @@ const LoginForm = () => {
           fullWidth
           id="username"
           label="Tên tài khoản"
-          name="username"
+         
         />
 
         <TextField
@@ -203,8 +205,8 @@ const LoginForm = () => {
         <Divider sx={{ backgroundColor: "black" }} />
         <Box sx={{ margin: '0 auto' }}>
           <GoogleLogin
-            onSuccess={handleGoogleOnSuccess}
-            onError={handleGoogleOnFailure}
+            onSuccess={(response) => handleGoogleOnSuccess(response, navigate)}
+            onError={() => handleGoogleOnFailure(navigate)}
             data-width="100%"
           />
         </Box>

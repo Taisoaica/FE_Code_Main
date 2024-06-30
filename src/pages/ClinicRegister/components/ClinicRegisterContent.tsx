@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Box, Breadcrumbs, Button, Link, Typography } from '@mui/material';
 import UseMultipleStepForm from '../../../components/UseMultipleStepForm/UseMultipleStepForm';
-import ServicesForm from './ServicesForm/ServicesForm';
+// import ServicesForm from './ServicesForm/ServicesForm';
 import CertificationForm from './CertificationForm/CertificationForm';
 import BasicForm from './BasicForm/BasicForm';
 import styles from './ClinicRegisterContent.module.css';

@@ -101,7 +101,7 @@ const ClinicSystemDetail = () => {
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-                            Trang tài chi tiết phòng khám
+                            Trang chi tiết phòng khám
                         </Typography>
                     </Toolbar>
                 </AppBar>

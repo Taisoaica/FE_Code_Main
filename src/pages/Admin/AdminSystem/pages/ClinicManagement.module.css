@@ -102,7 +102,7 @@ th,
 td {
     border: 1px solid #0d47a1;
     padding: 8px;
-    text-align: left;
+    text-align: center !important;
 }
 
 th {

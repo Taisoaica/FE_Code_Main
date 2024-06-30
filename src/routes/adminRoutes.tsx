@@ -4,8 +4,7 @@ import ClinicInformation from '../pages/Admin/AdminClinicOwner/pages/ClinicInfor
 import ServicesInformation from '../pages/Admin/AdminClinicOwner/pages/ServicesInformation';
 import SlotRegister from '../pages/Admin/AdminClinicOwner/pages/SlotRegister';
 import ClinicManagement from '../pages/Admin/AdminSystem/pages/ClinicManagement';
-import ClinicSystemDetail from '../pages/Admin/AdminSystem/pages/ClinicSystemDetail';
-import UserDetail from '../pages/Admin/AdminSystem/pages/UserDetail';
+// import ClinicSystemDetail from '../pages/Admin/AdminSystem/pages/ClinicSystemDetail';
 import UserManagement from '../pages/Admin/AdminSystem/pages/UserManagement';
 import DentistAppointmentManager from '../pages/Admin/Dentist/pages/DentistAppointmentManager';
 import ClinicServices from '../pages/Admin/AdminSystem/pages/ClinicServices';
@@ -23,8 +22,7 @@ const adminRoutes = [
     // { path: '/dentist/scheduler', element: <AppointmentScheduler /> },
     { path: '/system-admin', element: <UserManagement /> },
     { path: '/system-admin/clinic', element: <ClinicManagement /> },
-    { path: '/system-admin/clinic/:clinicId', element: <ClinicSystemDetail /> },
-    { path: "/system-admin/user/:userId", element: <UserDetail /> },
+    // { path: '/system-admin/clinic/:clinicId', element: <ClinicSystemDetail /> },
     { path: "/system-admin/service", element: <ClinicServices /> }
 ]
 

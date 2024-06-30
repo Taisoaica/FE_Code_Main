@@ -6,16 +6,16 @@ import CertificationForm from './CertificationForm/CertificationForm';
 import BasicForm from './BasicForm/BasicForm';
 import styles from './ClinicRegisterContent.module.css';
 import { Service, Clinic, Slot } from '../../../utils/interfaces/ClinicRegister/Clinic';
-import { servicesData } from '../../../utils/mockData'
-import { ArrowBack, ArrowForward } from '@mui/icons-material';
+// import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { ClinicRegistrationModel } from '../../../utils/interfaces/ClinicRegister/Clinic';
 import { handleClinicRegister } from '../../../utils/api/ClinicRegister';
 import OwnerRegisterForm from './OwnerRegisterForm/OwnerRegisterForm';
+import { ArrowBack } from '@mui/icons-material';
 
 const ClinicRegisterContent = () => {
     const navigator = useNavigate();
-    const [services, setServices] = useState<Service[]>(servicesData);
+    // const [services, setServices] = useState<Service[]>(servicesData);
 
     const [formData, setFormData] = useState<ClinicRegistrationModel>({
         OwnerId: 0,

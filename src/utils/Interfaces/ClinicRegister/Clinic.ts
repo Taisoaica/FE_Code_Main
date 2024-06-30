@@ -71,17 +71,17 @@ export interface ClinicToDisplay {
 }
 
 export interface ClinicInfoModel {
-    Id: number;
-    Name: string;
-    Description: string;
-    Address: string;
-    Phone: string;
-    Email: string;
-    OpenHour: string;
-    CloseHour: string;
-    OwnerId: number;
-    Working: boolean;
-    Status: string;
+    id: number;
+    name: string;
+    description: string;
+    address: string;
+    phone: string;
+    email: string;
+    openHour: string;
+    closeHour: string;
+    ownerId: number;
+    working: boolean;
+    status: string;
 }
 
 export interface ClinicSlotInfoModel {

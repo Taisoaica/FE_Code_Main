@@ -32,8 +32,6 @@ const SignUpForm = () => {
     }
   };
 
-
-
   //add eye-icon to password
   const [showPassword, setShowPassword] = React.useState(false);
 

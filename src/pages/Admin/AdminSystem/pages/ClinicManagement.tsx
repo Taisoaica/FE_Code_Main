@@ -183,8 +183,8 @@ const ClinicManagement = () => {
                                             <td>{clinic.open_hour} - {clinic.close_hour}</td>
                                             <td>{clinic.email}</td>
                                             <td>{clinic.phone}</td>
-                                            <td>{/* Insert ID chủ phòng khám here */}</td>
-                                            <td>{/* Insert trạng thái here */}</td>
+                                            <td></td>
+                                            <td></td>
                                         </tr>
                                     ))}
                                 </tbody>

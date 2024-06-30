@@ -195,7 +195,7 @@ const UserManagement = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {loading ? (
+                                    {/* {loading ? (
                                         <tr>
                                             <td colSpan={16}>Loading...</td>
                                         </tr>
@@ -223,7 +223,7 @@ const UserManagement = () => {
                                                 </td>
                                             </tr>
                                         ))
-                                    )}
+                                    )} */}
                                 </tbody>
                             </table>
                         </div>

@@ -30,13 +30,13 @@ export const connection_path = {
         register_clinic_owner: "/clinic/register/clinic-owner",
         get_clinic_general_info: "/clinic/",
         get_all_clinic: "/clinic/search",
-        get_clinic_service: "/services",
+        get_clinic_service: "/service",
         post_clinic_schedule: "/schedule/slot/create",
         post_clinic_schedule_status: "/schedule/slot/:id/",
         get_clinic_schedule: "/schedule/:id/slots",
         put_clinic_schedule: "/schedule/slot/update",
         get_clinic_staff: "/booking/available/:id/dentist",
-        post_clinic_service: "/services",
+        post_clinic_service: "/service",
     },
 
     booking: {

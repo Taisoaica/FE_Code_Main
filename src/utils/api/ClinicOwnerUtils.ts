@@ -43,7 +43,7 @@ export const fetchDentistInfo = async (): Promise<HttpResponseModel<DentistInfoV
     const accessToken = localStorage.getItem('accessToken');
     const config: AxiosRequestConfig = {
         headers: {
-            Authorization: `Bearer ${accessToken}`  // Include the access token in the Authorization header
+            Authorization: `Bearer ${accessToken}`  
         }
     };
 

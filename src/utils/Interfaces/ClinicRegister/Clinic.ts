@@ -66,7 +66,8 @@ export interface ClinicToDisplay {
     email: string;
     openHour: string;
     closeHour: string;
-    status?: string;
+    status: string;
+    working?: string;
     ownerId?: number;
 }
 

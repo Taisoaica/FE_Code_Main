@@ -50,7 +50,7 @@ export const connection_path = {
 
     admin: {
         register_service: '/admin/service/categories',
-        get_clinics: '/admin/clinics',
+        get_clinics: '/clinic/search',
         get_users: '/admin/users',
         verify_clinic: '/admin/clinic/verify/:id',
     },

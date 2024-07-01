@@ -15,10 +15,11 @@ export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navig
 
     //    Dữ liệu về form
     const data = new FormData(event.currentTarget);
-
+    console.log(data.get('username'));
+    console.log(data.get('password'));
     //    Dữ liệu sau khi điền vào form
     const payload = {
-        userName: data.get('username'),
+        username: data.get('username'),
         password: data.get('password'),
     }
 
@@ -131,30 +132,30 @@ export const handleRegister = async (event: React.FormEvent<HTMLFormElement>, on
 
 export const handleGoogleOnSuccess = async (response: GoogleCredentialResponse, navigate: (path: string) => void) => {
     const api_url: string =
-      connection_path.base_url + connection_path.auth.googleAuth;
+        connection_path.base_url + connection_path.auth.googleAuth;
     const configuration: AxiosRequestConfig = {
-      method: "POST",
-      url: api_url,
-      data: { googleToken: response.credential },
-      headers: { "Content-Type": "application/json" },
+        method: "POST",
+        url: api_url,
+        data: { googleToken: response.credential },
+        headers: { "Content-Type": "application/json" },
     };
     const axiosResponse: AxiosResponse<{
-      accessToken: string;
-      refreshToken: string;
-      error: string;
-      message: string;
+        accessToken: string;
+        refreshToken: string;
+        error: string;
+        message: string;
     }> = await axios(configuration);
 
     console.log(axiosResponse);
 
     if (axiosResponse.data.accessToken !== undefined) {
-      localStorage.setItem("accessToken", axiosResponse.data.accessToken);
-      localStorage.setItem("refreshToken", axiosResponse.data.refreshToken);
-      navigate("/");
+        localStorage.setItem("accessToken", axiosResponse.data.accessToken);
+        localStorage.setItem("refreshToken", axiosResponse.data.refreshToken);
+        navigate("/");
     }
-  };
-  export const handleGoogleOnFailure = (navigate: (path: string) => void) => {
+};
+export const handleGoogleOnFailure = (navigate: (path: string) => void) => {
     navigate("/error404")
-  };
+};
 
 

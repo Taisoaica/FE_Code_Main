@@ -1,7 +1,103 @@
+/* ClinicServices.module.css */
+
+/* Container for the entire page */
 .mainContainer {
     height: 100%;
     background: linear-gradient(to left, #e3f2fd, #f8fbff);
     padding-top: 20px;
     color: #0d47a1;
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Container for the table */
+.tableContainer {
+    width: 90%;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+}
+
+/* Header of the table */
+.tableHeader {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+/* The table itself */
+.table {
+    width: 100%;
+    border: 2px solid #d3d3d3;
+    border-collapse: collapse;
+    background-color: white;
+    overflow: auto;
+}
+
+/* Table cells */
+th,
+td {
+    border: 1px solid #0d47a1;
+    padding: 8px;
+    text-align: left;
+}
+
+/* Table header cells */
+th {
+    background-color: #e3f2fd;
+}
+
+/* Section for adding a new category */
+.addCategorySection {
+    width: 90%;
+    margin: 20px auto 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Header for the add category section */
+.addCategoryHeader {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Input for the new category name */
+.addCategoryInput {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #d3d3d3;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+/* Add category button */
+.addCategoryButton {
+    width: 100%;
+    padding: 10px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Add category button on hover */
+.addCategoryButton:hover {
+    background-color: #1976d2;
+}
+
+/* Error text */
+.errorText {
+    color: red;
+    margin-bottom: 10px;
 }

@@ -182,46 +182,41 @@ const ClinicServices = () => {
                     }}
                 >
                     <Box className={styles.mainContainer}>
-                        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                            <Grid container spacing={3}>
-                                <Grid item xs={12} md={6}>
-                                    <Paper sx={{ p: 2 }}>
-                                        <Typography variant="h6" gutterBottom>
-                                            Thêm danh mục dịch vụ phòng khám
-                                        </Typography>
-                                        <TextField
-                                            label="Tên danh mục"
-                                            variant="outlined"
-                                            value={newCategoryName}
-                                            onChange={(e) => setNewCategoryName(e.target.value)}
-                                            fullWidth
-                                            sx={{ mb: 2 }}
-                                        />
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={handleAddCategory} // Call handleAddCategory function on button click
-                                        >
-                                            Thêm mới
-                                        </Button>
-                                    </Paper>
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Paper sx={{ p: 2 }}>
-                                        <Typography variant="h6" gutterBottom>
-                                            Danh sách danh mục dịch vụ phòng khám
-                                        </Typography>
-                                        <List>
-                                            {categories.map((category) => (
-                                                <ListItem key={category.id}>
-                                                    <ListItemText primary={category.name} />
-                                                </ListItem>
-                                            ))}
-                                        </List>
-                                    </Paper>
-                                </Grid>
-                            </Grid>
-                        </Container>
+                        <div className={styles.tableContainer}>
+                            <div className={styles.tableHeader}>Danh sách danh mục dịch vụ phòng khám</div>
+                            <table className={styles.table}>
+                                <thead>
+                                    <tr>
+                                        <th style={{ width: '10%' }}>ID</th>
+                                        <th style={{ width: '90%' }}>Tên danh mục dịch vụ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {categories.map((category) => (
+                                        <tr key={category.id}>
+                                            <td style={{ width: '10%' }}>{category.id}</td>
+                                            <td style={{ width: '90%' }}>{category.name}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className={styles.addCategorySection}>
+                            <h6 className={styles.addCategoryHeader}>Thêm danh mục dịch vụ phòng khám</h6>
+                            <input
+                                type="text"
+                                placeholder="Tên danh mục"
+                                className={styles.addCategoryInput}
+                                value={newCategoryName}
+                                onChange={(e) => setNewCategoryName(e.target.value)}
+                            />
+                            <button
+                                className={styles.addCategoryButton}
+                                onClick={handleAddCategory}
+                            >
+                                Thêm danh mục
+                            </button>
+                        </div>
                     </Box>
                 </Box>
             </Box>

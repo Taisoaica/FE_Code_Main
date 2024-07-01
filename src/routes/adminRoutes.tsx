@@ -8,6 +8,7 @@ import ClinicManagement from '../pages/Admin/AdminSystem/pages/ClinicManagement'
 import UserManagement from '../pages/Admin/AdminSystem/pages/UserManagement';
 import DentistAppointmentManager from '../pages/Admin/Dentist/pages/DentistAppointmentManager';
 import ClinicServices from '../pages/Admin/AdminSystem/pages/ClinicServices';
+import ClinicDetail from '../pages/Admin/AdminSystem/pages/ClinicDetail';
 
 const adminRoutes = [
     { path: '/admin/clinic-owner', element: <AdminClinicPage /> },
@@ -22,7 +23,7 @@ const adminRoutes = [
     // { path: '/dentist/scheduler', element: <AppointmentScheduler /> },
     { path: '/system-admin', element: <UserManagement /> },
     { path: '/system-admin/clinic', element: <ClinicManagement /> },
-    // { path: '/system-admin/clinic/:clinicId', element: <ClinicSystemDetail /> },
+    { path: '/system-admin/clinic/:id', element: <ClinicDetail /> },
     { path: "/system-admin/service", element: <ClinicServices /> }
 ]
 

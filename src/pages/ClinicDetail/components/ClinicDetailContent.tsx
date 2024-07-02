@@ -14,6 +14,7 @@ const ClinicDetailContent = () => {
     const [logo, setLogo] = useState<string>(''); // Placeholder for logo URL
     const [clinic, setClinic] = useState<ClinicInfoModel>();
     const [loading, setLoading] = useState<boolean>(true);
+  
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -82,12 +83,12 @@ const ClinicDetailContent = () => {
                         <div className={styles.avatar}>
                             <img
                                 src={logo}
-                                alt={`${clinic.Name} Logo`}
+                                alt={`${clinic.name} Logo`}
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             />
                         </div>
                         <Typography variant="h4" component="div" gutterBottom className={styles.clinicName}>
-                            {clinic.Name}Phong kham Asia
+                            {clinic.name}
                         </Typography>
                     </Box>
 
@@ -108,7 +109,7 @@ const ClinicDetailContent = () => {
                                 Giới thiệu chi tiết
                             </Typography>
                             <Typography variant="body1" className={styles.sectionContent}>
-                                {clinic.Description}
+                                {clinic.description}
                             </Typography>
                         </Box>
                         <Box className={styles.sectionContent}>
@@ -116,7 +117,7 @@ const ClinicDetailContent = () => {
                                 Thời gian khám:
                             </Typography>
                             <Typography variant="body1" className={styles.sectionContent}>
-                                {clinic.OpenHour} - {clinic.CloseHour} 07:00 - 17:00
+                                {clinic.openHour} - {clinic.closeHour} 
                             </Typography>
                         </Box>
 
@@ -125,7 +126,7 @@ const ClinicDetailContent = () => {
                                 Địa chỉ:
                             </Typography>
                             <Typography variant="body1" className={styles.sectionContent}>
-                                {clinic.Address} 130/13 Test Street
+                                {clinic.address} 
                             </Typography>
                         </Box>
 

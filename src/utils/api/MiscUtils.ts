@@ -24,15 +24,23 @@ export async function getClinicInformation(id: string): Promise<ClinicInfoModel 
     }
 }
 
-export const getAllClinics = async (searchTerm: string, pageSize: number, page: number): Promise<{ content: ClinicToDisplay[], totalCount: number }> => {
+export const getAllClinics = async (
+    searchTerm: string,
+    pageSize: number,
+    page: number,
+    open?: string,  // Optional parameter for open time in HH:mm format
+    close?: string  // Optional parameter for close time in HH:mm format
+): Promise<{ content: ClinicToDisplay[], totalCount: number }> => {
     const api_url = `${connection_path.base_url}${connection_path.clinic.get_all_clinic}`;
 
     try {
         const response: AxiosResponse = await axios.get(api_url, {
             params: {
-                search: searchTerm || '',
-                page_size: pageSize || 0,
-                page: page || 1,
+                name: searchTerm || '', 
+                open: open || '',       
+                close: close || '',     
+                page_size: pageSize || 100,
+                page: page || 1
             }
         });
 

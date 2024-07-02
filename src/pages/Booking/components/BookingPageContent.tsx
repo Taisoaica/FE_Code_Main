@@ -132,33 +132,35 @@ const BookingPageContent = () => {
                 {/* <Box className={`${styles.content} ${currentStep === 2 ? styles.step2 : ''}`}> */}
                 <Box className={styles.content} >
                     <Box className={styles.informationTab}>
-                        <Box className={styles.heading}>
-                            Thông tin đặt khám
-                        </Box>
                         <Box className={styles.informationTabContent}>
-                            <Box><b>Phòng khám:</b> {formData.clinic}</Box>
-                            <Box><b>Ngày khám:</b> {formData.date}</Box>
-                            <Box><b>Slot:</b> {formData.time.start} - {formData.time.end}</Box>
-                            <Box><b>Dịch vụ:</b> {formData.serviceName}</Box>
+                            <Box className={styles.heading}>
+                                Thông tin đặt khám
+                            </Box>
+                            <Box className={styles.body}>
+                                <Box><b>Phòng khám:</b> {formData.clinic}</Box>
+                                <Box><b>Ngày khám:</b> {formData.date}</Box>
+                                <Box><b>Slot:</b> {formData.time.start} - {formData.time.end}</Box>
+                                <Box><b>Dịch vụ:</b> {formData.serviceName}</Box>
+                            </Box>
+                        </Box>
+                        <Box className={`${styles.buttonContainer} ${currentStep === 2 ? styles.step2 : ''}`}>
+                            {!isFirstStep && (
+                                <Button variant="text" className={styles.backButton} onClick={handleBack}>
+                                    <ArrowBack />
+                                    Quay lại
+                                </Button>
+                            )}
+                            {currentStep == 2 && <Button variant="text" className={styles.nextButton} onClick={() => next()}>
+                                <ArrowForward />
+                                Xác nhận
+                            </Button>}
+                            {isFinalStep && <Button variant="contained" color="primary" type="submit" onClick={() => handleSubmit()}
+                            >Xác nhận</Button>}
                         </Box>
                     </Box>
                     <Box className={styles.formContainer}>
                         {step}
                     </Box>
-                </Box>
-                <Box className={`${styles.buttonContainer} ${currentStep === 2 ? styles.step2 : ''}`}>
-                    {!isFirstStep && (
-                        <Button variant="text" className={styles.backButton} onClick={handleBack}>
-                            <ArrowBack />
-                            Quay lại
-                        </Button>
-                    )}
-                    {currentStep == 2 && <Button variant="text" className={styles.nextButton} onClick={() => next()}>
-                        <ArrowForward />
-                        Xác nhận
-                    </Button>}
-                    {isFinalStep && <Button variant="contained" color="primary" type="submit" onClick={() => handleSubmit()}
-                    >Xác nhận</Button>}
                 </Box>
             </Box>
         </Box >

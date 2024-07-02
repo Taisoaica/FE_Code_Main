@@ -25,13 +25,13 @@ const LoginForm = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+    console.log("Đang xử lý đăng nhập");
     //    Dữ liệu về form
     const data = new FormData(event.currentTarget);
 
     //    Dữ liệu sau khi điền vào form
     const payload = {
-      userName: data.get("username"),
+      username: data.get("username"),
       password: data.get("password"),
     };
 
@@ -153,8 +153,8 @@ const LoginForm = () => {
           required
           fullWidth
           id="username"
+          name="username"
           label="Tên tài khoản"
-         
         />
 
         <TextField
@@ -196,7 +196,7 @@ const LoginForm = () => {
           type="submit"
           variant="contained"
           color="primary"
-          onClick={() => handleSubmit}
+          // onClick={() => handleSubmit}
           sx={{ width: "100%" }}
         >
           Đăng nhập

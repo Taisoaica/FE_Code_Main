@@ -1,3 +1,7 @@
+.calendar-one {
+    height: 100%;
+}
+
 .calendar-one .fc-daygrid-day-selected {
     background-color: #dbeaff;
     border-color: #dee2e6;

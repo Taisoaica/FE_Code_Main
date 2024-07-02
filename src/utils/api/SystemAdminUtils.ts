@@ -1,9 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { connection_path } from '../../constants/developments';
 
-
-
-
 export interface ClinicServiceCategoryRegistrationModel {
     Name: string;
 }
@@ -99,31 +96,53 @@ export interface ClinicInfoModel {
     address: string;
     phone: string;
     email: string;
-    openHour: string; // Assuming TimeOnly is serialized as string
-    closeHour: string; // Assuming TimeOnly is serialized as string
+    openHour: string;
+    closeHour: string;
     ownerId: number;
     working: boolean;
     status: string;
 }
 
-export const getAllClinics = async (page: number = 1): Promise<ClinicInfoModel[] | string> => {
-    const api_url: string = `${connection_path.base_url}${connection_path.admin.get_clinics}?page=${page}`;
+export const getAllClinics = async (
+    page: number,
+    pageSize: number,
+    name?: string,
+    open?: string,
+    close?: string,
+    status?: string,
+    working?: boolean
+): Promise<{ content: ClinicInfoModel[]} | string> => {
+    const api_url: string = `${connection_path.base_url}${connection_path.admin.get_clinics}`;
     const accessToken = localStorage.getItem('accessToken');
 
+    // Prepare request parameters
+    const params: { [key: string]: any } = {
+        page: page,
+        page_size: pageSize,
+        name: name || undefined,
+        open: open || undefined,
+        close: close || undefined,
+        status: status || undefined,
+        working: working !== undefined ? working : undefined,
+    };
+
+    // Configure Axios request
     const configuration: AxiosRequestConfig = {
         method: 'GET',
         url: api_url,
         headers: {
-            'Authorization': `${accessToken}`,
-            'Content-Type': 'application/json' // Set content type as JSON
-        }
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        },
+        params: params,
     };
 
-
     try {
-        const response: AxiosResponse = await axios(configuration);
+        const response: AxiosResponse<{ content: ClinicInfoModel[], totalPages: number }> = await axios(configuration);
         if (response.status === 200) {
-            return response.data.content; // Assuming response.data contains the list of clinics
+            return {
+                content: response.data.content,
+            };
         } else {
             const errorMessage = `Failed to fetch clinics: ${response.statusText}`;
             throw new Error(errorMessage);
@@ -211,7 +230,7 @@ export const verifyClinicStatus = async (clinicId: number): Promise<any> => {
         method: 'PUT',
         url: api_url,
         headers: {
-            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            // 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
             'Content-Type': 'application/json' // Set content type as JSON
         }
     };

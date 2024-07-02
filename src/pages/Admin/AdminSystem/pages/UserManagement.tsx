@@ -13,10 +13,10 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems } from "../components/listItems";
 import styles from "./UserManagement.module.css";
 import { UserInfoModel, getAllUsers } from "../../../../utils/api/SystemAdminUtils";
-import UserModal from "../components/UserModal";
-import { useNavigate } from "react-router-dom";
+import { Button } from 'reactstrap';
 import { useEffect, useState } from "react";
-import { MenuItem, Select } from "@mui/material";
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 
 
 const drawerWidth: number = 240;
@@ -102,6 +102,21 @@ const UserManagement = () => {
         fetchUsers();
     }, []);
 
+    const formatDate = (dateString: string) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+
+        const padToTwoDigits = (num: number) => String(num).padStart(2, '0');
+
+        const day = padToTwoDigits(date.getDate());
+        const month = padToTwoDigits(date.getMonth() + 1);
+        const year = date.getFullYear();
+        const hours = padToTwoDigits(date.getHours());
+        const minutes = padToTwoDigits(date.getMinutes());
+        const seconds = padToTwoDigits(date.getSeconds());
+
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    };
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -148,6 +163,7 @@ const UserManagement = () => {
                         </IconButton>
                     </Toolbar>
                     <Divider />
+                    {/* <NestedListItems /> */}
                     <List component="nav">
                         {mainListItems}
                     </List>
@@ -168,6 +184,7 @@ const UserManagement = () => {
 
                     <Box className={styles.mainContainer}>
                         <div className={styles.tableContainer}>
+                            <div className={styles.tableHeader}>Người dùng của hệ thống</div>
                             <Box className={styles.toolbar}>
                                 <Box className={styles.searchbar}>
                                     <input type="text" placeholder="Tìm kiếm người dùng" className={styles.searchInput} />
@@ -177,19 +194,19 @@ const UserManagement = () => {
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Username</th>
-                                        <th>Ngày tạo</th>
-                                        <th>Role</th>
-                                        <th>Fullname</th>
-                                        <th>Dentist ID</th>
-                                        <th>Clinic ID</th>
-                                        <th>IsOwner</th>
-                                        <th>
+                                        <th style={{ width: '5%' }}>ID</th>
+                                        <th style={{ width: '15%' }}>Username</th>
+                                        <th style={{ width: '15%' }}>Ngày tạo</th>
+                                        <th style={{ width: '10%' }}>Vai trò</th>
+                                        <th style={{ width: '15%' }}>Họ tên</th>
+                                        <th style={{width: '10%'}}>Là nha sĩ</th>
+                                        {/* <th>Clinic ID</th> */}
+                                        <th style={{width: '11%'}}>Là chủ phòng khám</th>
+                                        <th style={{width: '19%'}}>
                                             <Box className={styles.tooltip}>
                                                 Trạng thái
-                                                <span className={styles.tooltiptext}>Nhấn để cập nhật trạng thái</span>
-                                                <span className={styles.tooltipicon}>!</span>
+                                                {/* <span className={styles.tooltiptext}>Nhấn để cập nhật trạng thái</span>
+                                                <span className={styles.tooltipicon}>!</span> */}
                                             </Box>
                                         </th>
                                     </tr>
@@ -208,18 +225,22 @@ const UserManagement = () => {
                                             <tr key={user.id} className={styles.tableRow}>
                                                 <td>{user.id}</td>
                                                 <td>{user.username}</td>
-                                                <td>{user.joinedDate ? user.joinedDate.toString() : ""}</td>
+                                                <td>{user.joinedDate ? formatDate(user.joinedDate) : ''}</td>
                                                 <td>{user.role}</td>
                                                 <td>{user.fullname}</td>
-                                                <td>{user.dentistId}</td>
-                                                <td>{user.clinicId}</td>
-                                                <td>{user.isOwner ? 'Yes' : 'No'}</td>
                                                 <td>
-                                                    <button
-                                                        className={`${styles.statusButton} ${user.isActive ? styles.active : styles.inactive}`}
+                                                    {user.role === 'Customer' ? <CloseIcon /> : (user.role === 'Dentist' && !user.isOwner ? <CheckIcon /> : <CheckIcon />)}
+                                                </td>
+                                                {/* <td>
+                                                    {user.role === 'Customer' ? <CloseIcon /> : (user.role === 'Dentist' && user.isOwner ? <CheckIcon /> : '')}
+                                                </td> */}
+                                                <td>{user.isOwner ? <CheckIcon /> : <CloseIcon />}</td>
+                                                <td>
+                                                    <Button
+                                                        className={user.isActive ? styles.confirmedButton : styles.unconfirmedButton}
                                                     >
                                                         {user.isActive ? 'Hoạt động' : 'Ngừng hoạt động'}
-                                                    </button>
+                                                    </Button>
                                                 </td>
                                             </tr>
                                         ))

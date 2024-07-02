@@ -20,15 +20,16 @@
     background-image: linear-gradient(to left, #657bd1, #049fbb);
 }
 
-
 .contentBox {
     display: flex;
     flex-direction: column;
     width: 90%;
+    height: 100%;
     min-width: 50%;
     margin: 0 auto;
     gap: 5px;
     margin-top: 70px;
+    margin-bottom: 70px;
 }
 
 .content {
@@ -46,7 +47,8 @@
 }
 
 .formContainer {
-    height: fit-content;
+    /* height: fit-content; */
+    height: 100%;
     display: flex;
     flex-direction: column;
     width: 60%;
@@ -61,9 +63,6 @@
 
 .informationTab {
     width: 20%;
-    border: 2px solid #e0e4e5;
-    border-radius: 8px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .heading {
@@ -73,44 +72,48 @@
     font-weight: 700;
     padding: 14px;
     font-size: 20px;
-    border-radius: 8px 8px 0 0;
+    border-radius: 8px 8px 0 0; 
 }
 
 .informationTabContent {
-    padding: 20px;
     font-size: 20px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    border: 2px solid #e0e4e5;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.informationTabContent>div>span:first-child {
+.informationTabContent  {
+    padding: 0;
+}
+
+.body {
+    padding: 20px;
+}
+
+.informationTabContent > div > span:first-child {
     font-weight: bold;
     min-width: 120px;
     color: #555;
 }
 
-
-.informationTabContent>div:last-child {
+.informationTabContent > div:last-child {
     margin-bottom: 10px;
 }
 
 .buttonContainer {
     display: flex;
     justify-content: flex-end;
-    margin: 0 auto;
     padding-top: 10px;
-    margin-bottom: 30px;
-    width: 85%;
+    width: 100%;
 }
 
 .buttonContainer.step2 {
-    width: 37%;
+    width: 100%;
     display: flex;
     justify-content: flex-end;
-    margin: 0 auto;
     padding-top: 10px;
-    margin-bottom: 30px;
 }
 
 .backButton {
@@ -140,7 +143,6 @@
 .backButton .MuiSvgIcon-root {
     padding-right: 10px;
 }
-
 
 .dialog {
     overflow: hidden;

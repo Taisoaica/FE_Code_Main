@@ -1,7 +1,6 @@
 import * as React from "react";
 import { ThemeProvider, createTheme, styled } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
-import Box from "@mui/material/Box";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
@@ -10,15 +9,19 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { Button, Col, FormGroup, Input, Label, Row } from 'reactstrap';
-import styles from "./ClinicDetail.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
+import styles from "./ServiceDetail.module.css";
+import { Row, Col, FormGroup, Label, Input, Button } from 'reactstrap';
 
-import { ClinicInfoModel } from "../../../../utils/api/SystemAdminUtils";
-import { getClinicInformation } from "../../../../utils/api/MiscUtils";
-import { verifyClinicStatus } from "../../../../utils/api/SystemAdminUtils";
 import { useEffect, useState } from "react";
 import { NestedListItems } from "../components/NestedListMenu";
+import Box from "@mui/material/Box";
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+
+import { getClinicServiceById, updateClinicService } from "../../../../utils/api/ClinicOwnerUtils";
+import { ClinicServiceInfoModel } from "../../../../utils/api/BookingRegister";
 
 const drawerWidth: number = 270;
 
@@ -72,78 +75,106 @@ const Drawer = styled(MuiDrawer, {
 
 const defaultTheme = createTheme();
 
-
-const ClinicDetail = () => {
+const ServiceDetail = () => {
+    const [open, setOpen] = React.useState(true);
     const location = useLocation();
-    const navigate = useNavigate();
-    const [clinicInfo, setClinicInfo] = useState<ClinicInfoModel | null>(null)
+    const serviceId: string = location.pathname.split("/").pop() || "";
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>('');
+    const [textAreaContent, setTextAreaContent] = useState<string>('');
+    const [isDesDialogOpen, setIsDesDialogOpen] = useState(false);
+    const [editorData, setEditorData] = useState<string>('');
+    const [isEditable, setIsEditable] = useState(false);
 
-    const clinicId: string = location.pathname.split("/").pop() || "";
 
-    const [open, setOpen] = React.useState(true);
+    const [serviceInfo, setServiceInfo] = useState<ClinicServiceInfoModel>({
+        clinicId: 0,
+        clinicServiceId: "",
+        name: "",
+        description: "",
+        price: 0,
+        categoryId: 0,
+        available: false,
+        removed: false
+    });
 
+    const navigate = useNavigate();
+
+    const fetchServiceInfo = async () => {
+        setLoading(true);
+        try {
+            const sanitizedId = serviceId.replace(/%7D/g, '');
+            const data = await getClinicServiceById(sanitizedId);
+            if (typeof data === "string") {
+                setError(data);
+            } else {
+                setServiceInfo(data);
+                setTextAreaContent(data.description);
+                setEditorData(data.description);
+            }
+        } catch (error) {
+            setError(error as string);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchServiceInfo();
+    }, []);
 
     const toggleDrawer = () => {
         setOpen(!open);
     };
 
-    function formatTime(time: string): string {
-        const [hours, minutes] = time.split(':');
-
-        return `${hours}:${minutes}`;
-    }
-
     const handleBackClick = () => {
         navigate(-1);
     };
 
-    const fetchClinics = async () => {
-        setLoading(true);
-        try {
-            const data = await getClinicInformation(clinicId);
-            if (typeof data === "string") {
-                setError(data);
-            } else {
-                setClinicInfo(data);
-            }
-        } catch (error) {
-            setError(error as string)
-        } finally {
-            setLoading(false);
-        }
-
-    }
-
-    const handleConfirmClick = async () => {
-        if (clinicInfo && clinicInfo.status !== 'verified') {
-            try {
-                await verifyClinicStatus(clinicInfo.id);
-                // Refresh the clinic info or navigate to another page if needed
-                setClinicInfo({ ...clinicInfo, status: 'verified' });
-            } catch (error) {
-                setError(`Error verifying clinic status: ${error}`);
-            }
-        }
+    const handleInputDoubleClick = () => {
+        setIsDesDialogOpen(true);
     };
 
-    useEffect(() => {
-        fetchClinics();
-    }, []);
+    const handleEditorChange = (event: any, editor: { getData: () => any }) => {
+        const data = editor.getData();
+        console.log(data);
+        setEditorData(data);
+    };
 
-    if (loading) {
-        return <p>Loading...</p>;
+    const handleTextAreaChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
+        setTextAreaContent(e.target.value);
+    };
+
+    const handleDesSave = () => {
+        setIsDesDialogOpen(false);
+        setTextAreaContent(editorData);
+        setServiceInfo({
+            ...serviceInfo,
+            description: editorData
+        })
+    };
+
+    const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
+        setServiceInfo({
+            ...serviceInfo,
+            [e.target.name]: e.target.value
+        });
     }
 
-    if (error) {
-        return <p>Error: {error}</p>;
-    }
+    const handleEditClick = async () => {
+        if (isEditable) {
+            await handleConfirmClick();
+        }
+        setIsEditable(!isEditable);
+    };
 
-    if (!clinicInfo) {
-        return <p>No clinic information available.</p>;
-    }
-
+    const handleConfirmClick = async () => {
+        try {
+            await updateClinicService(serviceInfo);
+        } catch {
+            console.error('Error updating service');
+        }
+    };
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -209,52 +240,41 @@ const ClinicDetail = () => {
                         overflow: "auto",
                     }}
                 >
-
                     <Box className={styles.mainContainer}>
                         <div className={styles.content}>
                             <Row>
                                 <Col md={6}>
                                     <FormGroup>
-                                        <Label htmlFor="clinicName">Tên phòng khám</Label>
-                                        <Input type="text" id="clinicName" name="name" value={clinicInfo.name} disabled />
+                                        <Label htmlFor="serviceName">Tên dịch vụ</Label>
+                                        <Input type="text"
+                                            id="serviceName"
+                                            name="name"
+                                            onChange={handleInputChange}
+                                            value={serviceInfo?.name}
+                                            disabled={!isEditable} />
                                     </FormGroup>
                                     <FormGroup>
-                                        <Label htmlFor="clinicAddress">Địa chỉ</Label>
-                                        <Input type="text" id="clinicAddress" name="address" value={clinicInfo.address} disabled />
+                                        <Label htmlFor="servicePrice">Giá</Label>
+                                        <Input type="text"
+                                            id="servicePrice"
+                                            name="price"
+                                            onChange={handleInputChange}
+                                            value={serviceInfo?.price} disabled={!isEditable} />
                                     </FormGroup>
                                     <FormGroup>
-                                        <Label htmlFor="clinicPhone">Số điện thoại</Label>
-                                        <Input type="text" id="clinicPhone" name="phone" value={clinicInfo.phone} disabled />
-                                    </FormGroup>
-                                    <FormGroup>
-                                        <Label htmlFor="clinicEmail">Email</Label>
-                                        <Input type="text" id="clinicEmail" name="email" value={clinicInfo.email} disabled />
-                                    </FormGroup>
-                                    <Row>
-                                        <Col md={6}>
-                                            <FormGroup>
-                                                <Label htmlFor="openHour">Giờ mở cửa</Label>
-                                                <Input type="text" id="openHour" name="open_hour" value={formatTime(clinicInfo.openHour)} disabled />
-                                            </FormGroup>
-                                        </Col>
-                                        <Col md={6}>
-                                            <FormGroup>
-                                                <Label htmlFor="closeHour">Giờ đóng cửa</Label>
-                                                <Input type="text" id="closeHour" name="close_hour" value={formatTime(clinicInfo.closeHour)} disabled />
-                                            </FormGroup>
-                                        </Col>
-                                    </Row>
-                                    {/* <FormGroup>
                                         <Label>Mô tả</Label>
                                         <Input
                                             type="textarea"
-                                            value={clinicInfo.description}
+                                            id="serviceDescription"
+                                            name="description"
+                                            value={textAreaContent}
                                             onChange={handleTextAreaChange}
                                             onDoubleClick={handleInputDoubleClick}
+                                            disabled={!isEditable}
                                         />
                                         <Dialog
-                                            open={open}
-                                            onClose={() => setOpen(false)}
+                                            open={isDesDialogOpen}
+                                            onClose={() => setIsDesDialogOpen(false)}
                                             maxWidth="md"
                                             fullWidth
                                         >
@@ -262,12 +282,12 @@ const ClinicDetail = () => {
                                             <DialogContent>
                                                 <CKEditor
                                                     editor={ClassicEditor}
-                                                    data={clinicInfo.description}
+                                                    data={editorData}
                                                     onChange={handleEditorChange}
                                                 />
                                             </DialogContent>
                                             <DialogActions>
-                                                <Button onClick={() => setOpen(false)} color="secondary">
+                                                <Button onClick={() => setIsDesDialogOpen(false)} color="secondary">
                                                     Hủy
                                                 </Button>
                                                 <Button onClick={handleDesSave} color="primary">
@@ -275,49 +295,40 @@ const ClinicDetail = () => {
                                                 </Button>
                                             </DialogActions>
                                         </Dialog>
-                                    </FormGroup> */}
+                                    </FormGroup>
                                 </Col>
                                 <Col md={6}>
                                     <FormGroup>
-                                        <Label htmlFor="clinicStatus">Trạng thái hoạt động</Label>
+                                        <Label htmlFor="categoryId">ID Danh mục</Label>
+                                        <Input type="text" id="categoryId" name="categoryId" value={serviceInfo?.categoryId} disabled />
+                                    </FormGroup>
+                                    {/* <FormGroup>
+                                        <Label htmlFor="serviceAvailable">Trạng thái</Label>
                                         <Input
                                             type="text"
-                                            id="clinicStatus"
-                                            name="status"
-                                            value={clinicInfo.working ? 'Đang làm việc' : 'Không làm việc'}
-                                            disabled
+                                            id="serviceAvailable"
+                                            name="available"
+                                            value={serviceInfo?.available ? 'Còn hàng' : 'Hết hàng'}
+                                            disabled={!isEditable}
                                         />
-                                    </FormGroup>
-                                    <FormGroup>
-                                        <Label htmlFor="clinicVerification">Trạng thái xác nhận</Label>
+                                    </FormGroup> */}
+                                    {/* <FormGroup>
+                                        <Label htmlFor="serviceRemoved">Đã bị xóa</Label>
                                         <Input
                                             type="text"
-                                            id="clinicVerification"
-                                            name="verification"
-                                            value={clinicInfo.status === 'verified' ? 'Đã xác nhận' : 'Chưa xác nhận'}
-                                            disabled
+                                            id="serviceRemoved"
+                                            name="removed"
+                                            value={serviceInfo?.removed ? 'Đã xóa' : 'Còn hoạt động'}
+                                            disabled={!isEditable}
                                         />
-                                    </FormGroup>
-                                    <FormGroup>
-                                        <Label htmlFor="clinicOwnerId">ID Chủ phòng khám</Label>
-                                        <Input type="text" id="clinicOwnerId" name="ownerId" value={clinicInfo.ownerId} disabled />
-                                    </FormGroup>
-                                    {/* Add more fields as needed */}
+                                    </FormGroup> */}
                                 </Col>
                             </Row>
                             <div className={styles.buttonContainer}>
                                 <Button color="secondary" className={styles.backButton} onClick={handleBackClick}>Trở về</Button>
-                                <Button color="primary" className={styles.editButton} variant="contained">Chỉnh sửa</Button>
-                                {clinicInfo.status !== 'verified' && (
-                                    <Button
-                                        color="primary"
-                                        className={styles.confirmButton}
-                                        variant="contained"
-                                        onClick={handleConfirmClick}
-                                    >
-                                        Xác nhận
-                                    </Button>
-                                )}
+                                <Button color="primary" className={styles.editButton} onClick={handleEditClick}>
+                                    {isEditable ? 'Lưu' : 'Chỉnh sửa'}
+                                </Button>
                             </div>
                         </div>
                     </Box>
@@ -327,4 +338,4 @@ const ClinicDetail = () => {
     )
 }
 
-export default ClinicDetail
+export default ServiceDetail

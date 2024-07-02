@@ -21,8 +21,11 @@ function renderEventContent(eventInfo: any) {
   );
 }
 
-const App: React.FC = () => {
-  const calendarRef = useRef<FullCalendar>(null);
+interface SchedulerProps {
+  calendarRef: React.RefObject<FullCalendar>;
+}
+
+const Scheduler: React.FC<SchedulerProps> = ({ calendarRef }) => {
   const [weekendsVisible, setWeekendsVisible] = useState(true);
   const [allBookings, setAllBookings] = useState<AppointmentViewModel[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<AppointmentViewModel | undefined>(undefined);
@@ -82,6 +85,19 @@ const App: React.FC = () => {
   };
 
 
+  useEffect(() => {
+    if (calendarRef.current) {
+      const api = calendarRef.current.getApi();
+      if (api.updateSize) {
+        api.updateSize();
+      } else {
+        console.error('updateSize method is not available on FullCalendar API');
+      }
+    } else {
+      console.error('calendarRef.current is null in Scheduler');
+    }
+  }, [calendarRef]);
+
   return (
     <div className={styles.mainContainer}>
       <div className={styles.main}>
@@ -113,6 +129,7 @@ const App: React.FC = () => {
                   nowIndicator={true}
                   selectMirror={true}
                   dayMaxEvents={true}
+                  handleWindowResize={true}
                   weekends={weekendsVisible}
                   eventClick={handleEventClick}
                   slotLabelContent={slotLabelContent}
@@ -137,4 +154,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default Scheduler;

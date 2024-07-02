@@ -17,6 +17,7 @@ import { useState } from "react";
 
 import styles from "./AppointmentSchedule.module.css";
 import BookingDialog from "./BookingDialog";
+import { NestedListItems } from "../components/NestedListMenu";
 
 const mockBookings = [
   
@@ -108,7 +109,7 @@ const suggestedCheckups = [
   },
 ];
 
-const drawerWidth: number = 240;
+const drawerWidth: number = 270;
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -247,7 +248,8 @@ export default function AppointmentSchedule() {
           </IconButton>
         </Toolbar>
         <Divider />
-        <List component="nav">{mainListItems}</List>
+        {/* <List component="nav">{mainListItems}</List> */}
+        <NestedListItems />
       </Drawer>
       <Box
         component="main"

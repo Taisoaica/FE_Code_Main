@@ -27,12 +27,12 @@ const CertificationForm = () => {
     //----------------------------------Action handlers----------------------------------
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
-            const filesArray = Array.from(event.target.files); // Convert FileList to Array
+            const filesArray = Array.from(event.target.files);
             const newFiles = filesArray
                 .filter(file => !uploadedFiles.some(uploadedFile => uploadedFile.file.name === file.name))
                 .map(file => ({
                     file: file,
-                    imageUrl: URL.createObjectURL(file) // Create preview URL for each file
+                    imageUrl: URL.createObjectURL(file) 
                 }));
 
             setUploadedFiles(prevFiles => [...prevFiles, ...newFiles]);
@@ -56,7 +56,7 @@ const CertificationForm = () => {
         setDragging(false);
 
         const files = event.dataTransfer.files;
-        const newFiles = Array.from(files); // Convert FileList to array
+        const newFiles = Array.from(files);
 
         if (newFiles.length > 0) {
             const uploadPromises = newFiles.map(async (file) => {
@@ -110,8 +110,7 @@ const CertificationForm = () => {
 
         try {
             const uploadPromises = uploadedFiles.map(async ({ file }) => {
-                //clinic id is hardcoded for now
-                const imageUrl = await uploadClinicImages(file);
+                const imageUrl = await uploadClinicImages(file, 'carousel');
                 return imageUrl;
             });
 

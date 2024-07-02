@@ -27,13 +27,16 @@ import {
     Label,
     Input,
 } from "reactstrap";
-import ServiceList from "../components/ServiceList";
 import { useEffect, useState } from "react";
 import { ClinicServiceRegistrationModel, getClinicServices, addClinicService } from "../../../../utils/api/ClinicOwnerUtils";
 import { ClinicServiceCategoryModel, getAllCategories } from "../../../../utils/api/SystemAdminUtils";
+import { NestedListItems } from "../components/NestedListMenu";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { useNavigate } from "react-router-dom";
 
-const drawerWidth: number = 240;
-
+const drawerWidth: number = 270;
 
 interface ClinicServiceInfoModel {
     clinicServiceId: string;
@@ -50,9 +53,6 @@ interface ClinicServiceInfoModel {
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
 }
-
-
-
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== "open",
@@ -109,6 +109,35 @@ const ServicesInformation = () => {
         clinicId: 1,
     });
     const [categories, setCategories] = useState<ClinicServiceCategoryModel[]>([]);
+
+    const [textAreaContent, setTextAreaContent] = useState('');
+    const [isDesDialogOpen, setIsDesDialogOpen] = useState(false);
+    const [editorData, setEditorData] = useState('');
+
+    const navigate = useNavigate();
+
+    const handleInputDoubleClick = () => {
+        setIsDesDialogOpen(true);
+    };
+
+    const handleEditorChange = (event: any, editor: { getData: () => any }) => {
+        const data = editor.getData();
+        console.log(data);
+        setEditorData(data);
+    };
+
+    const handleTextAreaChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
+        setTextAreaContent(e.target.value);
+    };
+
+    const handleDesSave = () => {
+        setIsDesDialogOpen(false);
+        setTextAreaContent(editorData);
+    };
+
+    const handleRowClick = (service: ClinicServiceInfoModel) => {
+        navigate(`./${service.clinicServiceId}}`);
+    }
 
     useEffect(() => {
         // Fetch clinic services on component mount
@@ -190,7 +219,7 @@ const ServicesInformation = () => {
                         <MenuIcon />
                     </IconButton>
                     <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-                        Trang dịch vụ
+                        Trang dịch vụ phòng khám
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -208,7 +237,7 @@ const ServicesInformation = () => {
                     </IconButton>
                 </Toolbar>
                 <Divider />
-                <List component="nav">{mainListItems}</List>
+                <NestedListItems />
             </Drawer>
             <Box
                 component="main"
@@ -224,18 +253,18 @@ const ServicesInformation = () => {
             >
                 <div className={styles.mainContainer}>
                     <div className={styles.tableContainer}>
+                        <div className={styles.tableHeader}>Dịch vụ của phòng khám</div>
                         <table className={styles.table}>
                             <thead>
                                 <tr>
-                                    <th>Tên dịch vụ</th>
-                                    <th>Giá</th>
-                                    <th>Mô tả</th>
-
+                                    <th style={{ width: '25%' }}>Tên dịch vụ</th>
+                                    <th style={{ width: '20%' }}>Giá</th>
+                                    <th style={{ width: '55%' }}>Mô tả</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {serviceList.map((service) => (
-                                    <tr key={service.clinicServiceId} className={styles.tableRow}>
+                                    <tr key={service.clinicServiceId} className={styles.tableRow} onClick={() => handleRowClick(service)}>
                                         <td>{service.name}</td>
                                         <td>{service.price}</td>
                                         <td>{service.description}</td>
@@ -243,13 +272,10 @@ const ServicesInformation = () => {
                                 ))}
                             </tbody>
                         </table>
+                        <Button color="primary" onClick={toggleModal}>
+                            Thêm dịch vụ
+                        </Button>
                     </div>
-                    {/* Button to trigger modal */}
-                    <Button color="primary" onClick={toggleModal}>
-                        Thêm dịch vụ
-                    </Button>
-
-                    {/* Modal for adding service */}
                     <Modal isOpen={modalOpen} toggle={toggleModal} centered>
                         <ModalHeader toggle={toggleModal}>Thêm dịch vụ</ModalHeader>
                         <ModalBody>
@@ -261,6 +287,7 @@ const ServicesInformation = () => {
                                         id="serviceCategory"
                                         value={formData.serviceCategory}
                                         onChange={handleCategoryChange}
+                                        style={{ marginLeft: '10px' }}
                                     >
                                         <option value={0}>Chọn danh mục</option>
                                         {categories.map((category) => (
@@ -296,8 +323,9 @@ const ServicesInformation = () => {
                                         type="textarea"
                                         name="serviceDescription"
                                         id="serviceDescription"
-                                        value={formData.serviceDescription}
-                                        onChange={handleInputChange}
+                                        value={textAreaContent}
+                                        onChange={handleTextAreaChange}
+                                        onDoubleClick={handleInputDoubleClick}
                                     />
                                 </FormGroup>
                                 <Button type="submit" color="primary">
@@ -311,6 +339,30 @@ const ServicesInformation = () => {
                             </Button>
                         </ModalFooter>
                     </Modal>
+
+                    <Dialog
+                        open={isDesDialogOpen}
+                        onClose={() => setIsDesDialogOpen(false)}
+                        maxWidth="md"
+                        fullWidth
+                    >
+                        <DialogTitle>Sửa mô tả</DialogTitle>
+                        <DialogContent>
+                            <CKEditor
+                                editor={ClassicEditor}
+                                data={editorData}
+                                onChange={handleEditorChange}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => setIsDesDialogOpen(false)} color="secondary">
+                                Hủy
+                            </Button>
+                            <Button onClick={handleDesSave} color="primary">
+                                Lưu
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </div>
             </Box>
         </Box>

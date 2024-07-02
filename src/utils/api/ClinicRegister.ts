@@ -1,6 +1,7 @@
 import { ClinicRegistrationModel } from "../interfaces/ClinicRegister/Clinic";
 import { UserRegistrationModel } from "../interfaces/User/UserDefinition";
 import { connection_path } from "../../constants/developments";
+import { login } from "./AuthenticateUtils";
 import axios from "axios";
 
 export const handleClinicRegister = async (payload: ClinicRegistrationModel, navigate: (path: string, state?: any) => void) => {
@@ -15,22 +16,30 @@ export const handleClinicRegister = async (payload: ClinicRegistrationModel, nav
         }
     };
 
-    await axios(configuration)
-        .then(response => {
-            if (response.status === 200) {
-                console.log("Register successful");
-                navigate('/');
-                return response.data;
-            } else {
-                console.log(response);
-                alert("Register failed");
-            }
-        })
-        .catch(error => {
-            alert('Register failed, please try again later.')
-            throw error;
-        })
+    try {
+        const response = await axios(configuration);
+
+        if (response.status === 200) {
+            
+            const loginPayload = {
+                username: payload.OwnerUserName,
+                password: payload.OwnerPassword,
+            };
+
+            // Call the login function
+            await login(loginPayload, navigate);
+
+        } else {
+            console.log(response);
+            alert("Register failed");
+        }
+    } catch (error) {
+        alert('Register failed, please try again later.');
+        console.log(error);
+    }
 };
+
+
 export const handleOwnerRegister = async (payload: UserRegistrationModel) => {
     const api_url = connection_path.base_url + connection_path.clinic.register_clinic_owner;
 

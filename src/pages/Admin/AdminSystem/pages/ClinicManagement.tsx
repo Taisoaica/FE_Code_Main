@@ -20,8 +20,9 @@ import { useEffect, useState } from "react";
 import { Button } from "reactstrap";
 import { MouseDownEvent } from "emoji-picker-react/dist/config/config";
 import { useNavigate } from "react-router-dom";
+import { NestedListItems } from "../components/NestedListMenu";
 
-const drawerWidth: number = 240;
+const drawerWidth: number = 270;
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -118,20 +119,20 @@ const ClinicManagement = () => {
                 // Filter the clinics based on the status
                 const filteredClinics = data.content.filter(clinic => clinic.status === status);
                 const totalItems = filteredClinics.length;
-    
+
                 const totalPages = Math.ceil(totalItems / itemsPerPage);
 
                 if (page > totalPages) {
                     page = totalPages;
                 }
-    
+
                 // Set the total pages for the correct status
                 if (status === 'verified') {
                     setTotalPagesVerified(totalPages);
                 } else {
                     setTotalPagesUnverified(totalPages);
                 }
-    
+
                 // Fetch clinics for the current page
                 fetchClinics(status, page, name, itemsPerPage);
             }
@@ -141,7 +142,7 @@ const ClinicManagement = () => {
             setLoading(false);
         }
     };
-    
+
     const fetchClinics = async (
         status: 'verified' | 'unverified' | '',
         page: number,
@@ -151,7 +152,7 @@ const ClinicManagement = () => {
         setLoading(true);
         setError('');
         try {
-            const data = await getAllClinics(page , itemsPerPage, name, '', '', '', undefined);
+            const data = await getAllClinics(page, itemsPerPage, name, '', '', '', undefined);
             if (typeof data === 'string') {
                 setError(data);
             } else {
@@ -171,15 +172,15 @@ const ClinicManagement = () => {
             setLoading(false);
         }
     };
-    
+
     useEffect(() => {
         fetchTotalClinics('verified', searchNameVerified, currentPageVerified, 5);
     }, [searchNameVerified, currentPageVerified]);
-    
+
     useEffect(() => {
         fetchTotalClinics('unverified', searchNameUnverified, currentPageUnverified, 5);
     }, [searchNameUnverified, currentPageUnverified]);
-    
+
     const handlePageChange = (pageNumber: number, type: 'verified' | 'unverified') => {
         if (type === 'verified') {
             setCurrentPageVerified(pageNumber);
@@ -189,7 +190,7 @@ const ClinicManagement = () => {
             fetchTotalClinics(type, searchNameUnverified, pageNumber, 5);
         }
     };
-    
+
 
     const handleSearchChangeVerified = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchNameVerified(e.target.value);
@@ -221,26 +222,26 @@ const ClinicManagement = () => {
     }: PaginationProps) => {
         const pages: number[] = [];
         const validCurrentPage = currentPage ?? 1;
-    
+
         if (totalPages < 1) totalPages = 1;
-    
+
         const page = Math.min(Math.max(validCurrentPage, 1), totalPages);
-    
+
         let startPage = Math.max(page - Math.floor(maxPagesToShow / 2), 1);
         let endPage = Math.min(startPage + maxPagesToShow - 1, totalPages);
-    
+
         if (endPage - startPage + 1 < maxPagesToShow) {
             startPage = Math.max(endPage - maxPagesToShow + 1, 1);
         }
-    
+
         if (startPage + maxPagesToShow - 1 > totalPages) {
             startPage = Math.max(totalPages - maxPagesToShow + 1, 1);
         }
-    
+
         for (let p = startPage; p <= endPage; p++) {
             pages.push(p);
         }
-    
+
         return (
             <div className={styles.pagination}>
                 {page > 1 && (
@@ -261,7 +262,7 @@ const ClinicManagement = () => {
             </div>
         );
     };
-    
+
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -309,9 +310,10 @@ const ClinicManagement = () => {
                         </IconButton>
                     </Toolbar>
                     <Divider />
-                    <List component="nav">
+                    {/* <List component="nav">
                         {mainListItems}
-                    </List>
+                    </List> */}
+                    <NestedListItems />
                 </Drawer>
                 <Box
                     component="main"
@@ -358,11 +360,11 @@ const ClinicManagement = () => {
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
-                                        <th style={{ width: '5%' }}>ID</th>
-                                        <th style={{ width: '25%' }}>Tên phòng khám</th>
+                                        <th style={{ width: '3%' }}>ID</th>
+                                        <th style={{ width: '20%' }}>Tên phòng khám</th>
                                         <th style={{ width: '20%' }}>Tên chủ phòng khám</th>
                                         <th style={{ width: '27%' }}>Trạng thái hoạt động</th>
-                                        <th style={{ width: '28%' }}>Trạng thái xác nhận</th>
+                                        <th style={{ width: '35%' }}>Trạng thái xác nhận</th>
                                         {/* <th>
                                             <Box className={styles.tooltip}>
                                                 Trạng thái
@@ -440,11 +442,11 @@ const ClinicManagement = () => {
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
-                                        <th style={{ width: '5%' }}>ID</th>
-                                        <th style={{ width: '30%' }}>Tên phòng khám</th>
-                                        <th style={{ width: '15%' }}>Tên chủ phòng khám</th>
-                                        <th style={{ width: '25%' }}>Trạng thái hoạt động</th>
-                                        <th style={{ width: '25%' }}>Trạng thái xác nhận</th>
+                                        <th style={{ width: '3%' }}>ID</th>
+                                        <th style={{ width: '20%' }}>Tên phòng khám</th>
+                                        <th style={{ width: '20%' }}>Tên chủ phòng khám</th>
+                                        <th style={{ width: '27%' }}>Trạng thái hoạt động</th>
+                                        <th style={{ width: '35%' }}>Trạng thái xác nhận</th>
                                         {/* <th>
                                             <Box className={styles.tooltip}>
                                                 Trạng thái
@@ -456,9 +458,9 @@ const ClinicManagement = () => {
                                     {unverifiedClinics.map((clinic) => (
                                         <tr key={clinic.id} onClick={() => handleRowClick(clinic)}>
                                             <td style={{ width: '5%' }}>{clinic.id}</td>
-                                            <td style={{ width: '30%' }}>{clinic.name}</td>
-                                            <td style={{ width: '15%' }}>{clinic.ownerId}</td>
-                                            <td style={{ width: '25%' }}>
+                                            <td style={{ width: '25%' }}>{clinic.name}</td>
+                                            <td style={{ width: '20%' }}>{clinic.ownerId}</td>
+                                            <td style={{ width: '27%' }}>
                                                 {clinic.working ? (
                                                     <Button variant="contained" color="error">
                                                         Không làm việc
@@ -469,7 +471,7 @@ const ClinicManagement = () => {
                                                     </Button>
                                                 )}
                                             </td>
-                                            <td style={{ width: '25%' }}>
+                                            <td style={{ width: '28%' }}>
                                                 {clinic.status == 'verified' ? (
                                                     <Button variant="contained" className={styles.confirmedButton}>
                                                         Đã xác nhận

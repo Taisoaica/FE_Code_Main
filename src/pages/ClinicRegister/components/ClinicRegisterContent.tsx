@@ -15,7 +15,6 @@ import { ArrowBack } from '@mui/icons-material';
 
 const ClinicRegisterContent = () => {
     const navigator = useNavigate();
-    // const [services, setServices] = useState<Service[]>(servicesData);
 
     const [formData, setFormData] = useState<ClinicRegistrationModel>({
         OwnerId: 0,
@@ -39,7 +38,7 @@ const ClinicRegisterContent = () => {
         OwnerUserName: formData.OwnerUserName,
         OwnerPassword: formData.OwnerPassword,
         OwnerEmail: formData.OwnerEmail,
-        OwnerFullName: "Truong Gia Binh",
+        OwnerFullName: formData.OwnerFullName,
         Name: formData.Name,
         Description: formData.Description,
         Address: formData.Address,
@@ -54,12 +53,11 @@ const ClinicRegisterContent = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            console.log(payload)
             await handleClinicRegister(payload, navigator);
-            console.log('Register successful');
+            alert('Đăng ký thành công');
         }
         catch (error) {
-            console.log(error);
+            alert('Đăng ký thất bại');
         }
     }
 

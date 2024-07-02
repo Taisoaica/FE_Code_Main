@@ -61,7 +61,6 @@
     cursor: pointer;
 }
 
-/* Toolbar Styles */
 .calendar-two .fc-toolbar {
     margin: 0 auto;
     width: 100%;
@@ -155,8 +154,12 @@
     padding: 10px;
     text-align: left;
 }
-
-.calendar-two .fc-timegrid-slot-lane {
-    padding: 10px;
-    text-align: left;
+/* 
+.calendar-two.drawer-open .fc-timegrid-slot-lane {
+    background-color: red;
+    width: 100%;
 }
+
+.calendar-two.drawer-closed .fc-timegrid-slot-lane {
+    width: 100%;
+} */

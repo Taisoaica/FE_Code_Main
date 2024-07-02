@@ -1,0 +1,132 @@
+.mainContainer {
+    height: 100%;
+    background: linear-gradient(to left, #e3f2fd, #f8fbff);
+    padding-top: 20px;
+    color: #0d47a1;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    font-family: 'Roboto', sans-serif;
+}
+
+.main {
+    width: 95%;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Added box shadow for better appearance */
+}
+
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.uploadContainer {
+    padding: 20px;
+}
+
+.content {
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.uploadTitle {
+    font-size: 18px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    color: #0d47a1;
+}
+
+.imageGallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.imageGallery img {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.imageItem {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .deleteIcon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 20px;
+    color: gray;
+    transition: background-color 0.3s ease;
+  }
+  
+  .deleteIcon:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+  
+
+.img {
+    padding: 20px;
+    border: 2px dashed #ccc;
+    width: 150px;
+    height: 150px;
+}
+
+.img img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.img span {
+    font-size: 16px;
+    color: #888;
+}
+
+/* .form label{
+    border: 15px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+} */
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#logoInput,
+#carouselInput {
+    display: none;
+}
+
+.uploadButton {
+    background-color: #0d47a1;
+    color: white;
+
+    &:hover {
+        background-color: #083d77;
+    }
+}

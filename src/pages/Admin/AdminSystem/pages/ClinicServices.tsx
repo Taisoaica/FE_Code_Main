@@ -15,9 +15,10 @@ import { mainListItems } from "../components/listItems";
 import styles from "./ClinicServices.module.css";
 import { ClinicServiceCategoryRegistrationModel, ClinicServiceCategoryModel, getAllCategories, addCategory } from '../../../../utils/api/SystemAdminUtils'; // Assuming type definitions are imported
 import { useEffect, useState } from "react";
+import { NestedListItems } from "../components/NestedListMenu";
 
 
-const drawerWidth: number = 240;
+const drawerWidth: number = 270;
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -164,9 +165,10 @@ const ClinicServices = () => {
                         </IconButton>
                     </Toolbar>
                     <Divider />
-                    <List component="nav">
+                    <NestedListItems />
+                    {/* <List component="nav">
                         {mainListItems}
-                    </List>
+                    </List> */}
                 </Drawer>
                 <Box
                     component="main"

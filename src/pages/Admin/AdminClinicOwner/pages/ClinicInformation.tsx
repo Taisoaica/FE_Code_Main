@@ -4,19 +4,35 @@ import MuiDrawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
+import {
+  Button,
+  FormControl,
+  CircularProgress,
+  Grid,
+  Paper,
+  FormGroup,
+  TextField,
+  Divider
+} from '@mui/material';
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { mainListItems } from "../components/listItems";
+import { fetchClinicImages, uploadClinicImages } from "../../../../utils/UploadFireBase";
 import { useEffect, useState } from "react";
 import ClinicInfo from "../components/ClinicInfo/ClinicInfo";
-import { fetchClinicImages } from "../../../../utils/UploadFireBase";
+import { NestedListItems } from "../components/NestedListMenu";
+import CustomFileInput from "../components/CustomFileInput";
+import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
+import styles from './ClinicInformation.module.css';
+import { MdClose } from "react-icons/md";
+import { getStorage, ref } from "firebase/storage";
+import { deleteFile } from "../../../../utils/UploadFireBase";
+import { Carousel } from "reactstrap";
+import ConfirmationDialog from "../../../../components/ConfirmationDialog/ConfirmationDialog";
 
 
-const drawerWidth: number = 240;
+const drawerWidth: number = 270;
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -72,68 +88,136 @@ export default function ClinicInformation() {
     setOpen(!open);
   };
 
-  const [isDesDialogOpen, setIsDesDialogOpen] = useState(false);
-  const [editorData, setEditorData] = useState('');
-  const [textAreaContent, setTextAreaContent] = useState('');
-  const [images, setImages] = useState<string[]>([]);
   const [logo, setLogo] = useState<string>('');
-  const [isSerDialogOpen, setIsSerDialogOpen] = useState(false);
-  const [services, setServices] = useState(['Service 1', 'Service 2', 'Service 3']);
-  const [selectedService, setSelectedService] = useState('');
-  const [newService, setNewService] = useState('');
+  const [logoUpdated, setLogoUpdated] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [logoFiles, setLogoFiles] = useState<{ file: File }[]>([]);
+  const [carouselFiles, setCarouselFiles] = useState<{ file: File }[]>([]);
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
+  const clinicId = localStorage.getItem('clinicId');
 
   useEffect(() => {
-  
-    // if (!clinicId) return; 
-
     const fetchImages = async (folderName: string) => {
-      const folderPath = `clinics/1/${folderName}/`;
+      const folderPath = `clinics/${clinicId}/${folderName}/`;
       try {
         const imageUrls = await fetchClinicImages(folderPath);
         if (folderName === 'carousel') {
           setImages(imageUrls);
         } else if (folderName === 'logo') {
-
-          setLogo(imageUrls[0]);
+          setLogo(imageUrls[0] || '');
         }
       } catch (error) {
         console.error(`Error fetching images from ${folderName}:`, error);
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchImages('carousel');
     fetchImages('logo');
   }, []);
 
 
-  const handleEditorChange = (event: any, editor: { getData: () => any; }) => {
-    const data = editor.getData();
-    setEditorData(data);
-  };
-
-  const handleEditClick = () => {
-    setEditorData(textAreaContent);
-    setIsDesDialogOpen(true);
-  };
-
-  const handleDesSave = () => {
-    setTextAreaContent(editorData);
-    setIsDesDialogOpen(false);
+  const handleLogoChange = (files: File[]) => {
+    const updatedFiles = files.map((file) => ({ file }));
+    setLogoFiles(updatedFiles);
   };
 
 
-  const handleAddClick = () => {
-    setIsSerDialogOpen(true);
+  const handleCarouselChange = (files: File[]) => {
+    const updatedFiles = files.map((file) => ({ file }));
+    setCarouselFiles(updatedFiles);
   };
 
-  const handleServiceSave = () => {
-    if (newService) {
-      setServices([...services, newService]);
-      setNewService('');
-      setIsSerDialogOpen(false);
+  const handleLogoUpload = async () => {
+    if (logoFiles.length === 0) return;
+
+    setUploading(true);
+    try {
+      for (const { file } of logoFiles) {
+        const downloadURL = await uploadClinicImages(file, 'logo');
+        setLogo(downloadURL);
+        setLogoFiles([]);
+      }
+      alert('Logo uploaded successfully!');
+      setLogoUpdated(!logoUpdated);
+    } catch (error) {
+      console.error('Failed to upload logo:', error);
+    } finally {
+      setUploading(false);
+      await fetchClinicImages('logo');
     }
   };
+
+  const handleCarouselUpload = async () => {
+    if (carouselFiles.length === 0) return;
+
+    setUploading(true);
+    try {
+      for (const { file } of carouselFiles) {
+        const downloadURL = await uploadClinicImages(file, 'carousel');
+        setImages((prevImages) => [...prevImages, downloadURL]);
+        setCarouselFiles([]);
+      }
+      alert('Carousel images uploaded successfully!');
+      setCarouselFiles([]);
+    } catch (error) {
+      alert(error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDeleteFile = (index: number, fileType: 'logo' | 'carousel') => {
+    if (fileType === 'logo') {
+      setLogoFiles([]);
+    } else {
+      setCarouselFiles(prevFiles => {
+        const newFiles = [...prevFiles];
+        newFiles.splice(index, 1);
+        return newFiles;
+      });
+    }
+  };
+
+  const handleOpenDialog = (index: number) => {
+    setSelectedImageIndex(index);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setSelectedImageIndex(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedImageIndex === null) return;
+
+    const imageUrl = images[selectedImageIndex];
+    const fileName = decodeURIComponent(imageUrl.split('/').pop()?.split('?')[0] || '');
+
+    if (!fileName) {
+      alert('Failed to extract file name from image URL.');
+      return;
+    }
+
+    const fileRef = ref(getStorage(), imageUrl);
+
+    try {
+      await deleteFile(fileRef);
+      setImages(images.filter((_, i) => i !== selectedImageIndex));
+      alert('File deleted successfully.');
+    } catch (error) {
+      alert(error);
+    } finally {
+      handleCloseDialog();
+    }
+  };
+
   return (
     <Box sx={{ display: "flex", height: '100%' }}>
       <AppBar position="absolute" open={open}>
@@ -179,9 +263,7 @@ export default function ClinicInformation() {
           </IconButton>
         </Toolbar>
         <Divider />
-        <List component="nav">
-          {mainListItems}
-        </List>
+        <NestedListItems />
       </Drawer>
       <Box
         component="main"
@@ -197,7 +279,90 @@ export default function ClinicInformation() {
           background: 'linear-gradient(to left, #e3f2fd, #f8fbff)'
         }}
       >
-        <ClinicInfo />
+        <Box sx={{ p: 3 }}>
+          <ClinicInfo logoUpdated={logoUpdated} />
+          <Box className={styles.mainContainer}>
+            <Box className={styles.main}>
+              <h1 className={styles.title}>Quản lí hình ảnh</h1>
+              <Box className={styles.content}>
+                <Paper className={styles.uploadContainer}>
+                  <div className={styles.uploadTitle}>Đăng tải logo mới</div>
+                  <FormControl fullWidth className={styles.form}>
+                    <div className={styles.img}>
+                      {logo ? <img src={logo} alt="Logo" /> : <span>Chọn logo</span>}
+                    </div>
+                    <CustomFileInput
+                      id="logo"
+                      onFileChange={handleLogoChange}
+                      uploading={uploading}
+                      handleDeleteFile={(index) => handleDeleteFile(index, 'logo')}
+                      uploadedFiles={logoFiles}
+                      progress={progress}
+                      multiple={false}
+                    />
+                    <Button
+                      onClick={handleLogoUpload}
+                      variant="contained"
+                      color="primary"
+                      className={styles.uploadButton}
+                    >
+                      Đăng tải logo mới
+                    </Button>
+
+                  </FormControl>
+                </Paper>
+                <Paper className={styles.uploadContainer}>
+                  <div className={styles.uploadTitle}>Đăng tải ảnh cho carousel</div>
+                  <FormControl fullWidth className={styles.form}>
+                    <div className={styles.imageGallery}>
+                      {images.length > 0 ? (
+                        images.map((image, index) => (
+                          <div key={index} className={styles.imageItem}>
+                            <img key={index} src={image} alt={`Carousel Image ${index}`} />
+                            <div
+                              className={styles.deleteIcon}
+                              onClick={() => handleOpenDialog(index)}
+                            >
+                              <MdClose />
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <span>Chưa có ảnh nào trong carousel</span>
+                      )}
+                    </div>
+                    <ConfirmationDialog
+                      open={dialogOpen}
+                      onClose={handleCloseDialog}
+                      onConfirm={handleConfirmDelete}
+                      title="Xác nhận xóa"
+                      message="Bạn có chắc muốn xóa hình này?"
+                      confirmText="Xóa"
+                      cancelText="Hủy"
+                    />
+                    <CustomFileInput
+                      id="carousel"
+                      onFileChange={handleCarouselChange}
+                      uploading={uploading}
+                      handleDeleteFile={(index) => handleDeleteFile(index, 'carousel')}
+                      uploadedFiles={carouselFiles}
+                      progress={progress}
+                      multiple={true}
+                    />
+                    <Button
+                      onClick={handleCarouselUpload}
+                      variant="contained"
+                      color="primary"
+                      className={styles.uploadButton}
+                    >
+                      Đăng tải hình ảnh mới
+                    </Button>
+                  </FormControl>
+                </Paper>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
       </Box>
     </Box>
   );

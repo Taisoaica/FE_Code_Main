@@ -21,9 +21,11 @@ import {
 
 import Scheduler from "../components/Scheduler/Scheduler";
 import ClinicInfo from "../components/ClinicInfo/ClinicInfo";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import FullCalendar from "@fullcalendar/react";
+import { NestedListItems } from "../components/NestedListMenu";
 
-const drawerWidth: number = 240;
+const drawerWidth: number = 270;
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -75,10 +77,21 @@ const Drawer = styled(MuiDrawer, {
 
 const Dashboard = () => {
   const [open, setOpen] = useState(true);
+  const calendarRef = useRef<FullCalendar>(null);
 
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  useEffect(() => {
+    if (calendarRef.current) {
+      const api = calendarRef.current.getApi();
+      
+      api.updateSize();
+    
+      api.view.calendar.updateSize();
+    }
+  }, [open]);
 
   return (
     <Box sx={{ display: "flex", height: '100%' }}>
@@ -100,9 +113,9 @@ const Dashboard = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Box className={styles.logoBox}>
+          {/* <Box className={styles.logoBox}>
             <Link href="/"><img src="../../../../../public/Logo.png" /></Link>
-          </Box>
+          </Box> */}
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
@@ -119,9 +132,10 @@ const Dashboard = () => {
           </IconButton>
         </Toolbar>
         <Divider />
-        <List component="nav">
+        {/* <List component="nav">
           {mainListItems}
-        </List>
+        </List> */}
+        <NestedListItems/>
       </Drawer>
       <Box
         component="main"
@@ -139,7 +153,6 @@ const Dashboard = () => {
 
         }}
       >
-
         <div className={styles.mainContainer} >
           <div className={styles.main}>
             <Typography
@@ -151,7 +164,9 @@ const Dashboard = () => {
             >
               Trang chủ
             </Typography>
-            <Scheduler />
+            {/* <div className={`calendar-two ${open ? 'drawer-open' : 'drawer-closed'}`}> */}
+            <Scheduler calendarRef={calendarRef} />
+            {/* </div> */}
           </div>
         </div>
       </Box>

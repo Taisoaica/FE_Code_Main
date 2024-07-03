@@ -58,7 +58,7 @@ export interface setClinicRegistrationModel {
 
 
 export interface ClinicToDisplay {
-    id?: number;
+    id: number;
     name: string;
     description: string;
     address: string;
@@ -67,8 +67,8 @@ export interface ClinicToDisplay {
     openHour: string;
     closeHour: string;
     status: string;
-    working?: string;
-    ownerId?: number;
+    working: string;
+    ownerId: number;
 }
 
 export interface ClinicInfoModel {

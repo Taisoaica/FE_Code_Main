@@ -1,0 +1,106 @@
+.fileInputContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 20px;
+  width: 100%;
+  height: 100%;
+}
+
+
+.hiddenFileInput {
+  display: none;
+}
+
+.fileName {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #0d47a1;
+}
+
+.upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 0.5px dashed #0d47a1;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 20px;
+  background-color: white;
+  transition: background-color 0.3s, border-color 0.3s;
+  width: 100%;
+  height: 100%;
+}
+
+.upload:hover {
+  border-color: #0d47a1;
+  background-color: #f0f4ff;
+}
+
+.dragging {
+  border-color: #0d47a1;
+  background-color: #e3f2fd;
+}
+
+.hiddenFileInput {
+  display: none;
+}
+
+.uploadedFile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.uploadProgress {
+  display: flex;
+  align-items: center;
+}
+
+.delBtn {
+  color: #d32f2f;
+  margin-left: 10px;
+}
+
+
+.imgBox {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  justify-content: center;
+  border: .5px dashed #ccc;
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+  padding: 20px;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.imgBox:hover {
+  border-color: #0d47a1;
+  background-color: #f0f4ff;
+}
+
+.imgBox label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  cursor: pointer;
+  color: #0d47a1;
+  font-weight: bold;
+}
+

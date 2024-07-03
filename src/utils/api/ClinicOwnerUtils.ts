@@ -8,7 +8,7 @@ import { DentistInfoViewModel } from "../interfaces/AdminClinicOwner/DentistAcco
 import HttpResponseModel from "../interfaces/HttpResponseModel/HttpResponseModel";
 import { ClinicServiceInfoModel } from "./BookingRegister";
 
-export const getClinicGeneralInfo = async (clinicId: string): Promise<ClinicToDisplay | null> => {
+export const getClinicGeneralInfo = async (clinicId: number): Promise<ClinicToDisplay | null> => {
     const api_url: string = connection_path.base_url + connection_path.clinic.get_clinic_general_info + `${clinicId}`;
 
     try {
@@ -24,8 +24,10 @@ export const getClinicGeneralInfo = async (clinicId: string): Promise<ClinicToDi
                 email: data.email,
                 openHour: data.openHour,
                 closeHour: data.closeHour,
-                id: 0,
-                ownerId: 0
+                status: data.status,
+                working: data.working,
+                id: data.id,
+                ownerId: data.ownerId,
             }
             return clinic;
         } else {
@@ -38,12 +40,41 @@ export const getClinicGeneralInfo = async (clinicId: string): Promise<ClinicToDi
     }
 }
 
+export const updateClinicGeneralInfo = async (clinicInfo: ClinicToDisplay): Promise<void> => {
+    const api_url = connection_path.base_url + connection_path.clinic.put_clinic_general_info;
+
+    const configuration: AxiosRequestConfig = {
+        method: 'PUT',
+        url: api_url,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        },
+        data: JSON.stringify(clinicInfo)
+    };
+
+    try {
+        const response = await axios(configuration);
+        if (response.status === 200) {
+            console.log('Clinic info updated successfully:', response.data);
+        } else {
+            console.error('Failed to update clinic info:', response.statusText);
+            throw new Error(`Failed to update clinic info: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error('Axios error:', error);
+        throw new Error('Failed to update clinic info');
+    }
+
+}
+
 export const fetchDentistInfo = async (): Promise<HttpResponseModel<DentistInfoViewModel>> => {
     const api_url = connection_path.base_url + connection_path.invoker.get_dentist_invoker;
     const accessToken = localStorage.getItem('accessToken');
     const config: AxiosRequestConfig = {
         headers: {
-            Authorization: `Bearer ${accessToken}`  
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`
         }
     };
 
@@ -59,6 +90,63 @@ export const fetchDentistInfo = async (): Promise<HttpResponseModel<DentistInfoV
         };
     }
 };
+
+export const fetchClinicStaff = async (): Promise<DentistInfoViewModel[]> => {
+    const api_url = connection_path.base_url + connection_path.clinic.get_clinic_staff;
+    const accessToken = localStorage.getItem('accessToken');
+    const config: AxiosRequestConfig = {
+        method: "GET",
+        url: api_url,
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`
+        }
+    };
+
+    try {
+        const response = await axios(config);
+        return response.data.content as DentistInfoViewModel[];
+    } catch (error) {
+        console.error('Error fetching clinic staff:', error);
+        return [];
+    }
+
+}
+export interface DentistRegistrationModel {
+    fullname: string;
+    username: string;
+    password: string;
+    email: string;
+}
+
+export const registerDentist = async (dentistInfo: DentistRegistrationModel): Promise<void> => {
+    const api_url = connection_path.base_url + connection_path.clinic.register_staff;
+    const accessToken = localStorage.getItem('accessToken');
+
+    const configuration: AxiosRequestConfig = {
+        method: 'POST',
+        url: api_url,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+        },
+        data: JSON.stringify(dentistInfo)
+    };
+
+    try {
+        const response = await axios(configuration);
+        if (response.status == 200) {
+            console.log('Dentist registered successfully:', response.data);
+        } else {
+            console.error('Failed to register dentist:', response.statusText);
+            throw new Error(`Failed to register dentist: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error('Axios error:', error);
+        throw new Error('Failed to register dentist');
+    }
+}
+
 
 export const registerSlots = async (
     slot: ClinicSlotRegistrationModel,
@@ -277,15 +365,67 @@ export const getClinicServices = async (clinicId: number): Promise<ClinicService
     }
 };
 
+export const getClinicServiceById = async (serviceId: string): Promise<ClinicServiceInfoModel> => {
+    const api_url = `${connection_path.base_url}${connection_path.clinic.get_clinic_service}/${serviceId}`;
+
+    const configuration: AxiosRequestConfig = {
+        method: 'GET',
+        url: api_url,
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    };
+
+    try {
+        const response = await axios(configuration);
+        if (response.status === 200) {
+            return response.data.content as ClinicServiceInfoModel;
+        }
+        return {} as ClinicServiceInfoModel;
+    } catch (error) {
+        console.error('Axios error:', error);
+        return {} as ClinicServiceInfoModel;
+    }
+}
+
+export const updateClinicService = async (serviceInfo: ClinicServiceInfoModel): Promise<void> => {
+    const api_url = `${connection_path.base_url}${connection_path.clinic.put_clinic_service}`;
+
+    const configuration: AxiosRequestConfig = {
+        method: 'PUT',
+        url: api_url,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        },
+        data: JSON.stringify(serviceInfo)
+    };
+
+    try {
+        const response = await axios(configuration);
+        if (response.status === 200) {
+            console.log('Service updated successfully:', response.data);
+        } else {
+            console.error('Failed to update service:', response.statusText);
+            throw new Error(`Failed to update service: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error('Axios error:', error);
+        throw new Error('Failed to update service');
+    }
+
+}
+
+
 export interface AppointmentViewModel {
     BookId: string;
     appointmentType: string;
     CustomerFullName: string;
     DentistFullname: string;
-    AppointmentDate: string; // Use string or Date format as per your requirement
-    CreationTime: string; // Use string or Date format as per your requirement
-    AppointmentTime: string; // Use string or Date format as per your requirement
-    ExpectedEndTime: string; // Use string or Date format as per your requirement
+    AppointmentDate: string;
+    CreationTime: string;
+    AppointmentTime: string;
+    ExpectedEndTime: string;
     PatientNumber: number;
     ClinicName: string;
     ClinicAddress: string;
@@ -329,3 +469,4 @@ export const getClinicAppointments = async (clinicId: number, from_date?: Date, 
         throw error;
     }
 };
+

@@ -1,0 +1,125 @@
+.mainContainer {
+    height: 100%;
+    background: linear-gradient(to left, #e3f2fd, #f8fbff);
+    padding-top: 20px;
+    color: #0d47a1;
+    overflow: auto;
+    display: flex;
+    justify-content: space-between;
+}
+
+.tableContainer {
+    width: 95%;
+    height: fit-content;
+    gap: 10px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.tableContainer table tbody tr {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.tableContainer table tbody tr:hover {
+    background-color: #e3f2fd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tableContainer table tbodt tr:active {
+    background-color: #bbdefb;
+}
+
+.tableHeader {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.tableContainer .MuiButton-contained:hover {
+    opacity: 0.9;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    background-color: white;
+    padding: 10px;
+    border: 3px solid #d3d3d3;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.searchbar {
+    display: flex;
+    align-items: center;
+}
+
+.searchInput {
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #d3d3d3;
+    border-radius: 4px 0 0 4px;
+    outline: none;
+}
+
+.searchInput:focus {
+    border-color: #2196F3;
+}
+
+.searchButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: 2px solid #2196F3;
+    background-color: #2196F3;
+    color: white;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.searchButton:hover {
+    background-color: #1976d2;
+}
+
+.table {
+    width: 100%;
+    border: 2px solid #d3d3d3;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+th,
+td {
+    border: 1px solid #0d47a1;
+    padding: 8px;
+    text-align: left !important;
+}
+
+th {
+    background-color: #e3f2fd;
+}
+
+.confirmedButton {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+.confirmedButton:hover {
+    background-color: #388e3c;
+}
+
+.unconfirmedButton {
+    background-color: #f44336;
+    color: #fff;
+}
+
+.unconfirmedButton:hover {
+    background-color: #d32f2f;
+}

@@ -72,17 +72,17 @@ const Drawer = styled(MuiDrawer, {
 
 const defaultTheme = createTheme();
 
-
-const UserManagement = () => {
+const CustomerManagement = () => {
     const [users, setUsers] = useState<UserInfoModel[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>('');
 
-
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
+        console.log('drawer open at main', open)
         setOpen(!open);
     };
+
     const fetchUsers = async () => {
         setLoading(true);
         try {
@@ -90,7 +90,7 @@ const UserManagement = () => {
             if (typeof data === 'string') {
                 setError(data);
             } else {
-                setUsers(data);
+                setUsers(data.filter(user => user.role === 'Customer'));
             }
         } catch (error) {
             setError(error as string);
@@ -106,9 +106,7 @@ const UserManagement = () => {
     const formatDate = (dateString: string) => {
         if (!dateString) return '';
         const date = new Date(dateString);
-
         const padToTwoDigits = (num: number) => String(num).padStart(2, '0');
-
         const day = padToTwoDigits(date.getDate());
         const month = padToTwoDigits(date.getMonth() + 1);
         const year = date.getFullYear();
@@ -117,6 +115,16 @@ const UserManagement = () => {
         const seconds = padToTwoDigits(date.getSeconds());
 
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    };
+
+    const formatDateOnly = (dateString: string) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const padToTwoDigits = (num: number) => String(num).padStart(2, '0');
+        const day = padToTwoDigits(date.getDate());
+        const month = padToTwoDigits(date.getMonth() + 1);
+        const year = date.getFullYear();
+        return `${year}-${month}-${day}`;
     };
 
     return (
@@ -164,7 +172,7 @@ const UserManagement = () => {
                         </IconButton>
                     </Toolbar>
                     <Divider />
-                    <NestedListItems />
+                    <NestedListItems  />
                     {/* <List component="nav">
                         {mainListItems}
                     </List> */}
@@ -185,7 +193,7 @@ const UserManagement = () => {
 
                     <Box className={styles.mainContainer}>
                         <div className={styles.tableContainer}>
-                            <div className={styles.tableHeader}>Người dùng của hệ thống</div>
+                            <div className={styles.tableHeader}>Người dùng của hệ thống - Khách hàng</div>
                             <Box className={styles.toolbar}>
                                 <Box className={styles.searchbar}>
                                     <input type="text" placeholder="Tìm kiếm người dùng" className={styles.searchInput} />
@@ -196,30 +204,25 @@ const UserManagement = () => {
                                 <thead>
                                     <tr>
                                         <th style={{ width: '5%' }}>ID</th>
-                                        <th style={{ width: '15%' }}>Username</th>
-                                        <th style={{ width: '15%' }}>Ngày tạo</th>
-                                        <th style={{ width: '10%' }}>Vai trò</th>
-                                        <th style={{ width: '15%' }}>Họ tên</th>
-                                        <th style={{width: '10%'}}>Là nha sĩ</th>
-                                        {/* <th>Clinic ID</th> */}
-                                        <th style={{width: '11%'}}>Là chủ phòng khám</th>
-                                        <th style={{width: '19%'}}>
-                                            <Box className={styles.tooltip}>
-                                                Trạng thái
-                                                {/* <span className={styles.tooltiptext}>Nhấn để cập nhật trạng thái</span>
-                                                <span className={styles.tooltipicon}>!</span> */}
-                                            </Box>
-                                        </th>
+                                        <th style={{ width: '10%' }}>Username</th>
+                                        <th style={{ width: '10%' }}>Ngày tạo</th>
+                                        <th style={{ width: '10%' }}>Họ tên</th>
+                                        <th style={{ width: '10%' }}>Email</th>
+                                        <th style={{ width: '5%' }}>Phone</th>
+                                        <th style={{ width: '10%' }}>Ngày sinh</th>
+                                        <th style={{ width: '10%' }}>Giới tính</th>
+                                        <th style={{ width: '10%' }}>Bảo hiểm</th>
+                                        <th style={{ width: '30%' }}>Trạng thái</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {loading ? (
                                         <tr>
-                                            <td colSpan={16}>Loading...</td>
+                                            <td colSpan={13}>Loading...</td>
                                         </tr>
                                     ) : error ? (
                                         <tr>
-                                            <td colSpan={16}>Error: {error}</td>
+                                            <td colSpan={13}>Error: {error}</td>
                                         </tr>
                                     ) : (
                                         users.map((user) => (
@@ -227,15 +230,12 @@ const UserManagement = () => {
                                                 <td>{user.id}</td>
                                                 <td>{user.username}</td>
                                                 <td>{user.joinedDate ? formatDate(user.joinedDate) : ''}</td>
-                                                <td>{user.role}</td>
                                                 <td>{user.fullname}</td>
-                                                <td>
-                                                    {user.role === 'Customer' ? <CloseIcon /> : (user.role === 'Dentist' && !user.isOwner ? <CheckIcon /> : <CheckIcon />)}
-                                                </td>
-                                                {/* <td>
-                                                    {user.role === 'Customer' ? <CloseIcon /> : (user.role === 'Dentist' && user.isOwner ? <CheckIcon /> : '')}
-                                                </td> */}
-                                                <td>{user.isOwner ? <CheckIcon /> : <CloseIcon />}</td>
+                                                <td>{user.email}</td>
+                                                <td>{user.phone}</td>
+                                                <td>{user.birthdate ? formatDateOnly(user.birthdate) : ''}</td>
+                                                <td>{user.sex}</td>
+                                                <td>{user.insurance || 'N/A'}</td>
                                                 <td>
                                                     <Button
                                                         className={user.isActive ? styles.confirmedButton : styles.unconfirmedButton}
@@ -253,8 +253,7 @@ const UserManagement = () => {
                 </Box>
             </Box>
         </ThemeProvider>
-    )
+    );
 }
 
-
-export default UserManagement
+export default CustomerManagement;

@@ -28,8 +28,8 @@ export const getAllClinics = async (
     searchTerm: string,
     pageSize: number,
     page: number,
-    open?: string,  // Optional parameter for open time in HH:mm format
-    close?: string  // Optional parameter for close time in HH:mm format
+    open?: string, 
+    close?: string  
 ): Promise<{ content: ClinicToDisplay[], totalCount: number }> => {
     const api_url = `${connection_path.base_url}${connection_path.clinic.get_all_clinic}`;
 
@@ -46,7 +46,6 @@ export const getAllClinics = async (
 
         if (response.status === 200) {
             const clinicsData: ClinicToDisplay[] = response.data.content;
-            console.log(clinicsData);
             return {
                 content: response.data.content,
                 totalCount: response.data.totalCount

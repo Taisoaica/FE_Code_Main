@@ -18,55 +18,10 @@ const LoginForm = () => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate(-1);
+    navigate('/');
   }
 
   //    ===================== Nên đưa ra một thư mục khác ==========================
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log("Đang xử lý đăng nhập");
-    //    Dữ liệu về form
-    const data = new FormData(event.currentTarget);
-
-    //    Dữ liệu sau khi điền vào form
-    const payload = {
-      username: data.get("username"),
-      password: data.get("password"),
-    };
-
-    //    Chuỗi kết nối tới server backend
-    //!   LƯU Ý: KHÔNG THAY ĐỔI TRỰC TIẾP CHUỖI KẾT NỐI TẠI ĐÂY (Fix cứng)
-    //==  Chỉ thay đổi dữ liệu của "connection_path" trong file src/constants/developments
-
-    const api_url: string =
-      connection_path.base_url + connection_path.auth.login;
-
-    const configuration: AxiosRequestConfig = {
-      method: "POST",
-      url: api_url,
-      data: payload,
-    };
-
-    await axios(configuration)
-      .then((response) => {
-        if (
-          response.status === 200 &&
-          response.data.accessToken !== undefined
-        ) {
-          localStorage.setItem("accessToken", response.data.accessToken);
-          localStorage.setItem("refreshToken", response.data.refreshToken);
-          //  Thành công thì cho về trang người dùng
-          navigate("/");
-        } else {
-          alert("Không đăng nhập thành công");
-        }
-      })
-      .catch((error) => {
-        alert("Đăng nhập thất bại, vui lòng thử lại sau.");
-        console.log(error);
-      });
-  }
 
   // const handleGoogleOnSuccess = async (response: GoogleCredentialResponse) => {
   //   const api_url: string =
@@ -97,9 +52,9 @@ const LoginForm = () => {
   // };
 
   //#   Kiểm tra xem người dùng đã login hay chưa (nên có ở các trang / component yêu cầu phải login)
-  useEffect(() => {
-    const usertoken = localStorage.getItem("accessToken");
-    if (usertoken != null) {
+  // useEffect(() => {
+  //   const usertoken = localStorage.getItem("accessToken");
+  //   if (usertoken != null) {
       //!   Chưa update server nên hiện tại chưa hỗ trợ kiểm tra login bên phía Backend.
 
       // Prepare for API fetching
@@ -111,10 +66,10 @@ const LoginForm = () => {
       //#   Nếu đã login rồi thì không phải login lại nữa mà về trang chủ.
       //if (response.data.result === 'valid') {
 
-      navigate("/user/profile");
-      //}
-    }
-  });
+  //     navigate("/user/profile");
+  //     }
+  //   }
+  // });
 
 
 

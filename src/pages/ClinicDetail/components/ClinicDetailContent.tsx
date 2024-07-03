@@ -19,17 +19,15 @@ const ClinicDetailContent = () => {
         const fetchData = async () => {
             try {
                 if (!id) return;
-                setLoading(true); // Start loading
+                setLoading(true); 
                 const response = await fetch(`https://localhost:7163/api/clinic/${id}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch clinic information');
                 }
                 const clinicInfo = await response.json();
-                fetchImages('carousel', 1);
-                fetchImages('logo', 1);
-                setClinic(clinicInfo.content); // Update state with clinicInfo.content
-                // fetchImages('carousel', clinicInfo.Id);
-                // fetchImages('logo', clinicInfo.Id);
+                fetchImages('carousel', clinicInfo.content.id);
+                fetchImages('logo', clinicInfo.content.id);
+                setClinic(clinicInfo.content); 
             } catch (error) {
                 console.error('Error fetching clinic information:', error);
                 // Handle error state if needed

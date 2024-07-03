@@ -18,7 +18,7 @@ const SignUpForm = () => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate(-1);
+    navigate('/');
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

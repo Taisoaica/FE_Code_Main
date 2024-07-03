@@ -5,8 +5,8 @@ export interface DentistInfoViewModel {
     email: string;
     phone: string;
     isActive: boolean;
-    joinedDate: Date | null; // DateTime? is nullable, so Date | null in TypeScript
-    clinicId: number | null; // int? is nullable, so number | null in TypeScript
+    joinedDate: Date | null; 
+    clinicId: number | null; 
     isOwner: boolean;
 }
     

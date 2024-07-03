@@ -9,14 +9,53 @@ interface JwtPayload {
     id: string;
 }
 
+export const login = async (payload: { username: string; password: string }, navigate: (path: string) => void) => {
+    const api_url: string = connection_path.base_url + connection_path.auth.login;
+
+    const configuration: AxiosRequestConfig = {
+        method: "POST",
+        url: api_url,
+        data: payload,
+    };
+
+    try {
+        const response = await axios(configuration);
+
+        if (response.status === 200 && response.data.content.accessToken !== undefined) {
+            const { accessToken, refreshToken } = response.data.content;
+
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
+
+            const decodedToken = decodeToken(accessToken);
+
+            if (decodedToken && 'role' in decodedToken && 'id' in decodedToken) {
+                localStorage.setItem('id', decodedToken.id as string);
+                localStorage.setItem('role', decodedToken.role as string);
+
+                if (decodedToken.role === 'Dentist') {
+                    navigate('/admin/clinic-owner');
+                } else {
+                    navigate('/');
+                }
+            } else {
+                console.error('Invalid decoded token:', decodedToken);
+            }
+        } else {
+            console.log(response);
+            alert("Không đăng nhập thành công");
+        }
+    } catch (error) {
+        alert('Đăng nhập thất bại, vui lòng thử lại sau.');
+        console.log(error);
+    }
+};
 
 export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navigate: (path: string) => void) => {
     event.preventDefault();
 
     //    Dữ liệu về form
     const data = new FormData(event.currentTarget);
-    console.log(data.get('username'));
-    console.log(data.get('password'));
     //    Dữ liệu sau khi điền vào form
     const payload = {
         username: data.get('username'),
@@ -37,7 +76,6 @@ export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navig
     await axios(configuration)
 
         .then(response => {
-            console.log("Response:", response.data.content);
 
             if (response.status === 200 && response.data.content.accessToken !== undefined) {
 

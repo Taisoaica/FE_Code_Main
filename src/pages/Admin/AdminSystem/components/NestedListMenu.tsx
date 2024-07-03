@@ -4,8 +4,10 @@ import { Link } from "react-router-dom";
 import { useState } from "react"
 import PeopleIcon from "@mui/icons-material/People";
 import MaterialIcon from "@mui/icons-material/Icon";
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
+
 
 export const NestedListItems = () => {
     const [open, setOpen] = useState<string | null>(null);
@@ -13,61 +15,41 @@ export const NestedListItems = () => {
         setOpen(open === title ? null : title)
     }
 
+
     return (
         <Box>
             <List component="nav">
-                <ListItemButton onClick={() => handleClick("Người dùng")}>
+                <ListItemButton onClick={() => handleClick("Người dùng")} component={Link} to="/system-admin" >
                     <ListItemIcon >
                         <PeopleIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Người dùng" />
+                    <ListItemText primary="Quản lí người dùng" />
                     {open === "Người dùng" ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
-                <Collapse in={open === "Người dùng"} timeout="auto" unmountOnExit>
+                <Collapse in={open == "Người dùng"} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        <ListItemButton component={Link} to="/system-admin">
-                            <ListItemText primary="Người dùng hoạt động" />
+                        <ListItemButton component={Link} to="/system-admin/patient">
+                            <ListItemText primary="Bệnh nhân" />
                         </ListItemButton>
                     </List>
                     <List component="div" disablePadding>
-                        <ListItemButton component={Link} to="/system-admin">
-                            <ListItemText primary="Người dùng ngừng hoạt động" />
+                        <ListItemButton component={Link} to="/system-admin/dentist">
+                            <ListItemText primary="Nha sĩ" />
                         </ListItemButton>
-                    </List> 
+                    </List>
                 </Collapse>
-                <ListItemButton onClick={() => handleClick("Phòng khám")}>
+                <ListItemButton component={Link} to="/system-admin/clinic">
                     <ListItemIcon >
-                        <MedicalServicesIcon />
+                        <LocalHospitalIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Phòng khám" />
-                    {open === "Phòng khám" ? <ExpandLess /> : <ExpandMore />}
+                    <ListItemText primary="Quản lí phòng khám" />
                 </ListItemButton>
-                <Collapse in={open === "Phòng khám"} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                        <ListItemButton component={Link} to="/system-admin/clinic">
-                            <ListItemText primary="Phòng khám đã xác nhận" />
-                        </ListItemButton>
-                    </List>
-                    <List component="div" disablePadding>
-                        <ListItemButton component={Link} to="/system-admin/clinic">
-                            <ListItemText primary="Phòng khám chưa xác nhận" />
-                        </ListItemButton>
-                    </List>
-                </Collapse>
-                <ListItemButton onClick={() => handleClick("Dịch vụ")}>
+                <ListItemButton component={Link} to='/system-admin/service'>
                     <ListItemIcon >
                         <MedicalServicesIcon />
                     </ListItemIcon>
                     <ListItemText primary="Danh mục dịch vụ" />
-                    {open === "Dịch vụ" ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
-                <Collapse in={open === "Dịch vụ"} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                        <ListItemButton component={Link} to="/system-admin/service">
-                            <ListItemText primary="Thêm danh mục dịch vụ" />
-                        </ListItemButton>
-                    </List>
-                </Collapse>
             </List>
         </Box>
     )

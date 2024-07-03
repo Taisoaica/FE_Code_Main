@@ -7,6 +7,7 @@ import { getAllClinics } from "../../utils/api/MiscUtils";
 import { ClinicToDisplay } from "../../utils/interfaces/ClinicRegister/Clinic";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { fetchClinicImages } from "../../utils/UploadFireBase";
 
 const settings = {
     dots: true,
@@ -21,28 +22,28 @@ const settings = {
 const Carousel = () => {
     const navigate = useNavigate();
     const [items, setItems] = useState<ClinicToDisplay[]>([]);
+    const [images, setImages] = useState({});
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
-
-    const backUp: ClinicToDisplay = {
-        id: 1,
-        name: 'Phòng khám nha khoa Asia',
-        address: '105/10 Nguyễn Thị Tú, Phường Bình Hưng Hòa B, Quận Bình Tân, TP. Hồ Chí Minh',
-        phone: '0123456789',
-        email: 'info@asia',
-        openHour: '8:00',
-        closeHour: '20:00',
-        description: 'Nha khoa Asia được thành lập ngày 03 tháng 01 năm 2010.... ',
-        status: 'active',
-        ownerId: 1
-    }
 
     useEffect(() => {
         const fetchClinics = async () => {
             try {
-                const clinics = (await getAllClinics('',100, 0)).content;
-                console.log(clinics + "Hi");
-                setItems(clinics);
+                const clinics = (await getAllClinics('', 100, 0)).content;
+                const verifiedClinics = clinics.filter(clinic => clinic.status === 'verified');
+
+                setItems(verifiedClinics);
+
+                // Fetch images for each clinic
+                const imagesPromises = clinics.map(async (clinic) => {
+                    const imageUrls = await fetchClinicImages(`clinics/${clinic.id}/logo/`);
+                    return { [clinic.id]: imageUrls };
+                });
+
+                const imagesResults = await Promise.all(imagesPromises);
+                const imagesMap = imagesResults.reduce((acc, img) => ({ ...acc, ...img }), {});
+                setImages(imagesMap);
+
             } catch (err) {
                 if (err instanceof Error) {
                     setError(err);
@@ -57,6 +58,7 @@ const Carousel = () => {
 
         fetchClinics();
     }, []);
+
 
     if (loading) {
         return <div>Loading...</div>;
@@ -80,8 +82,11 @@ const Carousel = () => {
                 <Card key={index} sx={{ backgroundColor: '#fff', margin: '1em', borderRadius: '10px', border: '.5px solid #000', height: '450px' }}>
                     <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
                         <Box>
-                            <img src={''} alt={item.name} style={{ width: '100%', height: '130px', objectFit: 'cover', borderTopLeftRadius: '10px', borderTopRightRadius: '10px' }} />
-                            <Divider sx={{ backgroundColor: 'black', width: '90%', margin: '1em auto' }} />
+                            <img
+                                src={images[item.id] ? images[item.id][0] : ''}
+                                alt={item.name}
+                                style={{ width: '100%', height: '130px', objectFit: 'cover', borderTopLeftRadius: '10px', borderTopRightRadius: '10px' }}
+                            />                            <Divider sx={{ backgroundColor: 'black', width: '90%', margin: '1em auto' }} />
                             <Box sx={{ minHeight: '80px' }}>
                                 <Typography variant="h5" component="div" sx={{ textAlign: 'left', marginBottom: '0.5em' }}>
                                     {item.name}

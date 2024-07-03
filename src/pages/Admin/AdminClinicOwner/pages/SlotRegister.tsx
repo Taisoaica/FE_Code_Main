@@ -39,10 +39,11 @@ import { ClinicSlotRegistrationModel, Weekdays } from "../../../../utils/interfa
 import { ClinicSlotInfoModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
 import { ClinicSlotUpdateModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
 import { fetchDentistInfo, registerSlots, getAllClinicSlots, updateClinicSlot, enableSlot } from "../../../../utils/api/ClinicOwnerUtils";
+import { NestedListItems } from "../components/NestedListMenu";
 
 
 
-const drawerWidth: number = 240;
+const drawerWidth: number = 270;
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -372,7 +373,7 @@ const SlotRegister = () => {
             noWrap
             sx={{ flexGrow: 1 }}
           >
-            Trang đăng kí slot khám
+            Trang thiết lập slot khám
           </Typography>
         </Toolbar>
       </AppBar>
@@ -390,9 +391,7 @@ const SlotRegister = () => {
           </IconButton>
         </Toolbar>
         <Divider />
-        <List component="nav">
-          {mainListItems}
-        </List>
+        <NestedListItems />
       </Drawer>
       <Box
         component="main"

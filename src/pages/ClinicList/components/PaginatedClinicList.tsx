@@ -21,26 +21,43 @@ const PaginatedClinicList = () => {
 
     useEffect(() => {
         setSearchTerm(searchTermParams || '');
+        setCurrentPage(1);
     }, [searchTermParams]);
+
+    const fetchTotalClinics = async () => {
+        try {
+            const { content } = await getAllClinics(searchTerm, 0, 0); 
+            const verifiedClinics = content.filter(clinic => clinic.status === 'verified');
+            const totalCount = verifiedClinics.length;
+            setNumberOfPages(Math.ceil(totalCount / clinicPerPage));  
+        } catch (error) {
+            console.error('Error fetching total clinics:', error);
+        }
+    };
 
     const fetchClinics = async () => {
         try {
-            const { content, totalCount } = await getAllClinics(searchTerm, clinicPerPage, currentPage);
-            console.log(content);
-            setClinics(content);
-            setNumberOfPages(Math.ceil(totalCount / clinicPerPage));
+            const { content } = await getAllClinics(searchTerm, clinicPerPage, currentPage);
+            const verifiedClinics = content.filter(clinic => clinic.status === 'verified');
+
+            setClinics(verifiedClinics);
         } catch (error) {
             console.error('Error fetching clinics:', error);
         }
     };
 
-    const handleSearch = () => {
-        fetchClinics();
-    };
+    useEffect(() => {
+        fetchTotalClinics();
+    }, []);
 
     useEffect(() => {
         fetchClinics();
     }, [currentPage, searchTerm]);
+
+    const handleSearch = () => {
+        setCurrentPage(1);
+        fetchClinics();
+    };
 
     const clinicsToDisplay = clinics.map(clinic => (
         <Box key={clinic.id} sx={{ display: 'flex', flexDirection: 'column', margin: '15px 0' }}>
@@ -71,13 +88,13 @@ const PaginatedClinicList = () => {
                     placeholder='Tìm kiếm theo tên, địa chỉ phòng khám'
                     onChange={(e) => setSearchTerm(e.target.value)}
                     sx={{ margin: '0 auto' }}
-                    className={styles.searchBar} // Apply CSS class from module
+                    className={styles.searchBar}
                 />
                 <IconButton
                     onClick={handleSearch}
                     aria-label="search"
                     sx={{ color: "#000", position: 'absolute', right: '15px', top: '0', bottom: '0', margin: 'auto' }}
-                    className={styles.searchIconButton} // Apply CSS class from module
+                    className={styles.searchIconButton}
                 >
                     <SearchIcon />
                 </IconButton>

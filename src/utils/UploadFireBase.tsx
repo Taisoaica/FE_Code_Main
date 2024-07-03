@@ -1,4 +1,4 @@
-import { UploadResult, deleteObject, getDownloadURL, listAll, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
+import { StorageReference, UploadResult, deleteObject, getDownloadURL, listAll, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../../firebase";
 
 const upload = async (file: File) => {
@@ -53,21 +53,26 @@ export const fetchClinicImages = async (folderPath: string) => {
 
 
 //--------------Upload clinic images to firebase storage----------------
-export const uploadClinicImages = (file: File): Promise<string> => {
-  if (file == null) return Promise.reject("No file");
 
-  //Set different clinicId for each folder in firebase storage
-  //To test go to homepage and click on the clinic cards
-  const clinicId = 12;
+export const uploadClinicImages = async (file: File, folder: 'carousel' | 'logo'): Promise<string> => {
+  if (!file) return Promise.reject("No file");
+
+  const clinicId = localStorage.getItem('clinicId');
   const timestamp = Date.now();
-  const imageRef = ref(storage, `clinics/${clinicId}/pictures/${timestamp}_${file.name}`);
+  const folderRef = ref(storage, `clinics/${clinicId}/${folder}`);
 
+  if (folder === 'logo') {
+    const existingFiles = await listFilesInFolder(folderRef);
+    for (const fileRef of existingFiles) {
+      await deleteFile(fileRef);
+    }
+  }
+
+  const imageRef = ref(storage, `${folderRef.fullPath}/${timestamp}_${file.name}`);
   console.log("Uploading image:", imageRef.fullPath);
+
   return uploadBytes(imageRef, file)
-    .then((result: UploadResult) => {
-      const downloadURL = getDownloadURL(result.ref);
-      return downloadURL;
-    })
+    .then((result: UploadResult) => getDownloadURL(result.ref))
     .catch((reason) => {
       console.error("Error uploading image:", reason);
       throw reason;
@@ -75,8 +80,27 @@ export const uploadClinicImages = (file: File): Promise<string> => {
 };
 
 //--------------Delete clinic images from firebase storage----------------
-export const deleteClinicImage = (imagePath: string): Promise<void> => {
-  const imageRef = ref(storage, imagePath);
-  console.log("Deleting image:", imageRef.fullPath);
-  return deleteObject(imageRef);
+// export const deleteClinicImage = (imagePath: string): Promise<void> => {
+//   const imageRef = ref(storage, imagePath);
+//   console.log("Deleting image:", imageRef.fullPath);
+//   return deleteObject(imageRef);
+// };
+
+const listFilesInFolder = async (folderRef: StorageReference) => {
+  try {
+    const listResult = await listAll(folderRef);
+    return listResult.items;
+  } catch (error) {
+    console.error("Error listing files in folder:", error);
+    throw error;
+  }
+};
+
+export const deleteFile = async (fileRef: StorageReference) => {
+  try {
+    await deleteObject(fileRef);
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    throw error;
+  }
 };

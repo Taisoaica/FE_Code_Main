@@ -78,6 +78,7 @@ const Drawer = styled(MuiDrawer, {
 const Dashboard = () => {
   const [open, setOpen] = useState(true);
   const calendarRef = useRef<FullCalendar>(null);
+  const [fullname, setFullname] = useState('');
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -86,12 +87,20 @@ const Dashboard = () => {
   useEffect(() => {
     if (calendarRef.current) {
       const api = calendarRef.current.getApi();
-      
+
       api.updateSize();
-    
+
       api.view.calendar.updateSize();
     }
   }, [open]);
+
+  useEffect(() => {
+    const userDetails = localStorage.getItem('userDetails');
+    if (userDetails) {
+      const user = JSON.parse(userDetails);
+      setFullname(user.fullname);
+    }
+  }, []);
 
   return (
     <Box sx={{ display: "flex", height: '100%' }}>
@@ -135,7 +144,7 @@ const Dashboard = () => {
         {/* <List component="nav">
           {mainListItems}
         </List> */}
-        <NestedListItems/>
+        <NestedListItems />
       </Drawer>
       <Box
         component="main"
@@ -146,27 +155,51 @@ const Dashboard = () => {
               : theme.palette.grey[900],
           flexGrow: 1,
           marginTop: 5.5,
+          height: '100%',
           color: '#0d47a1',
           background: 'linear-gradient(to left, #e3f2fd, #f8fbff)',
-          overflow: 'auto',
-
-
         }}
       >
         <div className={styles.mainContainer} >
+
+          <h1 className={styles.greeting}>Xin chào {fullname}</h1>
+          {/* <Scheduler calendarRef={calendarRef} /> */}
           <div className={styles.main}>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              sx={{ width: '90%', margin: '0 auto' }}
-            >
-              Trang chủ
-            </Typography>
-            {/* <div className={`calendar-two ${open ? 'drawer-open' : 'drawer-closed'}`}> */}
-            <Scheduler calendarRef={calendarRef} />
-            {/* </div> */}
+            <Box className={styles.content1}>
+              <Box>
+                <Box className={styles.imageBox}>
+                  <img src="/icon/hospital.png" alt="placeholder" />
+                </Box>
+                <Box sx={{ fontSize: '22px', fontWeight: 700 }}>
+                  Quản lí phòng khám
+                </Box>
+                <Box sx={{ fontSize: '20px' }}>
+                  Đầy đủ các tính năng:  quản lí lịch hẹn, bệnh nhân, bác sĩ, dịch vụ, slot khám, ...
+                </Box>
+              </Box>
+              <Box>
+                <Box>
+                  <img src="/icon/folder.png" alt="placeholder" />
+                </Box>
+                <Box sx={{ fontSize: '22px', fontWeight: 700 }}>
+                  Bảo mật thông tin
+                </Box>
+                <Box sx={{ fontSize: '20px' }}>
+                  Cam kết bảo mật theo hạ tầng ISO 27001:2013, đạo luật HIPAA, thành viên VNISA.
+                </Box>
+              </Box>
+              <Box>
+                <Box>
+                  <img src="/icon/folder.png" alt="placeholder" />
+                </Box>
+                <Box sx={{ fontSize: '22px', fontWeight: 700 }}>
+                  Bảo mật thông tin
+                </Box>
+                <Box sx={{ fontSize: '20px' }}>
+                  Cam kết bảo mật theo hạ tầng ISO 27001:2013, đạo luật HIPAA, thành viên VNISA.
+                </Box>
+              </Box>
+            </Box>
           </div>
         </div>
       </Box>

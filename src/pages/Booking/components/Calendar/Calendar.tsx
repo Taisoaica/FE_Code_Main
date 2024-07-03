@@ -45,7 +45,6 @@ export default function BasicDateCalendar({ formData, setFormData, onStepComplet
       try {
         const slots = await getAllClinicSlots();
         setClinicSlots(slots);
-        console.log(slots)
       } catch (error) {
         console.error('Error fetching clinic slots:', error);
       }

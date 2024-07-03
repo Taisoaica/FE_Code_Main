@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { connection_path } from '../../constants/developments'; // Adjust the import according to your project structure
 import { GoogleCredentialResponse } from '@react-oauth/google';
+import { getAllUsers } from './SystemAdminUtils';
 
 import decodeToken from "../../utils/decoder/accessTokenDecoder";
 
@@ -26,12 +27,12 @@ export const login = async (payload: { username: string; password: string }, nav
 
             localStorage.setItem("accessToken", accessToken);
             localStorage.setItem("refreshToken", refreshToken);
-
             const decodedToken = decodeToken(accessToken);
 
             if (decodedToken && 'role' in decodedToken && 'id' in decodedToken) {
                 localStorage.setItem('id', decodedToken.id as string);
                 localStorage.setItem('role', decodedToken.role as string);
+
 
                 if (decodedToken.role === 'Dentist') {
                     navigate('/admin/clinic-owner');
@@ -50,21 +51,15 @@ export const login = async (payload: { username: string; password: string }, nav
         console.log(error);
     }
 };
-
-export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navigate: (path: string) => void) => {
+export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navigate: (path: string) => void, redirectPath: string) => {
     event.preventDefault();
 
-    //    Dữ liệu về form
     const data = new FormData(event.currentTarget);
-    //    Dữ liệu sau khi điền vào form
     const payload = {
         username: data.get('username'),
         password: data.get('password'),
     }
 
-    //    Chuỗi kết nối tới server backend
-    //!   LƯU Ý: KHÔNG THAY ĐỔI TRỰC TIẾP CHUỖI KẾT NỐI TẠI ĐÂY (Fix cứng)
-    //==  Chỉ thay đổi dữ liệu của "connection_path" trong file src/constants/developments
     const api_url: string = connection_path.base_url + connection_path.auth.login;
 
     const configuration: AxiosRequestConfig = {
@@ -73,42 +68,47 @@ export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navig
         data: payload
     };
 
-    await axios(configuration)
+    try {
+        const response = await axios(configuration);
 
-        .then(response => {
+        if (response.status === 200 && response.data.content.accessToken !== undefined) {
+            const accessToken = response.data.content.accessToken;
+            const refreshToken = response.data.content.refreshToken;
 
-            if (response.status === 200 && response.data.content.accessToken !== undefined) {
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
 
-                var accessToken = response.data.content.accessToken;
-                var refreshToken = response.data.content.refreshToken;
+            const decodedToken = decodeToken(accessToken);
 
-                localStorage.setItem("accessToken", accessToken);
-                localStorage.setItem("refreshToken", refreshToken);
+            if (decodedToken && 'role' in decodedToken && 'id' in decodedToken) {
+                const users = await getAllUsers();
 
-                const decodedToken = decodeToken(accessToken);
-                //  Thành công thì cho về trang người dùng
-                if (decodedToken && 'role' in decodedToken && 'id' in decodedToken) {
-                    localStorage.setItem('id', decodedToken.id as string);
-                    localStorage.setItem('role', decodedToken.role as string);
-                    if (decodedToken.role === 'Dentist') {
-                        navigate('/admin/clinic-owner');
-                    } else {
-                        navigate('/');
-                    }
-                } else {
-                    console.error('Invalid decoded token:', decodedToken);
+                const loggedInUser = Array.isArray(users) ? users.find(user => user.id.toString() === decodedToken.id) : null;
+
+                if (loggedInUser) {
+                    localStorage.setItem('userDetails', JSON.stringify(loggedInUser));
                 }
 
+                localStorage.setItem('id', decodedToken.id as string);
+                localStorage.setItem('role', decodedToken.role as string);
+
+                if (decodedToken.role === 'Dentist') {
+                    navigate('/admin/clinic-owner');
+                } else {
+                    navigate(redirectPath || '/');
+                }
+            } else {
+                console.error('Invalid decoded token:', decodedToken);
             }
-            else {
-                console.log(response);
-                alert("Không đăng nhập thành công");
-            }
-        })
-        .catch(error => {
-            alert('Đăng nhập thất bại, vui lòng thử lại sau.')
-            console.log(error);
-        })
+
+        } else {
+            console.log(response);
+            alert("Không đăng nhập thành công");
+        }
+    } catch (error) {
+        alert('Đăng nhập thất bại, vui lòng thử lại sau.');
+        console.log(error);
+    }
 };
 
 export const handleLogout = async (navigate: (path: string) => void) => {

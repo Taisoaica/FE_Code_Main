@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './DentistList.module.css';
 import { SetBookingInformation } from '../../../../utils/interfaces/interfaces';
 import { getAllDentist, DentistInfoViewModel } from '../../../../utils/api/BookingRegister';
+import { useParams } from 'react-router-dom';
 
 interface DentistListProps {
     setFormData: SetBookingInformation;
@@ -10,15 +11,15 @@ interface DentistListProps {
 
 const DentistList = ({ setFormData, onStepComplete }: DentistListProps) => {
     const [dentistList, setDentistList] = useState<DentistInfoViewModel[]>([]);
+    const { clinicId } = useParams<{ clinicId: string }>();
 
     useEffect(() => {
         const fetchDentists = async () => {
             try {
-                const dentists = await getAllDentist('1');
+                const dentists = await getAllDentist(`${clinicId}`);
                 setDentistList(dentists);
             } catch (error) {
                 console.error('Error fetching dentists:', error);
-                // Handle error fetching data
             }
         };
 

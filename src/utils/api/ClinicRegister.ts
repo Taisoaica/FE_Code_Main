@@ -26,7 +26,6 @@ export const handleClinicRegister = async (payload: ClinicRegistrationModel, nav
                 password: payload.OwnerPassword,
             };
 
-            // Call the login function
             await login(loginPayload, navigate);
 
         } else {

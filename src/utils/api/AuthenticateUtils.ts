@@ -51,7 +51,7 @@ export const login = async (payload: { username: string; password: string }, nav
     }
 };
 
-export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navigate: (path: string) => void) => {
+export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navigate: (path: string) => void, redirectPath: string) => {
     event.preventDefault();
 
     //    Dữ liệu về form
@@ -93,7 +93,7 @@ export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navig
                     if (decodedToken.role === 'Dentist') {
                         navigate('/admin/clinic-owner');
                     } else {
-                        navigate('/');
+                        navigate(redirectPath || '/');
                     }
                 } else {
                     console.error('Invalid decoded token:', decodedToken);

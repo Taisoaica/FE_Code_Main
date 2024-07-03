@@ -13,6 +13,7 @@ interface ServiceListProps {
 const ServiceList = ({ setFormData, onStepComplete }: ServiceListProps) => {
     const [clinicServices, setClinicServices] = useState<ClinicServiceInfoModel[]>([]);
     const { clinicId } = useParams<{ clinicId?: string }>(); 
+   
     useEffect(() => {
         const fetchServices = async () => {
             try {
@@ -30,7 +31,6 @@ const ServiceList = ({ setFormData, onStepComplete }: ServiceListProps) => {
     }, []);
 
     const handleServiceClick = (serviceId: string) => {
-        console.log('Service clicked:', serviceId);
         setFormData(prevState => ({
             ...prevState,
             serviceId: serviceId,
@@ -45,11 +45,11 @@ const ServiceList = ({ setFormData, onStepComplete }: ServiceListProps) => {
                 <div className={styles.heading}>Chọn dịch vụ khám</div>
             </div>
             <div className={styles.contentBox}>
-                <div className={styles.toolbar}>
+                {/* <div className={styles.toolbar}>
                     <div className={styles.searchbar}>
                         <input type="text" placeholder="Tìm kiếm dịch vụ" className={styles.searchInput} />
                     </div>
-                </div>
+                </div> */}
                 <div className={styles.list}>
                     {clinicServices.map((service) => (
                         <div key={service.clinicServiceId} className={styles.item} onClick={() => handleServiceClick(service.clinicServiceId)}>

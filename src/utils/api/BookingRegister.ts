@@ -1,63 +1,64 @@
-import { BookingRegistrationModel } from "../interfaces/interfaces";
+import { BookingInformation, BookingRegistrationModel } from "../interfaces/interfaces";
 import { connection_path } from "../../constants/developments";
 import axios, { AxiosRequestConfig } from "axios";
+import { useNavigate } from "react-router-dom";
 
 
-
-// export const handleBookingRegister = async (payload: BookingRegistrationModel, navigate: (path: string, state?: any) => void) => {
-//     const api_url: string = connection_path.base_url + connection_path.booking.place_book;
+// export const handleBookingSuccess = async () => {
+//     const api_url: string = connection_path.base_url + connection_path.booking.get_cus_booking;
+//     const accessToken = localStorage.getItem('accessToken');
 
 //     const configuration = {
-//         method: "POST",
+//         method: "GET",
 //         url: api_url,
-//         data: payload,
 //         headers: {
-//             'Content-Type': 'application/json' 
+//             'Authorization': `Bearer ${accessToken}`
 //         }
 //     };
 
 //     await axios(configuration)
 //         .then(response => {
-//             if (response.status === 200) {
-//                 console.log("Booking successful");
-//                 navigate('/success', { state: { bookingInfo: payload } });
+//             if (response.status == 200 && response.data.statusCode == 200) {
+//                 const userInfo = response.data.content;
+
 //             } else {
-//                 console.log(response);
-//                 alert("Booking failed");
+//                 console.log("error", response.data);
 //             }
 //         })
 //         .catch(error => {
-//             alert('Booking failed, please try again later.')
 //             console.log(error);
 //         })
+
+// }
+
+// export const handleBookingSuccess = async (): Promise<BookingInformationToSend> => {
+//     const api_url: string = connection_path.base_url + connection_path.booking.get_cus_booking;
+//     const accessToken = localStorage.getItem('accessToken');
+
+//     const configuration = {
+//         method: "GET",
+//         url: api_url,
+//         headers: {
+//             'Authorization': `Bearer ${accessToken}`
+//         }
+//     };
+
+//     try {
+//         const response = await axios(configuration);
+//         if (response.status === 200 && response.data.statusCode === 200) {
+//             const userInfo = response.data.content;
+
+//             return userInfo;
+//         } else {
+//             console.error('Error fetching booking info:', response.data);
+//             throw new Error('Error fetching booking info');
+//         }
+//     } catch (error) {
+//         console.error('Error fetching booking info:', error);
+//         throw error;
+//     }
 // };
 
-export const handleBookingSuccess = async () => {
-    const api_url: string = connection_path.base_url + connection_path.booking.get_cus_booking;
-    const accessToken = localStorage.getItem('accessToken');
-
-    const configuration = {
-        method: "GET",
-        url: api_url,
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        }
-    };
-
-    await axios(configuration)
-        .then(response => {
-            if (response.status == 200 && response.data.statusCode == 200) {
-                const userInfo = response.data.content;
-                console.log(userInfo);
-            } else {
-                console.log("error", response.data);
-            }
-        })
-        .catch(error => {
-            console.log(error);
-        })
-
-}
 
 export interface ClinicServiceInfoModel {
     clinicServiceId: string;
@@ -85,14 +86,14 @@ export const handleGetAllService = async (clinicId: number): Promise<ClinicServi
         const response = await axios(config);
         if (response.status === 200 && response.data.statusCode === 200) {
             const serviceList: ClinicServiceInfoModel[] = response.data.content;
-            return serviceList; // Return the fetched service list
+            return serviceList;
         } else {
             console.error('Error:', response.data);
             throw new Error('Failed to fetch clinic services');
         }
     } catch (error) {
         console.error('Error fetching clinic services:', error);
-        throw error; // Rethrow the error to be handled by the caller
+        throw error;
     }
 };
 
@@ -148,19 +149,52 @@ export interface AppointmentRegistrationModel {
     Status: string;
 }
 
-export const createNewCustomerAppointment = async (appointmentData: AppointmentRegistrationModel): Promise<any> => {
+// export const createNewCustomerAppointment = async (appointmentData: AppointmentRegistrationModel): Promise<any> => {
+//     const api_url = connection_path.base_url + connection_path.booking.place_book;
+
+//     try {
+//         const response = await axios.post(api_url, appointmentData, {
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+//             }
+//         });
+
+//         if (response.status === 201) {
+//             console.log('Appointment created successfully:', response.data);
+//             return response.data;
+//         } else {
+//             console.error('Failed to create appointment:', response.data);
+//             throw new Error('Failed to create appointment');
+//         }
+//     } catch (error) {
+//         console.error('Error creating appointment:', error);
+//         throw error;
+//     }
+// };
+
+export const createNewCustomerAppointment = async (
+    appointmentData: AppointmentRegistrationModel,
+    navigate: (path: string, options?: { state?: { bookingInfo: any } }) => void,
+    formData: BookingInformation,
+    clinicName: string): Promise<any> => {
     const api_url = connection_path.base_url + connection_path.booking.place_book;
+
 
     try {
         const response = await axios.post(api_url, appointmentData, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}` // Add authorization header if required
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             }
         });
 
         if (response.status === 201) {
-            console.log('Appointment created successfully:', response.data);
+
+            const bookingInfo = response.data;
+
+            navigate('/success', { state: { bookingInfo, formData, clinicName} });
+
             return response.data;
         } else {
             console.error('Failed to create appointment:', response.data);

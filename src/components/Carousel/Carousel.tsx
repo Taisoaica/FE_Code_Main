@@ -73,7 +73,11 @@ const Carousel = () => {
     }
 
     const handleBookingButtonClick = (id: number) => {
-        navigate(`/booking/${id}`)
+        if(localStorage.getItem('accessToken')) {
+            navigate(`/booking/${id}`)
+        } else {
+            navigate('/login')
+        }
     }
 
     return (

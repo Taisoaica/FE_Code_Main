@@ -1,6 +1,6 @@
 import { Button, Box, Checkbox, Link, Divider, TextField, } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios, { AxiosRequestConfig } from "axios";
 import { useEffect } from "react";
 import { connection_path } from "../../../constants/developments";
@@ -16,62 +16,13 @@ import { ArrowBack } from "@mui/icons-material";
 
 const LoginForm = () => {
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const redirectPath = queryParams.get('redirect') || '/'; 
+  
   const handleBack = () => {
     navigate('/');
   }
-
-  //    ===================== Nên đưa ra một thư mục khác ==========================
-
-  // const handleGoogleOnSuccess = async (response: GoogleCredentialResponse) => {
-  //   const api_url: string =
-  //     connection_path.base_url + connection_path.auth.googleAuth;
-  //   const configuration: AxiosRequestConfig = {
-  //     method: "POST",
-  //     url: api_url,
-  //     data: { googleToken: response.credential },
-  //     headers: { "Content-Type": "application/json" },
-  //   };
-  //   const axiosResponse: AxiosResponse<{
-  //     accessToken: string;
-  //     refreshToken: string;
-  //     error: string;
-  //     message: string;
-  //   }> = await axios(configuration);
-
-  //   console.log(axiosResponse);
-
-  //   if (axiosResponse.data.accessToken !== undefined) {
-  //     localStorage.setItem("accessToken", axiosResponse.data.accessToken);
-  //     localStorage.setItem("refreshToken", axiosResponse.data.refreshToken);
-  //     navigate("/");
-  //   }
-  // };
-  // const handleGoogleOnFailure = () => {
-  //   navigate("/error404")
-  // };
-
-  //#   Kiểm tra xem người dùng đã login hay chưa (nên có ở các trang / component yêu cầu phải login)
-  // useEffect(() => {
-  //   const usertoken = localStorage.getItem("accessToken");
-  //   if (usertoken != null) {
-      //!   Chưa update server nên hiện tại chưa hỗ trợ kiểm tra login bên phía Backend.
-
-      // Prepare for API fetching
-      //const api_url: string = connection_path.base_url + connection_path.api + connection_path.endpoints.checkAuth;
-      //const configuration: AxiosRequestConfig = { method: "POST",  url: api_url,  data:{token: usertoken}};
-
-      //const response: AxiosResponse<{result: string}> = await axios(configuration);
-
-      //#   Nếu đã login rồi thì không phải login lại nữa mà về trang chủ.
-      //if (response.data.result === 'valid') {
-
-  //     navigate("/user/profile");
-  //     }
-  //   }
-  // });
-
-
 
   //add eye icon into the password field
   const [showPassword, setShowPassword] = React.useState(false);
@@ -90,7 +41,7 @@ const LoginForm = () => {
   return (
     <Box
       component="form"
-      onSubmit={(event) => handleLogin(event, navigate)}
+      onSubmit={(event) => handleLogin(event, navigate, redirectPath)}
       noValidate
     // className={styles.form}
     >
@@ -151,7 +102,6 @@ const LoginForm = () => {
           type="submit"
           variant="contained"
           color="primary"
-          // onClick={() => handleSubmit}
           sx={{ width: "100%" }}
         >
           Đăng nhập

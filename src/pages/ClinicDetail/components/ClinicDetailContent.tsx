@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { Avatar, Box, Breadcrumbs, Button, Divider, Link, Typography } from '@mui/material';
 import ImageList from './ImageList/ImageList';
 import ClinicServices from './ClinicServices/ClinicServices';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styles from './ClinicDetailContent.module.css';
 import { fetchClinicImages } from '../../../utils/UploadFireBase';
 import { ClinicInfoModel } from '../../../utils/interfaces/ClinicRegister/Clinic';
@@ -14,12 +14,14 @@ const ClinicDetailContent = () => {
     const [logo, setLogo] = useState<string>(''); // Placeholder for logo URL
     const [clinic, setClinic] = useState<ClinicInfoModel>();
     const [loading, setLoading] = useState<boolean>(true);
-  
+
+    const navigator = useNavigate();
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 if (!id) return;
-                setLoading(true); 
+                setLoading(true);
                 const response = await fetch(`https://localhost:7163/api/clinic/${id}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch clinic information');
@@ -27,7 +29,7 @@ const ClinicDetailContent = () => {
                 const clinicInfo = await response.json();
                 fetchImages('carousel', clinicInfo.content.id);
                 fetchImages('logo', clinicInfo.content.id);
-                setClinic(clinicInfo.content); 
+                setClinic(clinicInfo.content);
             } catch (error) {
                 console.error('Error fetching clinic information:', error);
                 // Handle error state if needed
@@ -53,6 +55,14 @@ const ClinicDetailContent = () => {
             console.error(`Error fetching images from ${folderName}:`, error);
         }
     };
+
+    const handleBooking = () => {
+        if (localStorage.getItem('accessToken')) {
+            navigator(`/booking/${id}`, { state: { clinicName: clinic.name } });
+        } else {
+            navigator('/login')
+        }
+    }
 
     if (loading) {
         return (
@@ -96,7 +106,7 @@ const ClinicDetailContent = () => {
                         <ImageList images={images} />
                     </Box>
                     <Box className={styles.imageList} style={{ textAlign: 'right' }}>
-                        <Button variant="contained" href={`/booking/1`} className={styles.button}>
+                        <Button variant="contained" onClick={handleBooking} className={styles.button}>
                             Đặt lịch ngay
                         </Button>
                     </Box>
@@ -115,7 +125,7 @@ const ClinicDetailContent = () => {
                                 Thời gian khám:
                             </Typography>
                             <Typography variant="body1" className={styles.sectionContent}>
-                                {clinic.openHour} - {clinic.closeHour} 
+                                {clinic.openHour} - {clinic.closeHour}
                             </Typography>
                         </Box>
 
@@ -124,7 +134,7 @@ const ClinicDetailContent = () => {
                                 Địa chỉ:
                             </Typography>
                             <Typography variant="body1" className={styles.sectionContent}>
-                                {clinic.address} 
+                                {clinic.address}
                             </Typography>
                         </Box>
 

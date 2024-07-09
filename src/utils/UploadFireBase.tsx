@@ -54,10 +54,9 @@ export const fetchClinicImages = async (folderPath: string) => {
 
 //--------------Upload clinic images to firebase storage----------------
 
-export const uploadClinicImages = async (file: File, folder: 'carousel' | 'logo'): Promise<string> => {
+export const uploadClinicImages = async (file: File, folder: 'carousel' | 'logo', clinicId: string): Promise<string> => {
   if (!file) return Promise.reject("No file");
 
-  const clinicId = localStorage.getItem('clinicId');
   const timestamp = Date.now();
   const folderRef = ref(storage, `clinics/${clinicId}/${folder}`);
 

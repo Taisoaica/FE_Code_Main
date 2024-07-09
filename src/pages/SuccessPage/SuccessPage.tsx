@@ -1,89 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import UserLayout from '../../components/UserLayout';
-import { Box, Typography, Button, Paper } from '@mui/material';
+import { Box, Typography, Button, Paper, CircularProgress } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { BookingInformation } from '../../utils/interfaces/interfaces';
-import axios from 'axios';
-import HmacSHA512 from 'crypto-js/hmac-sha512';
-import encHex from 'crypto-js/enc-hex';
-
-interface LocationState {
-    bookingInfo: any;
-    formData: BookingInformation;
-    clinicName: string;
-}
+import { confirmPayment } from '../../utils/api/BookingRegister';
+import { getCustomerAppointments } from '../../utils/api/UserAccountUtils';
+import { AppointmentViewModelFetch } from '../../utils/api/ClinicOwnerUtils';
 
 const SuccessPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [appointment, setAppointment] = useState<AppointmentViewModelFetch | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [paymentSource, setPaymentSource] = useState<'normal' | 'detail' | null>(null);
 
-    const queryParams = new URLSearchParams(window.location.search);
-    const vnp_SecureHash = queryParams.get('vnp_SecureHash');
-    const bookingInfoString = queryParams.get('bookingInfo');
-    const formDataString = queryParams.get('formData');
-    const clinicName = queryParams.get('clinicName');
-
-    const bookingInfo = bookingInfoString ? JSON.parse(bookingInfoString) : null;
-    const formData: BookingInformation = formDataString ? JSON.parse(formDataString) : null;
-
-    const [isValid, setIsValid] = useState(false);
-    const [message, setMessage] = useState('');
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchPaymentStatus = async () => {
-            try {
-                const queryParams = new URLSearchParams(window.location.search);
-                const vnp_SecureHash = queryParams.get('vnp_SecureHash');
-                console.log(vnp_SecureHash, 'secure hash')
-                const secretKey = '6QM5P5RAQA6J49BJUYUIMPOL9PFFBOAD';
-
-                const secureHashData = new URLSearchParams(window.location.search)
-                    .toString()
-                    .replace(`&vnp_SecureHash=${vnp_SecureHash}`, '');
-
-                // const secureHash = HmacSHA512(secureHashData, secretKey)
-                //     .toString(encHex)
-
-                const secureHash = HmacSHA512(secureHashData, secretKey)
-                    .toString(encHex)
-                
-                console.log(secureHash, 'computed secure hash')
-
-                if (secureHash === vnp_SecureHash) {
-                    const queryParamsObj = Object.fromEntries(queryParams.entries());
-                    console.log(queryParamsObj)
-                    const response = await axios.get('https://localhost:7128/api/payment/payment/confirm', { params: queryParamsObj });
-
-                    if (response.status === 200) {
-                        const { Message, ErrorCode } = response.data;
-
-                        console.log(response.data)
-                        if (ErrorCode === '00') {
-                            setMessage(Message);
-                            setIsValid(true);
-                        } else {
-                            setMessage(`Thanh toán không thành công. Mã lỗi: ${ErrorCode}`);
-                        }
-                    } else {
-                        setMessage('Xác nhận thanh toán không thành công.');
-                    }
-                } else {
-                    setMessage('Mã bảo mật không hợp lệ.');
-                }
-            } catch (error) {
-                console.error('Failed to confirm payment:', error);
-                setMessage('Xác nhận thanh toán không thành công.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPaymentStatus();
-    }, []);
-
-
+    const getAppointmentTypeText = (type: string) => {
+        switch (type) {
+            case 'treatment':
+                return 'Khám chữa trị';
+            case 'checkup':
+                return 'Khám'
+            default:
+                return type;
+        }
+    }
 
     function formatTime(time: string): string {
         if (!time || !time.includes(':')) {
@@ -99,6 +39,59 @@ const SuccessPage = () => {
         return `${hours}:${minutes}`;
     }
 
+    useEffect(() => {
+        const confirmPaymentProcess = async () => {
+            const queryParams = new URLSearchParams(location.search);
+            const orderInfo = queryParams.get('vnp_OrderInfo') || '';
+            const appointmentId = orderInfo.split(' ').pop();
+
+            if (!appointmentId) {
+                console.error('No appointmentId found in the orderInfo');
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                const result = await confirmPayment(location.search);
+                if (result.success) {
+                    console.log('Payment confirmed:', result);
+
+                    const customerId = localStorage.getItem('id');
+                    if (customerId) {
+                        const appointments = await getCustomerAppointments(customerId);
+                        const bookedAppointment = appointments.find(app => app.bookId === appointmentId);
+
+                        if (bookedAppointment) {
+                            setAppointment(bookedAppointment);
+                            setPaymentSource(bookedAppointment.bookingStatus === 'booked' ? 'normal' : 'detail');
+                        } else {
+                            console.error('Appointment not found');
+                        }
+                    } else {
+                        console.error('No customer ID found in localStorage');
+                    }
+                } else {
+                    console.error('Payment confirmation failed:', result.message);
+                }
+            } catch (error) {
+                console.error('Error during payment confirmation:', error);
+            }
+            setIsLoading(false);
+        };
+
+        confirmPaymentProcess();
+    }, [location.search]);
+
+    if (isLoading) {
+        return (
+            <UserLayout>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                    <CircularProgress />
+                </Box>
+            </UserLayout>
+        );
+    }
+
     return (
         <UserLayout>
             <Box
@@ -112,51 +105,51 @@ const SuccessPage = () => {
                     textAlign: 'center'
                 }}
             >
-                {/* {isValid ? ( */}
-                    <>
-                        <CheckCircleIcon color="success" sx={{ fontSize: 80, mb: 2 }} />
-                        <Typography variant="h4" component="h1" gutterBottom>
-                            Đặt khám thành công!
-                        </Typography>
-                        <Typography variant="body1" gutterBottom>
-                            Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Lịch hẹn của bạn đã được xác nhận.
-                        </Typography>
+                <CheckCircleIcon color="success" sx={{ fontSize: 80, mb: 2 }} />
+                <Typography variant="h4" component="h1" gutterBottom>
+                    {paymentSource === 'normal' ? 'Đặt khám thành công!' : 'Thanh toán thành công!'}
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                    {paymentSource === 'normal'
+                        ? 'Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Lịch hẹn của bạn đã được xác nhận.'
+                        : 'Cảm ơn bạn đã hoàn tất thanh toán. Lịch hẹn của bạn đã được cập nhật.'}
+                </Typography>
 
-                        <Paper elevation={3} sx={{ padding: 2, marginTop: 3, width: '100%', maxWidth: 700, textAlign: 'left' }}>
-                            <Typography variant="h6" component="h2" gutterBottom sx={{ textAlign: 'center' }}>
-                                Chi tiết lịch hẹn của bạn:
-                            </Typography>
-                            <Typography>
-                                <strong>Ngày:</strong> {bookingInfo?.content.appointmentDate}
-                            </Typography>
-                            <Typography>
-                                <strong>Slot:</strong> {formData?.time?.start && formData?.time?.end ? `${formatTime(formData.time.start)} - ${formatTime(formData.time.end)}` : 'N/A'}
-                            </Typography>
-                            <Typography variant="body1">
-                                <strong>Nha sĩ:</strong> {formData?.dentistName}
-                            </Typography>
-                            <Typography>
-                                <strong>Hình thức khám:</strong> {bookingInfo?.type === 'treatment' ? 'Khám' : 'Chữa'}
-                            </Typography>
-                            <Typography>
-                                <strong>Dịch vụ:</strong> {formData?.serviceName}
-                            </Typography>
-                        </Paper>
-
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            sx={{ mt: 4 }}
-                            onClick={() => navigate('/')}
-                        >
-                            Trở về trang chủ
-                        </Button>
-                    </>
-                {/* ) : (
-                    <Typography variant="h6" component="h2" gutterBottom>
-                        Thanh toán không thành công. Vui lòng thử lại.
+                {appointment ? (
+                    <Paper elevation={3} sx={{ padding: 2, marginTop: 3, width: '100%', maxWidth: 700, textAlign: 'left' }}>
+                        <Typography variant="h6" component="h2" gutterBottom sx={{ textAlign: 'center' }}>
+                            Chi tiết lịch hẹn của bạn:
+                        </Typography>
+                        <Typography>
+                            <strong>Ngày:</strong> {appointment.appointmentDate}
+                        </Typography>
+                        <Typography>
+                            <strong>Slot:</strong> {`${formatTime(appointment.appointmentTime)} - ${formatTime(appointment.expectedEndTime)}`}
+                        </Typography>
+                        <Typography variant="body1">
+                            <strong>Nha sĩ:</strong> {appointment.dentistFullname}
+                        </Typography>
+                        <Typography>
+                            <strong>Hình thức khám:</strong> {getAppointmentTypeText(appointment.appointmentType)}
+                        </Typography>
+                        <Typography>
+                            <strong>Dịch vụ:</strong> {appointment.selectedServiceName}
+                        </Typography>
+                    </Paper>
+                ) : (
+                    <Typography variant="body1" gutterBottom color="error">
+                        Không thể tải thông tin lịch hẹn. Vui lòng kiểm tra trong mục "Lịch hẹn của tôi".
                     </Typography>
-                )} */}
+                )}
+
+                <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ mt: 4 }}
+                    onClick={() => navigate('/')}
+                >
+                    Trở về trang chủ
+                </Button>
             </Box>
         </UserLayout>
     );

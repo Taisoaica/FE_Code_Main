@@ -50,29 +50,21 @@ const ClinicInfo = ({ logoUpdated }: ClinicInfoProps) => {
   const [images, setImages] = useState<string[]>([]);
   const [carouselImages, setCarouselImages] = useState([]);
 
-  const ownerId = localStorage.getItem('id');
+
+  const clinic = localStorage.getItem('clinic');
+  const clinicId = clinic ? JSON.parse(clinic).id : null;
 
   useEffect(() => {
 
     const fetchClinicInfo = async () => {
       try {
-        const { content } = await getAllClinics('', 100, 1);
-
-        const ownerClinic = content.find(clinic => clinic.ownerId.toString() === ownerId);
-
-        if (ownerClinic) {
-          const clinicId: number = ownerClinic.id;
-          localStorage.setItem('clinicId', clinicId.toString());
-          const data = await getClinicGeneralInfo(clinicId);
-          if (data) {
-            setClinicInfo(data);
-            setTextAreaContent(data.description);
-            setEditorData(data.description);
-          }
-        } else {
-          console.error('No clinic found for this owner.');
+        if (!clinicId) return;
+        const data = await getClinicGeneralInfo(clinicId);
+        if (data) {
+          setClinicInfo(data);
+          setTextAreaContent(data.description);
+          setEditorData(data.description);
         }
-
       } catch (error) {
         console.error(error);
       }
@@ -82,25 +74,24 @@ const ClinicInfo = ({ logoUpdated }: ClinicInfoProps) => {
   }, []);
 
   useEffect(() => {
-    const clinicId = localStorage.getItem('clinicId');
-    const fetchImages = async (folderName: string) => {
-      const folderPath = `clinics/${clinicId}/${folderName}/`;
-      console.log(folderPath);
-      try {
-        const imageUrls = await fetchClinicImages(folderPath);
-        if (folderName === 'carousel') {
-          setImages(imageUrls);
-        } else if (folderName === 'logo') {
+    if (clinicId) {
+      const fetchImages = async (folderName: string) => {
+        const folderPath = `clinics/${clinicId}/${folderName}/`;
+        try {
+          const imageUrls = await fetchClinicImages(folderPath);
+          if (folderName === 'carousel') {
+            setImages(imageUrls);
+          } else if (folderName === 'logo') {
 
-          setLogo(imageUrls[0]);
+            setLogo(imageUrls[0]);
+          }
+        } catch (error) {
+          console.error(`Error fetching images from ${folderName}:`, error);
         }
-      } catch (error) {
-        console.error(`Error fetching images from ${folderName}:`, error);
-      }
-    };
-
-    fetchImages('carousel');
-    fetchImages('logo');
+      };
+      fetchImages('carousel');
+      fetchImages('logo');
+    }
   }, [logoUpdated]);
 
 

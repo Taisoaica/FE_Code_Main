@@ -101,12 +101,15 @@ const ServicesInformation = () => {
     const [open, setOpen] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [serviceList, setServiceList] = useState<ClinicServiceInfoModel[]>([]);
+    const clinic = localStorage.getItem('clinic');
+    const clinicId = clinic ? JSON.parse(clinic).id : 0;
+
     const [formData, setFormData] = useState<ClinicServiceRegistrationModel>({
         serviceCategory: 0,
         serviceName: '',
-        serviceDescription: '',
+        serviceDescription: "",
         servicePrice: 0,
-        clinicId: 1,
+        clinicId: clinicId,
     });
     const [categories, setCategories] = useState<ClinicServiceCategoryModel[]>([]);
 
@@ -122,7 +125,6 @@ const ServicesInformation = () => {
 
     const handleEditorChange = (event: any, editor: { getData: () => any }) => {
         const data = editor.getData();
-        console.log(data);
         setEditorData(data);
     };
 
@@ -139,32 +141,28 @@ const ServicesInformation = () => {
         navigate(`./${service.clinicServiceId}}`);
     }
 
+    const fetchClinicServices = async () => {
+        try {
+            const services = await getClinicServices(clinicId);
+            setServiceList(services);
+        } catch (error) {
+            console.error('Failed to fetch clinic services:', error);
+        }
+    };
+
+    const fetchCategories = async () => {
+        try {
+            const categories = await getAllCategories();
+            setCategories(categories);
+        } catch (error) {
+            console.error('Failed to fetch categories:', error);
+        }
+    };
+
     useEffect(() => {
-        // Fetch clinic services on component mount
-        const fetchClinicServices = async () => {
-            try {
-                const services = await getClinicServices(1); // Replace with your clinicId
-                setServiceList(services);
-            } catch (error) {
-                console.error('Failed to fetch clinic services:', error);
-                // Handle error state or display error message
-            }
-        };
-
-        // Fetch categories on component mount
-        const fetchCategories = async () => {
-            try {
-                const categories = await getAllCategories();
-                setCategories(categories);
-            } catch (error) {
-                console.error('Failed to fetch categories:', error);
-                // Handle error state or display error message
-            }
-        };
-
         fetchClinicServices();
         fetchCategories();
-    }, []); // Empty dependency array means it runs once on mount
+    }, []);
 
     const toggleModal = () => {
         setModalOpen(!modalOpen);
@@ -177,22 +175,30 @@ const ServicesInformation = () => {
 
     const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const category = parseInt(e.target.value);
-        console.log(category);
         setFormData({ ...formData, serviceCategory: category });
     };
 
     const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            await addClinicService(formData);
-            const updatedServices = await getClinicServices(1);
+            const updatedFormData = { ...formData, serviceDescription: textAreaContent, clinicId: clinicId};
+            await addClinicService(updatedFormData);
+            const updatedServices = await getClinicServices(clinicId);
             setServiceList(updatedServices);
             toggleModal();
+            setFormData({
+                serviceCategory: 0,
+                serviceName: '',
+                serviceDescription: "",
+                servicePrice: 0,
+                clinicId: clinicId,
+            });
+            setTextAreaContent('');
         } catch (error) {
             console.error('Failed to add service:', error);
-            // Handle error state or display error message
         }
     };
+    
 
     const toggleDrawer = () => {
         setOpen(!open);
@@ -328,16 +334,17 @@ const ServicesInformation = () => {
                                         onDoubleClick={handleInputDoubleClick}
                                     />
                                 </FormGroup>
-                                <Button type="submit" color="primary">
-                                    Lưu
-                                </Button>
+                                <div className={styles.buttonContainer}>
+                                    <Button type="submit" color="primary" className="submit-button">
+                                        Lưu
+                                    </Button>
+                                    <Button type="button" color="secondary" onClick={toggleModal} className="cancel-button">
+                                        Hủy
+                                    </Button>
+                                </div>
+
                             </form>
                         </ModalBody>
-                        <ModalFooter>
-                            <Button color="secondary" onClick={toggleModal}>
-                                Hủy
-                            </Button>
-                        </ModalFooter>
                     </Modal>
 
                     <Dialog

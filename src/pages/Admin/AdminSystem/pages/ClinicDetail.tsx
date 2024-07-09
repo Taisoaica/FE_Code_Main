@@ -120,7 +120,6 @@ const ClinicDetail = () => {
         if (clinicInfo && clinicInfo.status !== 'verified') {
             try {
                 await verifyClinicStatus(clinicInfo.id);
-                // Refresh the clinic info or navigate to another page if needed
                 setClinicInfo({ ...clinicInfo, status: 'verified' });
             } catch (error) {
                 setError(`Error verifying clinic status: ${error}`);

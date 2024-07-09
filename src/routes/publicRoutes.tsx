@@ -16,6 +16,7 @@ import ErrorPage from '../pages/ErrorPage/ErrorPage';
 import SuccessPage from '../pages/SuccessPage/SuccessPage';
 import ForOwner from '../pages/ForOwner/ForOwner';
 import Guide from '../pages/Guide/Guide';
+import SuccessPageWrapper from '../pages/SuccessPage/SuccessPageWrapper';
 
 
 export const publicRoutes = [
@@ -28,15 +29,9 @@ export const publicRoutes = [
     { path: "/login", element: < LoginMUI /> },
     { path: "/signup", element: <SignUpMUI /> },
     { path: "/error404", element: <ErrorPage /> },
-    { path: "/success", element: <SuccessPage /> },
+    { path: "/success", element: <SuccessPageWrapper /> },
     { path: "/chat", element: <Chat /> },
     { path: "/guide", element: <Guide /> },
 
     //{ path: "/login-google", element: <GoogleLogin />,
-    // { path: "/user/payment", element: <UserPayment /> },
-    // { path: "/user/profile", element: <UserProfile /> },
-    // { path: "/user/account", element: <UserAccount /> },
-    { path: '/admin/clinic-owner', element: <AdminClinicPage /> },
-    { path: '/admin/clinic-owner/appointment', element: <AppointmentSchedule /> },
-    { path: '/admin/clinic-owner/clinic', element: <ClinicInformation /> },
 ]

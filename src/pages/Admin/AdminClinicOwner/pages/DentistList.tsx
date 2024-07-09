@@ -9,7 +9,6 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./DentistList.module.css";
 
 import { useEffect, useState } from "react";
@@ -18,7 +17,8 @@ import Box from "@mui/material/Box";
 import { Button, FormGroup, Label, Input, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { DentistRegistrationModel } from "../../../../utils/api/ClinicOwnerUtils";
 import { DentistInfoViewModel } from "../../../../utils/api/BookingRegister";
-import { fetchClinicStaff, registerDentist } from "../../../../utils/api/ClinicOwnerUtils";
+import { fetchClinicStaff, registerDentist, activateDentist, deactivateDentist } from "../../../../utils/api/ClinicOwnerUtils";
+import Tooltip from "../components/Tooltip";
 
 const drawerWidth: number = 270;
 
@@ -86,19 +86,18 @@ const DentistList = () => {
         email: '',
     });
 
+    const loadStaff = async () => {
+        try {
+            const data = await fetchClinicStaff();
+            setStaff(data.filter(user => !user.isOwner));
+        } catch (error) {
+            setError('Failed to fetch staff data');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const loadStaff = async () => {
-            try {
-                const data = await fetchClinicStaff();
-                setStaff(data.filter(user => !user.isOwner));
-            } catch (error) {
-                setError('Failed to fetch staff data');
-            } finally {
-                setLoading(false);
-            }
-        };
-
         loadStaff();
     }, []);
 
@@ -137,22 +136,44 @@ const DentistList = () => {
                 password: '',
                 email: ''
             });
-            toggleModal(); // Close the modal
+            toggleModal();
+            loadStaff();
         } catch (error) {
             console.error('Failed to register dentist:', error);
         }
     };
 
+    const handleStatusChange = async (dentistId: number, isActive: boolean) => {
+        if (isActive) {
+            const response = await deactivateDentist(dentistId);
+            if (response.statusCode === 200) {
+                alert('Deactivated successfully');
+            }
+        } else {
+            const response = await activateDentist(dentistId);
+            if (response.statusCode === 200) {
+                alert('Activated successfully');
+            }
+        }
+        loadStaff();
+    }
 
-    const toggleModal = () => setModalOpen(!modalOpen);
-
+    const toggleModal = () => {
+        setNewDentist({
+            username: '',
+            fullname: '',
+            password: '',
+            email: '',
+        })
+        setModalOpen(!modalOpen);
+    }
     return (
         <ThemeProvider theme={defaultTheme}>
             <Box sx={{ display: "flex" }}>
                 <AppBar position="absolute" open={open}>
                     <Toolbar
                         sx={{
-                            pr: "24px", // keep right padding when drawer closed
+                            pr: "24px",
                         }}
                     >
                         <IconButton
@@ -192,9 +213,6 @@ const DentistList = () => {
                         </IconButton>
                     </Toolbar>
                     <Divider />
-                    {/* <List component="nav">
-                        {mainListItems}
-                    </List> */}
                     <NestedListItems />
                 </Drawer>
                 <Box
@@ -214,18 +232,6 @@ const DentistList = () => {
                         <div className={styles.tableContainer}>
                             <div className={styles.tableHeader}>Danh sách nha sĩ</div>
                             <div className={styles.toolbar}>
-                                {/* <div className={styles.searchbar}>
-                                    <input
-                                        type="text"
-                                        placeholder="Tìm kiếm người dùng"
-                                        className={styles.searchInput}
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                    />
-                                    <button className={styles.searchButton} onClick={handleSearch}>
-                                        Tìm kiếm
-                                    </button>
-                                </div> */}
                                 <Button
                                     onClick={toggleModal}
                                     color="primary"
@@ -244,7 +250,12 @@ const DentistList = () => {
                                         <th style={{ width: '15%' }}>Ngày tạo</th>
                                         <th style={{ width: '10%' }}>Email</th>
                                         <th style={{ width: '10%' }}>Phone</th>
-                                        <th style={{ width: '25%' }}>Trạng thái</th>
+                                        <th style={{ width: '25%' }}>
+                                            Trạng thái
+                                            <Tooltip message="Ấn để cập nhật trạng thái của nha sĩ">
+                                                <span className={styles.infoIcon}>!</span>
+                                            </Tooltip>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -268,6 +279,7 @@ const DentistList = () => {
                                                 <td>
                                                     <Button
                                                         className={user.isActive ? styles.confirmedButton : styles.unconfirmedButton}
+                                                        onClick={() => handleStatusChange(user.dentistId, user.isActive)}
                                                     >
                                                         {user.isActive ? 'Hoạt động' : 'Ngừng hoạt động'}
                                                     </Button>

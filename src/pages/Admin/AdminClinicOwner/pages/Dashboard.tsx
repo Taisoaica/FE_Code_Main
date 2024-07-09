@@ -24,6 +24,9 @@ import ClinicInfo from "../components/ClinicInfo/ClinicInfo";
 import { useEffect, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import { NestedListItems } from "../components/NestedListMenu";
+import { getAllClinics } from "../../../../utils/api/SystemAdminUtils";
+import { DentistInfoViewModel } from "../../../../utils/api/BookingRegister";
+import { fetchClinicStaff } from "../../../../utils/api/ClinicOwnerUtils";
 
 const drawerWidth: number = 270;
 
@@ -79,29 +82,53 @@ const Dashboard = () => {
   const [open, setOpen] = useState(true);
   const calendarRef = useRef<FullCalendar>(null);
   const [fullname, setFullname] = useState('');
+  const [clinicOpenHour, setClinicOpenHour] = useState('');
+  const [clinicCloseHour, setClinicCloseHour] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [staff, setStaff] = useState<DentistInfoViewModel[]>();
+
 
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
+  const ownerId = localStorage.getItem('id');
   useEffect(() => {
-    if (calendarRef.current) {
-      const api = calendarRef.current.getApi();
+    const fetchData = async () => {
+      try {
+        const { content } = await getAllClinics(1, 100, '');
 
-      api.updateSize();
+        const ownerClinic = content.find(clinic => clinic.ownerId.toString() === ownerId);
+        if (ownerClinic) {
+          localStorage.setItem('clinic', JSON.stringify(ownerClinic));
+          setClinicOpenHour(ownerClinic.openHour);
+          setClinicCloseHour(ownerClinic.closeHour);
+        } else {
+          console.error('No clinic found for the given ownerId');
+        }
 
-      api.view.calendar.updateSize();
-    }
-  }, [open]);
+        // const userDetails = localStorage.getItem('userDetails');
+        // if (userDetails) {
+        //   const user = JSON.parse(userDetails);
+        //   setFullname(user.fullname);
+        // } else {
+        //   console.error('No userDetails found in local storage');
+        // }
 
-  useEffect(() => {
-    const userDetails = localStorage.getItem('userDetails');
-    if (userDetails) {
-      const user = JSON.parse(userDetails);
-      setFullname(user.fullname);
-    }
-  }, []);
+        const data = await fetchClinicStaff();
+        setStaff(data.filter(user => !user.isOwner && user.isActive));
 
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching clinics or user details:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [ownerId]);
+
+  console.log(staff, 'Hi')
   return (
     <Box sx={{ display: "flex", height: '100%' }}>
       <AppBar position="absolute" open={open}>
@@ -155,51 +182,110 @@ const Dashboard = () => {
               : theme.palette.grey[900],
           flexGrow: 1,
           marginTop: 5.5,
-          height: '100%',
-          color: '#0d47a1',
-          background: 'linear-gradient(to left, #e3f2fd, #f8fbff)',
+          minHeight: "100vh",
+          overflow: "auto",
         }}
       >
         <div className={styles.mainContainer} >
+          <div className={styles.greeting}>
+            <h1>Xin chào {fullname}</h1>
+            <div>
+              Chào mừng bạn trở lại! Dưới đây là tổng quan nhanh về các hoạt động và số liệu thống kê của phòng khám của bạn.
+            </div>
+          </div>
 
-          <h1 className={styles.greeting}>Xin chào {fullname}</h1>
-          {/* <Scheduler calendarRef={calendarRef} /> */}
-          <div className={styles.main}>
+          <Divider sx={{
+            margin: '20px auto',
+            width: '90%',
+            borderBottomWidth: 2,
+            backgroundColor: 'black'
+          }} />
+
+          <div className={styles.contentWrapper}>
             <Box className={styles.content1}>
               <Box>
-                <Box className={styles.imageBox}>
-                  <img src="/icon/hospital.png" alt="placeholder" />
-                </Box>
                 <Box sx={{ fontSize: '22px', fontWeight: 700 }}>
-                  Quản lí phòng khám
+                  Lịch hẹn trong tuần này
                 </Box>
                 <Box sx={{ fontSize: '20px' }}>
-                  Đầy đủ các tính năng:  quản lí lịch hẹn, bệnh nhân, bác sĩ, dịch vụ, slot khám, ...
+                  5 lịch hẹn
                 </Box>
               </Box>
               <Box>
-                <Box>
-                  <img src="/icon/folder.png" alt="placeholder" />
-                </Box>
                 <Box sx={{ fontSize: '22px', fontWeight: 700 }}>
-                  Bảo mật thông tin
+                  Lịch hẹn đã hoàn thành
                 </Box>
                 <Box sx={{ fontSize: '20px' }}>
-                  Cam kết bảo mật theo hạ tầng ISO 27001:2013, đạo luật HIPAA, thành viên VNISA.
+                  15 lịch hẹn
                 </Box>
               </Box>
               <Box>
-                <Box>
-                  <img src="/icon/folder.png" alt="placeholder" />
-                </Box>
                 <Box sx={{ fontSize: '22px', fontWeight: 700 }}>
-                  Bảo mật thông tin
+                  Lịch hẹn đã hủy
                 </Box>
                 <Box sx={{ fontSize: '20px' }}>
-                  Cam kết bảo mật theo hạ tầng ISO 27001:2013, đạo luật HIPAA, thành viên VNISA.
+                  2 lịch hẹn
                 </Box>
               </Box>
             </Box>
+
+            {/* <Box className={styles.annualAppointments}>
+              <Box sx={{ fontSize: '22px', fontWeight: 700, marginBottom: '10px' }}>
+                Yêu cầu đặt lịch hẹn định kỳ
+              </Box>
+              <ul className={styles.annualAppointmentsList}>
+                <li>
+                  <span className={styles.appointmentService}>Khám Răng Định Kỳ</span>
+                  <span className={styles.appointmentDetails}>Lặp lại mỗi 2 tháng</span>
+                </li>
+                <li>
+                  <span className={styles.appointmentService}>Tẩy Trắng Răng Định Kỳ</span>
+                  <span className={styles.appointmentDetails}>Lặp lại mỗi 3 tháng</span>
+                </li>
+                <li>
+                  <span className={styles.appointmentService}>Nhổ Răng Khôn Định Kỳ</span>
+                  <span className={styles.appointmentDetails}>Lặp lại mỗi 6 tháng</span>
+                </li>
+                <li>
+                  <span className={styles.appointmentService}>Nhổ Răng Khôn Định Kỳ</span>
+                  <span className={styles.appointmentDetails}>Lặp lại mỗi 6 tháng</span>
+                </li>
+                <li>
+                  <span className={styles.appointmentService}>Nhổ Răng Khôn Định Kỳ</span>
+                  <span className={styles.appointmentDetails}>Lặp lại mỗi 6 tháng</span>
+                </li>
+              </ul>
+            </Box>
+
+            <Box className={styles.topServices}>
+              <Box sx={{ fontSize: '22px', fontWeight: 700, marginBottom: '10px' }}>
+                Dịch vụ được đặt nhiều nhất
+              </Box>
+              <ul className={styles.servicesList}>
+                <li>
+                  <span className={styles.serviceName}>Khám Răng</span>
+                  <span className={styles.serviceCount}>25 khách</span>
+                </li>
+                <li>
+                  <span className={styles.serviceName}>Tẩy Trắng Răng</span>
+                  <span className={styles.serviceCount}>18 khách</span>
+                </li>
+                <li>
+                  <span className={styles.serviceName}>Nhổ Răng Khôn</span>
+                  <span className={styles.serviceCount}>15 khách</span>
+                </li>
+              </ul>
+            </Box> */}
+
+            <div className={styles.calendarContainer}>
+              <Divider sx={{
+                margin: '20px auto',
+                width: '100%',
+                borderBottomWidth: 2,
+                backgroundColor: 'black'
+              }} />
+              {loading ? <p>Loading....</p> : <Scheduler openHour={clinicOpenHour} closeHour={clinicCloseHour} availableStaff={staff} />}
+            </div>
           </div>
         </div>
       </Box>

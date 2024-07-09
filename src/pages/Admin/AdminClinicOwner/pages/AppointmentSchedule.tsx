@@ -13,101 +13,18 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems } from "../components/listItems";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import styles from "./AppointmentSchedule.module.css";
 import BookingDialog from "./BookingDialog";
 import { NestedListItems } from "../components/NestedListMenu";
-
-const mockBookings = [
-  
-  {
-    bookingId: 'BK001',
-    customer: 'Nguyễn Văn A',
-    doctor: 'Dr. Nguyễn Thị B',
-    appointmentDate: '2024-06-25',
-    slotStartTime: '09:00 AM',
-    createdAt: '2024-06-20',
-    service: 'Tẩy trắng răng',
-    status: 'Đang chờ xác nhận',
-  },
-  {
-    bookingId: 'BK002',
-    customer: 'Trần Thị C',
-    doctor: 'Dr. Lê Văn D',
-    appointmentDate: '2024-06-26',
-    slotStartTime: '10:30 AM',
-    createdAt: '2024-06-21',
-    service: 'Lấy cắp mô nha chu',
-    status: 'Đã xác nhận',
-  },
-  {
-    bookingId: 'BK003',
-    customer: 'Phạm Văn E',
-    doctor: 'Dr. Nguyễn Thị B',
-    appointmentDate: '2024-06-27',
-    slotStartTime: '02:00 PM',
-    createdAt: '2024-06-22',
-    service: 'Chữa viêm lợi',
-    status: 'Đã hoàn thành',
-  },
-  {
-    bookingId: 'BK004',
-    customer: 'Lê Thị F',
-    doctor: 'Dr. Lê Văn D',
-    appointmentDate: '2024-06-28',
-    slotStartTime: '08:30 AM',
-    createdAt: '2024-06-23',
-    service: 'Niềng răng',
-    status: 'Đã hủy',
-  },
-];
-
-const mockDentists = [
-  {
-    dentistId: 'D001',
-    name: 'Dr. Nguyễn Thị B',
-    appointmentsToday: 5,
-    status: 'Hoạt động',
-  },
-  {
-    dentistId: 'D002',
-    name: 'Dr. Lê Văn D',
-    appointmentsToday: 3,
-    status: 'Xin vắng',
-  },
-  {
-    dentistId: 'D003',
-    name: 'Dr. Trần Văn E',
-    appointmentsToday: 7,
-    status: 'Hoạt động',
-  },
-  {
-    dentistId: 'D004',
-    name: 'Dr. Phạm Thị F',
-    appointmentsToday: 2,
-    status: 'Xin vắng',
-  },
-];
-
-const suggestedCheckups = [
-  {
-    patient: 'Nguyễn Văn A',
-    date: '2024-06-25',
-    doctor: 'Dr. Nguyễn Thị B',
-    startTime: '09:00 AM',
-    suggestedSchedule: 'Đề xuất 6 tháng/lần',
-    status: 'Đang chờ xác nhận',
-  },
-  {
-    patient: 'Trần Thị C',
-    date: '2024-06-26',
-    doctor: 'Dr. Lê Văn D',
-    startTime: '10:30 AM',
-    suggestedSchedule: 'Đề xuất 1 năm/lần',
-    status: 'Đã xác nhận',
-  },
-];
+import { getAllCustomer, getAllDentist, getAllUsers, UserInfoModel } from "../../../../utils/api/SystemAdminUtils";
+import { fetchClinicStaff } from "../../../../utils/api/ClinicOwnerUtils";
+import { getClinicAppointments, AppointmentViewModel, getAllClinicSlots } from "../../../../utils/api/ClinicOwnerUtils";
+import { ClinicSlotInfoModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
+import { Button } from "reactstrap";
+import { DentistInfoViewModel } from "../../../../utils/api/BookingRegister";
+import { slots } from "../../data";
 
 const drawerWidth: number = 270;
 
@@ -165,52 +82,138 @@ export default function AppointmentSchedule() {
     setOpen(!open);
   };
 
-  const navigator = useNavigate();
+  const clinic = localStorage.getItem('clinic');
+  const clinicId = clinic ? JSON.parse(clinic).id : null;
+  
+  // const [fromDate, setFromDate] = useState<Date>();
+  // const [toDate, setToDate] = useState<Date>();
+  // const [fromTime, setFromTime] = useState<string>('');
+  // const [toTime, setToTime] = useState<string>('');
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageIndex, setPageIndex] = useState<number>(1);
+  const [isFiltering, setIsFiltering] = useState<boolean>(false);
 
+  const [appointmentsWithTimes, setAppointmentsWithTimes] = useState<AppointmentViewModel[]>([]);
+  const [users, setUsers] = useState<{ [key: number]: UserInfoModel }>({});
+  const [dentists, setDentists] = useState<{ [key: number]: UserInfoModel }>({});
+  const [clinicSlots, setClinicSlots] = useState<ClinicSlotInfoModel[][]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [selectedBooking, setSelectedBooking] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  //----------------------------------------------------------------------
-
-  //----------------------------------------------------------------------
-  //Action handlers
-  const handleStatusButtonClick = (booking: React.SetStateAction<null>) => {
-    setSelectedBooking(booking);
-    setIsDialogOpen(true);
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    return `${hours}:${minutes}`;
   };
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
-  function getStatusStyle(status: string) {
+  const formatDateToSend = (date: Date) => {
+    return date.toLocaleDateString("en-US");
+  }
+
+  const getStatusText = (status: string) => {
     switch (status) {
-      case 'Hoạt động':
-        return styles.active;
-      case 'Xin vắng':
-        return styles.inactive;
-      case 'Đang chờ xác nhận':
-        return styles.waiting;
-      case 'Đã xác nhận':
-        return styles.confirmed;
-      case 'Đã hoàn thành':
+      case 'booked':
+        return 'Đã đặt lịch';
+      case 'pending':
+        return 'Đang chờ xác nhận';
+      case 'completed':
+        return 'Đã hoàn thành';
+      default:
+        return status;
+    }
+  }
+
+  const statusClass = (appointment: AppointmentViewModel) => {
+    switch (appointment.status) {
+      case 'booked':
+        return styles.booked;
+      case 'pending':
+        return styles.pending;
+      case 'completed':
         return styles.completed;
-      case 'Đã hủy':
-        return styles.cancelled;
       default:
         return '';
     }
   }
 
+  const onFilter = () => { 
+    setIsFiltering(!isFiltering);
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchedSlots = await getAllClinicSlots(clinicId);
+        setClinicSlots(fetchedSlots);
+
+        // const defaultFromDate = fromDate || new Date();
+        // const defaultToDate = toDate || new Date();
+        // defaultToDate.setFullYear(defaultToDate.getFullYear() + 1);
+
+        const fetchedAppointments = await getClinicAppointments(
+          clinicId,
+          // formatDateToSend(defaultFromDate), 
+          // formatDateToSend(defaultToDate),
+        );
+
+
+        const appointmentsWithSlotTimes = fetchedAppointments.map(appointment => {
+          const matchingSlot = fetchedSlots.flat().find(slot => slot.clinicSlotId === appointment.clinicSlotId);
+          return {
+            ...appointment,
+            slotStartTime: matchingSlot?.startTime,
+            slotEndTime: matchingSlot?.endTime
+          };
+        });
+
+        setAppointmentsWithTimes(appointmentsWithSlotTimes);
+        const allUsers = await getAllUsers();
+        const allDentists = await getAllDentist();
+
+        const userLookup = allUsers.reduce((acc, user) => {
+          acc[user.id] = user;
+          return acc;
+        }, {} as { [key: number]: UserInfoModel });
+
+        const dentistLookup = allDentists.reduce((acc, dentist) => {
+          acc[dentist.dentistId] = dentist;
+          return acc;
+        }, {} as { [key: number]: UserInfoModel });
+
+        setUsers(userLookup);
+        setDentists(dentistLookup);
+
+      } catch (error) {
+        setError('Failed to fetch data.');
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    console.log("Is request")
+    fetchData();
+  }, [isFiltering]);
+
+
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="absolute" open={open}>
-        <Toolbar
-          sx={{
-            pr: "24px", // keep right padding when drawer closed
-          }}
-        >
+        <Toolbar sx={{ pr: "24px" }}>
           <IconButton
             edge="start"
             color="inherit"
@@ -248,7 +251,6 @@ export default function AppointmentSchedule() {
           </IconButton>
         </Toolbar>
         <Divider />
-        {/* <List component="nav">{mainListItems}</List> */}
         <NestedListItems />
       </Drawer>
       <Box
@@ -259,145 +261,72 @@ export default function AppointmentSchedule() {
               ? theme.palette.grey[100]
               : theme.palette.grey[900],
           flexGrow: 1,
-          height: "100%",
-          marginTop: 8,
+          height: "100vh",
+          marginTop: 5.5,
+          overflow: "auto",
         }}
       >
         <Box className={styles.mainContainer}>
-          <div className={styles.content}>
-            <div className={styles.tableContainer}>
-              <div className={styles.title}>Danh sách lịch hẹn</div>
-              <Box className={styles.toolbar}>
-                <Box className={styles.searchbar}>
-                  <input type="text" placeholder="Tìm kiếm tên người dùng" className={styles.searchInput} />
-                  <button className={styles.searchButton}>Tìm kiếm</button>
-                </Box>
-                <Box className={styles.utilities}>
-                  <select className={styles.filterSelect}>
-                    <option value="">Filter</option>
-                    <option value="role1">Role 1</option>
-                    <option value="role2">Role 2</option>
-                  </select>
-
-                </Box>
-              </Box>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Booking ID</th>
-                    <th>Khách hàng</th>
-                    <th>Bác sĩ</th>
-                    <th>Ngày hẹn</th>
-                    <th>Slot(thời gian bắt đầu)</th>
-                    <th>Ngày tạo</th>
-                    <th>Dịch vụ</th>
-                    <th>
-                      <Box className={styles.tooltip}>
-                        Trạng thái
-                        <span className={styles.tooltiptext}>Nhấn để cập nhật trạng thái</span>
-                        <span className={styles.tooltipicon}>!</span>
-                      </Box>
-                    </th>
+          <div className={styles.tableContainer}>
+            <h2 className={styles.title}>Danh sách lịch hẹn</h2>
+            {/* <Box className={styles.toolbar}>
+              <input
+                type="date"
+                value={fromDate?.toISOString().split('T')[0] || ''}
+                onChange={(e) => setFromDate(new Date(e.target.value))}
+              />
+              <input
+                type="date"
+                value={toDate?.toISOString().split('T')[0] || ''}
+                onChange={(e) => setToDate(new Date(e.target.value))}
+              />
+              <input
+                type="time"
+                value={fromTime}
+                onChange={(e) => setFromTime(e.target.value)}
+              />
+              <input
+                type="time"
+                value={toTime}
+                onChange={(e) => setToTime(e.target.value)}
+              />
+             
+              <button onClick={() => onFilter()}>Áp dụng bộ lọc</button>
+            </Box> */}
+            {loading && <div>Loading...</div>}
+            {error && <div>{error}</div>}
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Khách hàng</th>
+                  <th>Bác sĩ</th>
+                  <th>Ngày hẹn</th>
+                  <th>Slot</th>
+                  <th>Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody>
+                {appointmentsWithTimes.map((appointment: AppointmentViewModel) => (
+                  <tr key={appointment.id} className={styles.tableRow}>
+                    <td>{users[appointment.customerId]?.fullname}</td>
+                    <td>{dentists[appointment.dentistId]?.fullname}</td>
+                    <td>{formatDate(appointment.appointmentDate)}</td>
+                    {/* <td>{formatTime(appointment.slotStartTime)} - {formatTime(appointment.slotEndTime)}</td> */}
+                    <td>{formatTime(appointment.slotStartTime)} - {formatTime(appointment.slotEndTime)}</td>
+                    <td>
+                      <Button className={`${styles.status} ${statusClass(appointment)}`}>
+                        {getStatusText(appointment.status)}
+                      </Button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {mockBookings.map((booking: any) => (
-                    <tr key={booking.bookingId} className={styles.tableRow} >
-                      <td>{booking.bookingId}</td>
-                      <td>{booking.customer}</td>
-                      <td>{booking.doctor}</td>
-                      <td>{booking.appointmentDate}</td>
-                      <td>{booking.slotStartTime}</td>
-                      <td>{booking.createdAt}</td>
-                      <td>{booking.service}</td>
-                      <td>
-                        <button className={`${styles.statusButton} ${getStatusStyle(booking.status)}`}
-                          onClick={() => handleStatusButtonClick(booking)}
-                        >
-                          {booking.status}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className={styles.row2}>
-              <div className={styles.column1}>
-                <div className={styles.tableContainer}>
-                  <div className={styles.title}>Danh sách nha sĩ</div>
-                  <table className={styles.table}>
-                    <thead>
-                      <tr>
-                        <th>Nha sĩ ID</th>
-                        <th>Tên</th>
-                        <th>Số lịch hẹn hôm nay</th>
-                        <th>
-                          <Box className={styles.tooltip}>
-                            Trạng thái
-                            <span className={styles.tooltiptext}>Nhấn để cập nhật trạng thái</span>
-                            <span className={styles.tooltipicon}>!</span>
-                          </Box>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {mockDentists.map((dentist: any) => (
-                        <tr key={dentist.dentistId} className={styles.tableRow} >
-                          <td>{dentist.dentistId}</td>
-                          <td>{dentist.name}</td>
-                          <td>{dentist.appointmentsToday}</td>
-                          <td>
-                            <button className={`${styles.statusButton} ${getStatusStyle(dentist.status)}`}>
-                              {dentist.status}
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <div className={styles.column2}>
-                <div className={styles.tableContainer}>
-                  <div className={styles.title}>Đề xuất lịch khám định kì</div>
-                  <table className={styles.table}>
-                    <thead>
-                      <tr>
-                        <th>Bệnh nhân</th>
-                        <th>Ngày lên lịch</th>
-                        <th>Bác sĩ</th>
-                        <th>Thời gian bắt đầu</th>
-                        <th>Đề xuất lịch khám</th>
-                        <th>
-                          <Box className={styles.tooltip}>
-                            Trạng thái
-                            <span className={styles.tooltiptext}>Nhấn để cập nhật trạng thái</span>
-                            <span className={styles.tooltipicon}>!</span>
-                          </Box>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {suggestedCheckups.map((checkup, index) => (
-                        <tr key={index}>
-                          <td>{checkup.patient}</td>
-                          <td>{checkup.date}</td>
-                          <td>{checkup.doctor}</td>
-                          <td>{checkup.startTime}</td>
-                          <td>{checkup.suggestedSchedule}</td>
-                          <td>
-                            <button className={`${styles.statusButton} ${getStatusStyle(checkup.status)}`}>
-                              {checkup.status}
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+                ))}
+              </tbody>
+            </table>
+            {/* <Box className={styles.pagination}>
+              <button onClick={() => { setPageIndex(prev => Math.max(1, prev - 1)); }}>Trang trước</button>
+              <span>Trang {pageIndex}</span>
+              <button onClick={() => { setPageIndex(prev => prev + 1); }}>Trang sau</button>
+            </Box> */}
           </div>
         </Box>
       </Box>

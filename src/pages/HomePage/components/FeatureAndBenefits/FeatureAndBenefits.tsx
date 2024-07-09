@@ -23,7 +23,7 @@ const features = [
 const FeaturesAndBenefits = () => {
     return (
         <Container>
-            <Box sx={{ textAlign: 'center', fontSize: '38px', fontWeight: 700 }}>
+            <Box sx={{ textAlign: 'center', fontSize: '38px', fontWeight: 800, marginBottom: '20px' }}>
                 Các tiện ích
             </Box>
             <Grid container spacing={3}>

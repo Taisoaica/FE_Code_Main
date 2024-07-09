@@ -3,17 +3,55 @@
     background: linear-gradient(to left, #e3f2fd, #f8fbff);
     padding-top: 20px;
     color: #0d47a1;
-    width: auto;
     overflow: auto;
+    display: flex;
+    justify-content: space-between;
 }
 
+.tableContainer {
+    width: 95%;
+    height: fit-content;
+    gap: 10px;
+    margin: 20px auto 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.tableContainer table tbody tr {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.tableContainer table tbody tr:hover {
+    background-color: #e3f2fd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tableContainer table tbodt tr:active {
+    background-color: #bbdefb;
+}
+
+.tableHeader {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.tableContainer .MuiButton-contained:hover {
+    opacity: 0.9;
+}
 
 .toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    margin-bottom: 10px;
     background-color: white;
+    padding: 10px;
     border: 3px solid #d3d3d3;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -30,7 +68,6 @@
     border: 2px solid #d3d3d3;
     border-radius: 4px 0 0 4px;
     outline: none;
-
 }
 
 .searchInput:focus {
@@ -51,179 +88,64 @@
     background-color: #1976d2;
 }
 
-.utilities {
-    display: flex;
-    align-items: center;
-}
-
-.filterSelect {
-    padding: 10px;
-    font-size: 16px;
-    border: 2px solid #d3d3d3;
-    border-radius: 4px;
-    margin-right: 10px;
-}
-
-.addButton {
-    padding: 10px 20px;
-    font-size: 16px;
-    border: 2px solid #4caf50;
-    background-color: #4caf50;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.addButton:hover {
-    background-color: #388e3c;
-}
-
-
-.content {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    border-radius: 10px;
-    flex-direction: column;
-    gap: 20px;
-    width: auto;
-}
-
-
-.tableContainer {
-    display: flex;
-    flex-grow: 1;
-    flex-direction: column;
-    gap: 20px;
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-height: 400px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
 .table {
     width: 100%;
     border: 2px solid #d3d3d3;
-    margin-top: 20px;
     border-collapse: collapse;
     background-color: white;
 }
 
-
-
-.tableRow {
-    transition: transform 0.2s ease-in-out;
-}
-
-.tableRow:hover {
-    cursor: pointer;
-    background-color: #e3f2fd;
-    transform: scale(1.005);
+th,
+td {
+    border: 1px solid #0d47a1;
+    padding: 8px;
+    text-align: left !important;
 }
 
 th {
     background-color: #e3f2fd;
 }
-
-.searchContainer {
-    margin-bottom: 20px;
-}
-
-.statusButton {
-    padding: 7px;
-    font-size: 14px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.waiting {
-    background-color: #ffc107;
-    color: #333;
-}
-
-.confirmed {
+/* 
+.confirmedButton {
     background-color: #4caf50;
     color: #fff;
 }
 
-.completed {
-    background-color: #2196f3;
+.confirmedButton:hover {
+    background-color: #388e3c;
+}
+
+.pendingButton{
+    background-color: #ff9800;
     color: #fff;
 }
 
-.cancelled {
+.pendingButton:hover {
+    background-color: #fb8c00;
+    color: #fff;
+}
+
+.unconfirmedButton {
     background-color: #f44336;
     color: #fff;
 }
 
+.unconfirmedButton:hover {
+    background-color: #d32f2f;
+} */
 
-.active {
-    background-color: green;
-    color: white;
-}
 
-.inactive {
-    background-color: gray;
-    color: white;
-}
-
-.tooltip {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-}
-
-.tooltiptext {
-    visibility: hidden;
-    width: 160px;
-    background-color: #555;
+.status.booked {
+    background-color: #007bff;
     color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    position: absolute;
-    z-index: 1;
-    bottom: 150%;
-    left: 50%;
-    margin-left: -80px;
-    opacity: 0;
-    transition: opacity 0.3s;
 }
 
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
+.status.pending {
+    background-color: #ffc107;
+    color: #333;
 }
 
-.tooltipicon {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-    line-height: 24px;
-    text-align: center;
-    border: 2px solid #87CEEB;
-    border-radius: 50%;
-    color: #87CEEB;
-    font-weight: bold;
-    margin-left: 5px;
-}
-
-.row2 {
-    flex: 1;
-    display: flex;
-    gap: 20px;
-    width: 100%;
-}
-
-.column1 {
-    width: 35%;
-}
-
-.column2 {
-    width: 65%;
+.status.completed {
+    background-color: #28a745;
+    color: #fff;
 }

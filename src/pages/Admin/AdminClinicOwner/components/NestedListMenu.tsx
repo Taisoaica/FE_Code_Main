@@ -65,9 +65,9 @@ export const NestedListItems = () => {
                         <CalendarMonthIcon />
                     </ListItemIcon>
                     <ListItemText primary="Quản lí lịch hẹn" />
-                    {open === "Quản lí lịch hẹn" ? <ExpandLess /> : <ExpandMore />}
+                    {/* {open === "Quản lí lịch hẹn" ? <ExpandLess /> : <ExpandMore />} */}
                 </ListItemButton>
-                <Collapse in={open == "Quản lí lịch hẹn"} timeout="auto" unmountOnExit>
+                {/* <Collapse in={open == "Quản lí lịch hẹn"} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         <ListItemButton component={Link} to="./list">
                             <ListItemText primary="Danh sách lịch hẹn" />
@@ -78,7 +78,7 @@ export const NestedListItems = () => {
                             <ListItemText primary="Đề xuất lịch định kì" />
                         </ListItemButton>
                     </List>
-                </Collapse>
+                </Collapse> */}
                 <ListItemButton component={Link} to='/admin/clinic-owner/slots'>
                     <ListItemIcon >
                         <AccessTimeIcon />

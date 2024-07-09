@@ -1,14 +1,9 @@
 import { CheckCircle } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
-
-
-interface clinicService {
-    serviceId: string;
-    serviceName: string;
-}
+import { ClinicServiceInfoModel } from "../../../../utils/api/BookingRegister";
 
 interface ClinicServicesProps {
-    services: clinicService[];
+    services: ClinicServiceInfoModel[];
 }
 
 const ClinicServices = ({ services }: ClinicServicesProps) => {
@@ -16,7 +11,7 @@ const ClinicServices = ({ services }: ClinicServicesProps) => {
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
             {services.map((service, index) => (
                 <Button key={index}
-                    id={service.serviceId}
+                    id={service.clinicServiceId}
                     sx={{
                         whiteSpace: 'nowrap',
                         border: '2px solid #888',
@@ -25,7 +20,7 @@ const ClinicServices = ({ services }: ClinicServicesProps) => {
                         },
                         padding: 1,
                     }} variant="text" startIcon={<CheckCircle />}>
-                    {service.serviceName}
+                    {service.name}
                 </Button>
             ))}
         </Box>

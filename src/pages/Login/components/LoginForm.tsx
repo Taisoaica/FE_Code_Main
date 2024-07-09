@@ -2,7 +2,7 @@ import { Button, Box, Checkbox, Link, Divider, TextField, } from "@mui/material"
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios, { AxiosRequestConfig } from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { connection_path } from "../../../constants/developments";
 import { GoogleLogin } from "@react-oauth/google";
 import * as React from "react";
@@ -19,7 +19,12 @@ const LoginForm = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const redirectPath = queryParams.get('redirect') || '/'; 
-  
+  const [remember, setRemember] = useState(false);
+
+  const handleRemeberChange = (event) => {
+    setRemember(event.target.checked);
+  }
+
   const handleBack = () => {
     navigate('/');
   }
@@ -36,12 +41,10 @@ const LoginForm = () => {
     event.preventDefault();
   };
 
-  
-
   return (
     <Box
       component="form"
-      onSubmit={(event) => handleLogin(event, navigate, redirectPath)}
+      onSubmit={(event) => handleLogin(event, navigate, redirectPath, remember)}
       noValidate
     // className={styles.form}
     >
@@ -91,7 +94,9 @@ const LoginForm = () => {
         <Box className={styles.passwordBox}>
           <FormControlLabel
             control={<Checkbox />}
-            label="Ghi nhớ mật khẩu"
+            label="Ghi nhớ đăng nhập"
+            checked={remember}
+            onChange={handleRemeberChange}
           />
           <Link href="#" variant="body2" sx={{ fontSize: "17px" }}>
             Quên mật khẩu?

@@ -43,7 +43,7 @@
 
 .calendar-two .fc-daygrid-day-frame {
     display: flex;
-    padding: 8px;
+    padding: 2px;
     justify-content: center;
     align-items: center;
 }
@@ -65,7 +65,7 @@
     margin: 0 auto;
     width: 100%;
     padding: 10px;
-    background-color: #f8f9fa;
+    background-color: white;
     border-bottom: 1px solid #dee2e6;
 }
 
@@ -140,7 +140,7 @@
 
 .calendar-two .fc-daygrid-day-frame {
     display: flex;
-    padding: 8px;
+    padding: 2px;
     justify-content: center;
     align-items: center;
 }
@@ -151,15 +151,12 @@
 }
 
 .calendar-two .fc-timegrid-slot-lane {
-    padding: 10px;
+    padding: 8px;
     text-align: left;
 }
-/* 
-.calendar-two.drawer-open .fc-timegrid-slot-lane {
-    background-color: red;
-    width: 100%;
-}
 
-.calendar-two.drawer-closed .fc-timegrid-slot-lane {
-    width: 100%;
+
+/* .calendar-two a {
+    background-color: #fa8072;
+    color: white;
 } */

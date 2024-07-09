@@ -13,16 +13,16 @@ const DentistList = ({ setFormData, onStepComplete }: DentistListProps) => {
     const [dentistList, setDentistList] = useState<DentistInfoViewModel[]>([]);
     const { clinicId } = useParams<{ clinicId: string }>();
 
-    useEffect(() => {
-        const fetchDentists = async () => {
-            try {
-                const dentists = await getAllDentist(`${clinicId}`);
-                setDentistList(dentists);
-            } catch (error) {
-                console.error('Error fetching dentists:', error);
-            }
-        };
+    const fetchDentists = async () => {
+        try {
+            const dentists = await getAllDentist(`${clinicId}`);
+            setDentistList(dentists);
+        } catch (error) {
+            console.error('Error fetching dentists:', error);
+        }
+    };
 
+    useEffect(() => {
         fetchDentists();
     }, []);
 

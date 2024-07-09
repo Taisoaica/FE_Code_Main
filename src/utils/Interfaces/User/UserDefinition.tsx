@@ -79,3 +79,13 @@ export interface UserRegistrationModel {
     clinic?: number | null;
 }
 
+export interface UserInfoModel {
+    id: number;
+    username: string;
+    fullname: string;
+    phone: string;
+    email: string;
+    sex: string;
+    insurance: string;
+    birthdate: string;
+}

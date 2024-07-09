@@ -1,47 +1,50 @@
 .mainContainer {
-    height: 100%;
+    background: linear-gradient(to left, #e3f2fd, #f8fbff);
     padding-top: 20px;
-    color: #0d47a1;
+    color: #37474f;
     overflow: auto;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    font-family: 'Roboto', sans-serif;
+    gap: 10px;
 }
 
 .greeting {
-    border: 3px solid black;
+    width: 90%;
+    margin: 0 auto;
     font-size: 24px;
     font-weight: bold;
-    padding: 20px;
+    color: #0d47a1;
+    padding-top: 20px;
+    padding-bottom: 20px;
     display: flex;
-    flex-grow: 1;
-    justify-self: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    /* Accent color for border */
 }
 
-.main {
-    width: 100%;
+.contentWrapper {
+    width: 90%;
     margin: 0 auto;
-    padding: 30px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.content1 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-rows: repeat(2, .5fr);
     gap: 20px;
 }
 
+.content1 {
+    grid-column: span 3;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
 
 .content1>div {
+    background-color: #ffffff;
     border: 1px solid #ddd;
+    height: 100%;
     border-radius: 8px;
-    display: flex;
-    flex-direction: column;
     padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .content1>div>div {
@@ -49,21 +52,92 @@
     width: 100%;
 }
 
-.content1 img {
-    max-width: 40%;
-    height: auto;
-    margin-bottom: 10px;
+.topServices {
+    grid-column: span 1;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.content1>div:nth-child(1) {
-    background-color: #fff6ed;
+.servicesList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-
-.content1>div:nth-child(2) {
-    background-color: #f4e8ff;
+.servicesList li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
 }
 
-.content1>div:nth-child(3) {
-    background-color: #effff4;
+.servicesList li:last-child {
+    border-bottom: none;
+}
+
+.serviceName {
+    font-size: 18px;
+    font-weight: 500;
+    color: #1e88e5;
+    /* Accent color for service name */
+}
+
+.serviceCount {
+    font-size: 18px;
+    color: #37474f;
+    /* Dark Gray for service counts */
+}
+
+.annualAppointments {
+    background-color: #ffffff;
+    grid-column: span 2;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+}
+
+.annualAppointmentsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.annualAppointmentsList li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.annualAppointmentsList li:last-child {
+    border-bottom: none;
+}
+
+.appointmentService {
+    font-size: 18px;
+    font-weight: 500;
+    color: #1e88e5;
+}
+
+.appointmentDetails {
+    font-size: 18px;
+    color: #37474f;
+}
+
+.servicesList li:hover,
+.annualAppointmentsList li:hover {
+    background-color: #bbdefb;
+    cursor: pointer;
+}
+
+.servicesList li:hover .serviceName,
+.annualAppointmentsList li:hover .appointmentService {
+    color: #0d47a1;
+}
+
+.calendarContainer {
+    grid-column: span 3;
 }

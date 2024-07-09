@@ -7,111 +7,123 @@ import { IUserAccount } from "../interfaces/User/UserDefinition";
 import { DentistInfoViewModel } from "../interfaces/AdminClinicOwner/DentistAccounts";
 import HttpResponseModel from "../interfaces/HttpResponseModel/HttpResponseModel";
 import { ClinicServiceInfoModel } from "./BookingRegister";
+import { apiCallWithTokenRefresh } from "./apiCallWithRefreshToken";
 
-export const getClinicGeneralInfo = async (clinicId: number): Promise<ClinicToDisplay | null> => {
-    const api_url: string = connection_path.base_url + connection_path.clinic.get_clinic_general_info + `${clinicId}`;
+export const getClinicGeneralInfo = async (clinicId: string): Promise<ClinicToDisplay | null> => {
+    const apiCall = async () => {
+        const api_url: string = connection_path.base_url + connection_path.clinic.get_clinic_general_info + `${clinicId}`;
 
-    try {
-        const response = await axios.get(api_url);
+        try {
+            const response = await axios.get(api_url);
 
-        if (response.status === 200) {
-            const data = response.data.content;
-            const clinic: ClinicToDisplay = {
-                name: data.name,
-                description: data.description,
-                address: data.address,
-                phone: data.phone,
-                email: data.email,
-                openHour: data.openHour,
-                closeHour: data.closeHour,
-                status: data.status,
-                working: data.working,
-                id: data.id,
-                ownerId: data.ownerId,
+            if (response.status === 200) {
+                const data = response.data.content;
+                const clinic: ClinicToDisplay = {
+                    name: data.name,
+                    description: data.description,
+                    address: data.address,
+                    phone: data.phone,
+                    email: data.email,
+                    openHour: data.openHour,
+                    closeHour: data.closeHour,
+                    status: data.status,
+                    working: data.working,
+                    id: data.id,
+                    ownerId: data.ownerId,
+                }
+                return clinic;
+            } else {
+                console.log('Failed to get users');
+                return null;
             }
-            return clinic;
-        } else {
-            console.log('Failed to get users');
+        } catch (error) {
+            console.error(error);
             return null;
         }
-    } catch (error) {
-        console.error(error);
-        return null;
     }
+    return await apiCallWithTokenRefresh(apiCall);
 }
 
 export const updateClinicGeneralInfo = async (clinicInfo: ClinicToDisplay): Promise<void> => {
-    const api_url = connection_path.base_url + connection_path.clinic.put_clinic_general_info;
+    const apiCall = async () => {
+        const api_url = connection_path.base_url + connection_path.clinic.put_clinic_general_info;
 
-    const configuration: AxiosRequestConfig = {
-        method: 'PUT',
-        url: api_url,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        data: JSON.stringify(clinicInfo)
-    };
+        const configuration: AxiosRequestConfig = {
+            method: 'PUT',
+            url: api_url,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            },
+            data: JSON.stringify(clinicInfo)
+        };
 
-    try {
-        const response = await axios(configuration);
-        if (response.status === 200) {
-            console.log('Clinic info updated successfully:', response.data);
-        } else {
-            console.error('Failed to update clinic info:', response.statusText);
-            throw new Error(`Failed to update clinic info: ${response.statusText}`);
+        try {
+            const response = await axios(configuration);
+            if (response.status === 200) {
+                console.log('Clinic info updated successfully:', response.data);
+            } else {
+                console.error('Failed to update clinic info:', response.statusText);
+                throw new Error(`Failed to update clinic info: ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error('Axios error:', error);
+            throw new Error('Failed to update clinic info');
         }
-    } catch (error) {
-        console.error('Axios error:', error);
-        throw new Error('Failed to update clinic info');
     }
-
+    return await apiCallWithTokenRefresh(apiCall);
 }
 
 export const fetchDentistInfo = async (): Promise<HttpResponseModel<DentistInfoViewModel>> => {
-    const api_url = connection_path.base_url + connection_path.invoker.get_dentist_invoker;
-    const accessToken = localStorage.getItem('accessToken');
-    const config: AxiosRequestConfig = {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`
-        }
-    };
-
-    try {
-        const response = await axios.get<HttpResponseModel<DentistInfoViewModel>>(api_url, config);
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching dentist info:', error);
-        return {
-            statusCode: 500,
-            message: 'Failed to fetch dentist info',
-            detail: '',
+    const apiCall = async () => {
+        const api_url = connection_path.base_url + connection_path.invoker.get_dentist_invoker;
+        const accessToken = localStorage.getItem('accessToken');
+        const config: AxiosRequestConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            }
         };
+
+        try {
+            const response = await axios.get<HttpResponseModel<DentistInfoViewModel>>(api_url, config);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching dentist info:', error);
+            return {
+                statusCode: 500,
+                message: 'Failed to fetch dentist info',
+                detail: '',
+            };
+        }
     }
+    return apiCallWithTokenRefresh(apiCall);
 };
 
 export const fetchClinicStaff = async (): Promise<DentistInfoViewModel[]> => {
-    const api_url = connection_path.base_url + connection_path.clinic.get_clinic_staff;
-    const accessToken = localStorage.getItem('accessToken');
-    const config: AxiosRequestConfig = {
-        method: "GET",
-        url: api_url,
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`
+    const apiCall = async () => {
+        const api_url = connection_path.base_url + connection_path.clinic.get_clinic_staff;
+        const accessToken = localStorage.getItem('accessToken');
+        const config: AxiosRequestConfig = {
+            method: "GET",
+            url: api_url,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            }
+        };
+
+        try {
+            const response = await axios(config);
+            return response.data.content as DentistInfoViewModel[];
+        } catch (error) {
+            console.error('Error fetching clinic staff:', error);
+            return [];
         }
-    };
-
-    try {
-        const response = await axios(config);
-        return response.data.content as DentistInfoViewModel[];
-    } catch (error) {
-        console.error('Error fetching clinic staff:', error);
-        return [];
     }
-
+    return apiCallWithTokenRefresh(apiCall);
 }
+
 export interface DentistRegistrationModel {
     fullname: string;
     username: string;
@@ -120,185 +132,265 @@ export interface DentistRegistrationModel {
 }
 
 export const registerDentist = async (dentistInfo: DentistRegistrationModel): Promise<void> => {
-    const api_url = connection_path.base_url + connection_path.clinic.register_staff;
-    const accessToken = localStorage.getItem('accessToken');
+    const apiCall = async () => {
+        const api_url = connection_path.base_url + connection_path.clinic.register_staff;
+        const accessToken = localStorage.getItem('accessToken');
 
-    const configuration: AxiosRequestConfig = {
-        method: 'POST',
-        url: api_url,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-        },
-        data: JSON.stringify(dentistInfo)
-    };
+        const configuration: AxiosRequestConfig = {
+            method: 'POST',
+            url: api_url,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            data: JSON.stringify(dentistInfo)
+        };
 
-    try {
-        const response = await axios(configuration);
-        if (response.status == 200) {
-            console.log('Dentist registered successfully:', response.data);
-        } else {
-            console.error('Failed to register dentist:', response.statusText);
-            throw new Error(`Failed to register dentist: ${response.statusText}`);
+        try {
+            const response = await axios(configuration);
+            if (response.status == 200) {
+                console.log('Dentist registered successfully:', response.data);
+            } else {
+                console.error('Failed to register dentist:', response.statusText);
+                throw new Error(`Failed to register dentist: ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error(error);
+            throw new Error('Failed to register dentist');
         }
-    } catch (error) {
-        console.error('Axios error:', error);
-        throw new Error('Failed to register dentist');
     }
+    return await apiCallWithTokenRefresh(apiCall);
 }
 
+export const activateDentist = async (dentistId: number): Promise<HttpResponseModel<any>> => {
+    const apiCall = async () => {
+        const api_url = connection_path.base_url + connection_path.clinic.active_staff;
+        const accessToken = localStorage.getItem('accessToken');
+        const configuration: AxiosRequestConfig = {
+            method: 'PUT',
+            url: api_url,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            },
+            params: {
+                dentistId: dentistId
+            }
+        }
+
+        try {
+            const response = await axios(configuration);
+            if (response.status === 200) {
+                console.log('Dentist activated successfully:', response.data);
+                return response.data;
+            } else {
+                console.error('Failed to activate dentist:', response.statusText);
+                return {} as HttpResponseModel<any>;
+            }
+        } catch (error) {
+            console.error(error);
+            return {} as HttpResponseModel<any>;
+        }
+    }
+    return await apiCallWithTokenRefresh(apiCall);
+}
+
+export const deactivateDentist = async (dentistId: number): Promise<HttpResponseModel<any>> => {
+    const apiCall = async () => {
+        const api_url = connection_path.base_url + connection_path.clinic.deactive_staff;
+        const accessToken = localStorage.getItem('accessToken');
+
+        const configuration: AxiosRequestConfig = {
+            method: 'PUT',
+            url: api_url,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            },
+            params: {
+                dentistId: dentistId
+            }
+        }
+
+        try {
+            const response = await axios(configuration);
+            if (response.status === 200) {
+                console.log('Dentist deactivated successfully:', response.data);
+                return response.data;
+            } else {
+                console.error('Failed to deactivate dentist:', response.statusText);
+                return {} as HttpResponseModel<any>;
+            }
+        } catch (error) {
+            return {} as HttpResponseModel<any>;
+            console.error('Axios error:', error);
+        }
+    }
+    return await apiCallWithTokenRefresh(apiCall);
+}
 
 export const registerSlots = async (
     slot: ClinicSlotRegistrationModel,
 ): Promise<boolean> => {
-    const api_url = connection_path.base_url + connection_path.clinic.post_clinic_schedule;
+    const apiCall = async () => {
+        const api_url = connection_path.base_url + connection_path.clinic.post_clinic_schedule;
 
-    const configuration: AxiosRequestConfig = {
-        method: "POST",
-        url: api_url,
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        data: {
-            clinicId: slot.clinicId,
-            slotId: slot.clinicSlotId,
-            weekday: slot.weekday,
-            maxTreatment: slot.maxTreatment,
-            maxCheckup: slot.maxCheckup
-        }
-    };
-
-    try {
-        const response = await axios(configuration);
-        if (response.status === 200) {
-            console.log("Slots registered successfully");
-            return true;
-        } else {
-            console.error("Failed to register slots");
-            return false;
-        }
-    } catch (error) {
-        console.error("Axios error:", error);
-        return false; // Indicate failure
-    }
-};
-export const getAllClinicSlots = async (): Promise<ClinicSlotInfoModel[][]> => {
-    const clinicId = 1; // Replace with your actual clinic ID or pass it as a parameter
-    const token = localStorage.getItem('accessToken');
-    const api_url = `${connection_path.base_url}${connection_path.clinic.get_clinic_schedule.replace(':id', clinicId.toString())}`;
-
-    try {
-        const response = await axios.get<HttpResponseModel<ClinicSlotInfoModel[]>>(
-            api_url,
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
+        const configuration: AxiosRequestConfig = {
+            method: "POST",
+            url: api_url,
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+            data: {
+                clinicId: slot.clinicId,
+                slotId: slot.clinicSlotId,
+                weekday: slot.weekday,
+                maxTreatment: slot.maxTreatment,
+                maxCheckup: slot.maxCheckup
             }
-        );
+        };
 
-        if (response.status === 200) {
-            const responseData = response.data;
+        try {
+            const response = await axios(configuration);
+            if (response.status === 200) {
+                alert("Slots registered successfully");
+                return true;
+            } else {
+                alert("Failed to register slots");
+                return false;
+            }
+        } catch (error) {
+            console.error("Axios error:", error);
+            return false; // Indicate failure
+        }
+    }
+    return await apiCallWithTokenRefresh(apiCall);
+};
 
-            if (responseData.statusCode === 200) {
-                if (responseData.content) {
-                    const slotsFromAPI = responseData.content;
+export const getAllClinicSlots = async (clinicId: string): Promise<ClinicSlotInfoModel[][]> => {
+    const apiCall = async () => {
+        const token = localStorage.getItem('accessToken');
+        const api_url = `${connection_path.base_url}${connection_path.clinic.get_clinic_schedule.replace(':id', clinicId)}`;
 
-                    // Initialize a 2D array for each weekday
-                    const convertedSlots: ClinicSlotInfoModel[][] = Array.from({ length: 7 }, () => []);
+        try {
+            const response = await axios.get<HttpResponseModel<ClinicSlotInfoModel[]>>(
+                api_url,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                }
+            );
 
-                    // Map API response to ClinicSlotInfoModel format
-                    slotsFromAPI.forEach((slot) => {
-                        const convertedSlot: ClinicSlotInfoModel = {
-                            clinicSlotId: slot.clinicSlotId,
-                            clinicId: slot.clinicId,
-                            maxCheckup: slot.maxCheckup,
-                            maxTreatment: slot.maxTreatment,
-                            weekday: slot.weekday as Weekdays,
-                            slotId: slot.slotId,
-                            startTime: slot.startTime,
-                            endTime: slot.endTime,
-                            status: slot.status,
-                        };
+            if (response.status === 200) {
+                const responseData = response.data;
 
-                        convertedSlots[slot.weekday].push(convertedSlot);
-                    });
+                if (responseData.statusCode === 200) {
+                    if (responseData.content) {
+                        const slotsFromAPI = responseData.content;
+                        const convertedSlots: ClinicSlotInfoModel[][] = Array.from({ length: 7 }, () => []);
 
-                    return convertedSlots;
+                        slotsFromAPI.forEach((slot) => {
+                            const convertedSlot: ClinicSlotInfoModel = {
+                                clinicSlotId: slot.clinicSlotId,
+                                clinicId: slot.clinicId,
+                                maxCheckup: slot.maxCheckup,
+                                maxTreatment: slot.maxTreatment,
+                                weekday: slot.weekday as Weekdays,
+                                slotId: slot.slotId,
+                                startTime: slot.startTime,
+                                endTime: slot.endTime,
+                                status: slot.status,
+                            };
+
+                            convertedSlots[slot.weekday].push(convertedSlot);
+                        });
+
+                        return convertedSlots;
+                    } else {
+                        return [];
+                    }
                 } else {
-                    return [];
+                    throw new Error(responseData.message || 'Failed to fetch clinic slots');
                 }
             } else {
-                throw new Error(responseData.message || 'Failed to fetch clinic slots');
+                throw new Error('Failed to fetch clinic slots');
             }
-        } else {
-            throw new Error('Failed to fetch clinic slots');
+        } catch (error) {
+            console.error('Error fetching clinic slots:', error);
+            throw error;
         }
-    } catch (error) {
-        console.error('Error fetching clinic slots:', error);
-        throw error; // Handle or rethrow the error as needed
     }
+    return await apiCallWithTokenRefresh(apiCall);
 };
 
 
-export async function updateClinicSlot(slotInfo: ClinicSlotUpdateModel): Promise<void> {
+export async function updateClinicSlot(slotInfo: ClinicSlotUpdateModel): Promise<boolean> {
+    const apiCall = async () => {
+        const api_url = connection_path.base_url + connection_path.clinic.put_clinic_schedule;
 
-    const api_url = connection_path.base_url + connection_path.clinic.put_clinic_schedule;
 
+        const configuration: AxiosRequestConfig = {
+            method: "PUT",
+            url: api_url,
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+            data: {
+                slotId: slotInfo.slotId,
+                maxTreatement: slotInfo.MaxTreatement,
+                maxCheckup: slotInfo.MaxCheckup,
+                status: slotInfo.Status
+            }
+        };
 
-    const configuration: AxiosRequestConfig = {
-        method: "PUT",
-        url: api_url,
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        data: {
-            slotId: slotInfo.slotId,
-            maxTreatement: slotInfo.MaxTreatement,
-            maxCheckup: slotInfo.MaxCheckup,
-            status: slotInfo.Status
+        try {
+            const response = await axios(configuration);
+            if (response.status === 200) {
+                console.log("Slots updated successfully");
+                return true;
+            } else {
+                console.error("Failed to update slots");
+                return false;
+            }
+        } catch (error) {
+            console.error("Axios error:", error);
+            return true;
         }
-    };
-
-    try {
-        const response = await axios(configuration);
-        if (response.status === 200) {
-            console.log("Slots updated successfully");
-        } else {
-            console.error("Failed to update slots");
-        }
-    } catch (error) {
-        console.error("Axios error:", error);
     }
+    return apiCallWithTokenRefresh(apiCall);
 }
 
 export const enableSlot = async (slotId: string, action: string): Promise<void> => {
-    const end_point = action === "enable" ? "enable" : "disable";
+    const apiCall = async () => {
+        const end_point = action === "enable" ? "enable" : "disable";
 
-    const api_url = connection_path.base_url + connection_path.clinic.post_clinic_schedule_status + `${slotId}/${end_point}`;
+        const api_url = connection_path.base_url + connection_path.clinic.post_clinic_schedule_status + `${slotId}/${end_point}`;
 
-    const configuration: AxiosRequestConfig = {
-        method: "PUT",
-        url: api_url,
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-    };
+        const configuration: AxiosRequestConfig = {
+            method: "PUT",
+            url: api_url,
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+        };
 
-    try {
-        const response = await axios(configuration);
-        if (response.status === 200) {
-            console.log("Slot enabled successfully");
-        } else {
-            console.error("Failed to enable slot");
+        try {
+            const response = await axios(configuration);
+            if (response.status === 200) {
+                console.log("Slot enabled successfully");
+            } else {
+                console.error("Failed to enable slot");
+            }
+        } catch (error) {
+            console.error("Axios error:", error);
         }
-    } catch (error) {
-        console.error("Axios error:", error);
     }
+    return await apiCallWithTokenRefresh(apiCall);
 }
 
 export interface ClinicServiceRegistrationModel {
@@ -310,163 +402,228 @@ export interface ClinicServiceRegistrationModel {
 }
 
 export const addClinicService = async (serviceInfo: ClinicServiceRegistrationModel): Promise<void> => {
-    const api_url = `${connection_path.base_url}${connection_path.clinic.post_clinic_service}`;
-    const accessToken = localStorage.getItem('accessToken');
+    const apiCall = async () => {
+        const api_url = `${connection_path.base_url}${connection_path.clinic.post_clinic_service}`;
+        const accessToken = localStorage.getItem('accessToken');
 
-    const configuration: AxiosRequestConfig = {
-        method: 'POST',
-        url: api_url,
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-        },
-        data: JSON.stringify(serviceInfo)
-    };
+        const configuration: AxiosRequestConfig = {
+            method: 'POST',
+            url: api_url,
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(serviceInfo)
+        };
 
-    try {
-        const response = await axios(configuration);
+        try {
+            const response = await axios(configuration);
 
-        if (response.status === 200) {
-            console.log('Service added successfully:', response.data);
-            // Optionally return response data or handle success scenario
-        } else {
-            console.error('Failed to add service:', response.statusText);
-            throw new Error(`Failed to add service: ${response.statusText}`);
+            if (response.status === 200) {
+                const service = response.data.content;
+                const serviceId = service.clinicServiceId;
+                if (serviceId) {
+                    await enableClinicService(serviceId);
+                }
+            } else {
+                console.error('Failed to add service:', response.statusText);
+                throw new Error(`Failed to add service: ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error('Axios error:', error);
+            throw new Error('Failed to add service');
         }
-    } catch (error) {
-        console.error('Axios error:', error);
-        throw new Error('Failed to add service');
     }
+    return apiCallWithTokenRefresh(apiCall);
 };
 
-export const getClinicServices = async (clinicId: number): Promise<ClinicServiceInfoModel[]> => {
-    const api_url = `${connection_path.base_url}${connection_path.clinic.get_clinic_service}?clinicId=${clinicId}`;
-    const accessToken = localStorage.getItem('accessToken');
+export const enableClinicService = async (serviceId: string): Promise<void> => {
+    const apiCall = async () => {
+        const api_url = `${connection_path.base_url}${connection_path.clinic.enable_clinic_service.replace(':id', serviceId)}`;
+        const accessToken = localStorage.getItem('accessToken');
 
-    const configuration: AxiosRequestConfig = {
-        method: 'GET',
-        url: api_url,
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-        }
-    };
+        const configuration: AxiosRequestConfig = {
+            method: 'PUT',
+            url: api_url,
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        };
 
-    try {
-        const response: AxiosResponse = await axios(configuration);
-        if (response.status === 200) {
-            return response.data.content; // Assuming response.data contains the list of clinic services
-        } else {
-            throw new Error(`Failed to fetch clinic services: ${response.statusText}`);
+        try {
+            const response = await axios(configuration);
+            if (response) {
+                console.log('Service enabled successfully:', response.data);
+            } else {
+                console.log('Failed to enable service:', response);
+            }
+        } catch (error) {
+            console.error('Axios error:', error);
         }
-    } catch (error) {
-        console.error('Axios error:', error);
-        throw new Error('Failed to fetch clinic services');
     }
+    return await apiCallWithTokenRefresh(apiCall);
+}
+
+
+export const getClinicServices = async (clinicId: number): Promise<ClinicServiceInfoModel[]> => {
+    const apiCall = async () => {
+        const api_url = `${connection_path.base_url}${connection_path.clinic.get_clinic_service}?clinicId=${clinicId}`;
+        const accessToken = localStorage.getItem('accessToken');
+
+        const configuration: AxiosRequestConfig = {
+            method: 'GET',
+            url: api_url,
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        try {
+            const response: AxiosResponse = await axios(configuration);
+            if (response.status === 200) {
+                return response.data.content; // Assuming response.data contains the list of clinic services
+            } else {
+                throw new Error(`Failed to fetch clinic services: ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error('Axios error:', error);
+            throw new Error('Failed to fetch clinic services');
+        }
+    }
+    return await apiCallWithTokenRefresh(apiCall);
 };
 
 export const getClinicServiceById = async (serviceId: string): Promise<ClinicServiceInfoModel> => {
-    const api_url = `${connection_path.base_url}${connection_path.clinic.get_clinic_service}/${serviceId}`;
+    const apiCall = async () => {
+        const api_url = `${connection_path.base_url}${connection_path.clinic.get_clinic_service}/${serviceId}`;
 
-    const configuration: AxiosRequestConfig = {
-        method: 'GET',
-        url: api_url,
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    };
+        const configuration: AxiosRequestConfig = {
+            method: 'GET',
+            url: api_url,
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
 
-    try {
-        const response = await axios(configuration);
-        if (response.status === 200) {
-            return response.data.content as ClinicServiceInfoModel;
+        try {
+            const response = await axios(configuration);
+            if (response.status === 200) {
+                return response.data.content as ClinicServiceInfoModel;
+            }
+            return {} as ClinicServiceInfoModel;
+        } catch (error) {
+            console.error('Axios error:', error);
+            return {} as ClinicServiceInfoModel;
         }
-        return {} as ClinicServiceInfoModel;
-    } catch (error) {
-        console.error('Axios error:', error);
-        return {} as ClinicServiceInfoModel;
     }
+    return await apiCallWithTokenRefresh(apiCall);
 }
 
 export const updateClinicService = async (serviceInfo: ClinicServiceInfoModel): Promise<void> => {
-    const api_url = `${connection_path.base_url}${connection_path.clinic.put_clinic_service}`;
+    const apiCall = async () => {
+        const api_url = `${connection_path.base_url}${connection_path.clinic.put_clinic_service}`;
 
-    const configuration: AxiosRequestConfig = {
-        method: 'PUT',
-        url: api_url,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        data: JSON.stringify(serviceInfo)
-    };
+        const configuration: AxiosRequestConfig = {
+            method: 'PUT',
+            url: api_url,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            },
+            data: JSON.stringify(serviceInfo)
+        };
 
-    try {
-        const response = await axios(configuration);
-        if (response.status === 200) {
-            console.log('Service updated successfully:', response.data);
-        } else {
-            console.error('Failed to update service:', response.statusText);
-            throw new Error(`Failed to update service: ${response.statusText}`);
+        try {
+            const response = await axios(configuration);
+            if (response.status === 200) {
+                console.log('Service updated successfully:', response.data);
+            } else {
+                console.error('Failed to update service:', response.statusText);
+                throw new Error(`Failed to update service: ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error('Axios error:', error);
+            throw new Error('Failed to update service');
         }
-    } catch (error) {
-        console.error('Axios error:', error);
-        throw new Error('Failed to update service');
     }
-
+    return await apiCallWithTokenRefresh(apiCall);
 }
 
 
 export interface AppointmentViewModel {
-    BookId: string;
-    appointmentType: string;
-    CustomerFullName: string;
-    DentistFullname: string;
-    AppointmentDate: string;
-    CreationTime: string;
-    AppointmentTime: string;
-    ExpectedEndTime: string;
-    PatientNumber: number;
-    ClinicName: string;
-    ClinicAddress: string;
-    ClinicPhone: string;
-    SelectedServiceName: string;
-    FinalFee: number;
-    IsRecurring: boolean;
-    BookingStatus: string;
+    appointmentDate: string;
+    appointmentFee: number;
+    clinicId: number;
+    clinicSlotId: string;
+    creationTime: string;
+    customerId: number;
+    cycleCount: number;
+    dentistId: number;
+    id: string;
+    note: string;
+    originalAppointment: string | null;
+    paymentId: string | null;
+    selectedService: string;
+    status: string;
+    type: string;
+    slotStartTime?: string;
+    slotEndTime?: string;
 }
 
-export const getClinicAppointments = async (clinicId: number, from_date?: Date, to_date?: Date, from_time?: string, to_time?: string, requestOldItems = true, page_size?: number, page_index?: number): Promise<AppointmentViewModel[]> => {
-    const api_url = connection_path.base_url + connection_path.booking.get_clinic_booking.replace(':id', clinicId.toString());
-    console.log('Fetching clinic appointments:', api_url);
-    try {
-        const response = await axios.get(api_url, {
-            params: {
-                from_date: from_date?.toISOString(),
-                to_date: to_date?.toISOString(),
-                from_time,
-                to_time,
-                requestOldItems,
-                page_size,
-                page_index
-            },
+export interface AppointmentViewModelFetch {
+    bookId: string;
+    appointmentType: string;
+    customerFullName: string;
+    dentistFullname: string;
+    appointmentTime: string;
+    expectedEndTime: string;
+    clinicName: string;
+    clinicAddress: string;
+    clinicPhone: string;
+    finalFee: number;
+    isRecurring: boolean;
+    bookingStatus: string;
+    selectedServiceName: string;
+    appointmentDate: string;
+}
+
+export const getClinicAppointments = async (clinicId: string, from_date?: string, to_date?: string, from_time?: string, to_time?: string, requestOldItems?: boolean, page_size?: number, page_index?: number): Promise<AppointmentViewModel[]> => {
+    const apiCall = async () => {
+        const api_url = connection_path.base_url + connection_path.booking.get_clinic_booking.replace(':id', clinicId);
+        const configuration: AxiosRequestConfig = {
+            method: 'GET',
+            url: api_url,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}` // Add authorization header if required
-            }
-        });
+            },
+            params: {
+                fromDate: from_date,
+                toDate: to_date,
+                fromTime: from_time,
+                toTime: to_time,
+                requestOldItems: requestOldItems,
+                pageSize: page_size,
+                pageIndex: page_index
 
-        if (response.status === 200) {
-            console.log('Clinic appointments fetched successfully:', response.data);
-            const appointments: AppointmentViewModel[] = response.data.content; // Assuming content is an array of AppointmentViewModel
-            return appointments;
-        } else {
-            console.error('Failed to fetch clinic appointments:', response.data);
-            throw new Error('Failed to fetch clinic appointments');
+            }
+
         }
-    } catch (error) {
-        console.error('Error fetching clinic appointments:', error);
-        throw error;
+
+        try {
+            const response = await axios(configuration);
+            if (response.status === 200) {
+                return response.data.content;
+            } else {
+                console.error('Failed to fetch clinic appointments:', response.data);
+                return [];
+            }
+        } catch (error) {
+            console.error('Error fetching clinic appointments:', error);
+            return [];
+        }
     }
+    return await apiCallWithTokenRefresh(apiCall);
 };
 

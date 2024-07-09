@@ -1,16 +1,35 @@
-.mainContainer {
-  margin-top: 15px;
-  padding: 0 20px 20px 20px;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
+.infoText {
+    width: 95%;
+    margin: 40px auto 0 auto;
+    text-align: left;
 }
 
-.main {
-  height: auto;
+.infoText h2 {
+    font-weight: 700;
+    font-size: 24px;
+    margin-bottom: 10px;
 }
 
+.infoText p {
+    font-weight: 600;
+    font-size: 16px;
+    color: #333;
+}
 
-.calendar-three {
-  border: 1px solid #ccc;
+.eventContent {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.activeSlot {
+    background-color: #4caf50;
+    color: white;
+}
+
+.inactiveSlot {
+    background-color: #f44336;
+    color: white;
 }

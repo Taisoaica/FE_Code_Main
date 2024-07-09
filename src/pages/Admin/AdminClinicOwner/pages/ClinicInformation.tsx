@@ -99,24 +99,26 @@ export default function ClinicInformation() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
-  const clinicId = localStorage.getItem('clinicId');
+  const clinic = localStorage.getItem('clinic');
+  const clinicId = clinic ? JSON.parse(clinic).id : null;
+
+  const fetchImages = async (folderName: string) => {
+    const folderPath = `clinics/${clinicId}/${folderName}/`;
+    try {
+      const imageUrls = await fetchClinicImages(folderPath);
+      if (folderName === 'carousel') {
+        setImages(imageUrls);
+      } else if (folderName === 'logo') {
+        setLogo(imageUrls[0] || '');
+      }
+    } catch (error) {
+      console.error(`Error fetching images from ${folderName}:`, error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchImages = async (folderName: string) => {
-      const folderPath = `clinics/${clinicId}/${folderName}/`;
-      try {
-        const imageUrls = await fetchClinicImages(folderPath);
-        if (folderName === 'carousel') {
-          setImages(imageUrls);
-        } else if (folderName === 'logo') {
-          setLogo(imageUrls[0] || '');
-        }
-      } catch (error) {
-        console.error(`Error fetching images from ${folderName}:`, error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchImages('carousel');
     fetchImages('logo');
   }, []);
@@ -139,7 +141,7 @@ export default function ClinicInformation() {
     setUploading(true);
     try {
       for (const { file } of logoFiles) {
-        const downloadURL = await uploadClinicImages(file, 'logo');
+        const downloadURL = await uploadClinicImages(file, 'logo', clinicId);
         setLogo(downloadURL);
         setLogoFiles([]);
       }
@@ -159,7 +161,7 @@ export default function ClinicInformation() {
     setUploading(true);
     try {
       for (const { file } of carouselFiles) {
-        const downloadURL = await uploadClinicImages(file, 'carousel');
+        const downloadURL = await uploadClinicImages(file, 'carousel', clinicId);
         setImages((prevImages) => [...prevImages, downloadURL]);
         setCarouselFiles([]);
       }

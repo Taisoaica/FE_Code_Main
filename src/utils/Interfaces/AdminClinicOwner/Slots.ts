@@ -9,10 +9,11 @@ export interface ClinicRegistrationModel {
 export interface ClinicSlotRegistrationModel {
     SlotId: number;
     clinicSlotId: number;
-    clinicId: number;
+    clinicId: string;
     weekday: number;
     maxCheckup: number;
     maxTreatment: number;
+    status: boolean;
 }
 
 

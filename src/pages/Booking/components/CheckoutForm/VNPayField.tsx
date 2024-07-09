@@ -1,66 +1,48 @@
-import React from 'react';
-import { TextField } from '@mui/material';
+import React, { SetStateAction } from 'react';
+import { Box, TextField } from '@mui/material';
+import { PaymentModel } from '../../../../utils/api/BookingRegister';
 
-interface VNPayFieldsProps {
-    paymentData: {
-        paymentMethod: string;
-        amount: string;
-        orderID: string;
-        orderDetail: string;
-    };
-
-    setPaymentData: (value: React.SetStateAction<{
-        paymentMethod: string;
-        amount: string;
-        orderID: string;
-        orderDetail: string;
-    }>) => void;
-
-    handleAmountChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    amount: string;
+interface VNPayFieldProps {
+    paymentData: PaymentModel;
+    setPaymentData: (value: SetStateAction<PaymentModel>) => void;
+    amount: number;
     orderID: string;
     orderDetail: string;
+    handleAmountChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const VNPayFields: React.FC<VNPayFieldsProps> = ({ paymentData, setPaymentData, amount, orderID, orderDetail, handleAmountChange }) => (
-    <>
-        <TextField
-            fullWidth
-            id="amount"
-            label="Giá trị"
-            value={amount}
-            onChange={handleAmountChange}
-            InputLabelProps={{
-                shrink: true,
-            }}
-            sx={{ marginBottom: '20px', marginTop: '20px' }}
-        />
-        <TextField
-            fullWidth
-            id="orderID"
-            label="Mã đơn hàng"
-            value={orderID}
-            InputProps={{
-                readOnly: true,
-            }}
-            InputLabelProps={{
-                shrink: true,
-            }}
-            sx={{ marginBottom: '20px' }}
-        />
-        <TextField
-            fullWidth
-            id="orderInfo"
-            label="Thông tin đơn hàng"
-            value={orderDetail}
-            InputProps={{
-                readOnly: true,
-            }}
-            InputLabelProps={{
-                shrink: true,
-            }}
-        />
-    </>
-);
+const VNPayField = ({ paymentData, setPaymentData, amount, orderID, orderDetail, handleAmountChange }: VNPayFieldProps) => {
+    return (
+        <Box>
+            <TextField
+                label="Số tiền"
+                value={amount}
+                onChange={handleAmountChange}
+                fullWidth
+                margin="normal"
+                type="number"
+                inputProps={{ min: 0 }}
+            />
+            <TextField
+                label="Mã đơn hàng"
+                value={orderID}
+                fullWidth
+                margin="normal"
+                InputProps={{
+                    readOnly: true,
+                }}
+            />
+            <TextField
+                label="Thông tin đơn hàng"
+                value={orderDetail}
+                fullWidth
+                margin="normal"
+                InputProps={{
+                    readOnly: true,
+                }}
+            />
+        </Box>
+    );
+};
 
-export default VNPayFields;
+export default VNPayField;

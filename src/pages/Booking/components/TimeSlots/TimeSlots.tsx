@@ -97,10 +97,14 @@ const TimeSlots = ({ formData, setFormData, onClose, onSlotSelect, date }: TimeS
     const [morningSlots, setMorningSlots] = useState<ExtendedTimeSlot[]>([]);
     const [afternoonSlots, setAfternoonSlots] = useState<ExtendedTimeSlot[]>([]);
 
+    const urlPath = window.location.pathname;
+    const clinicId = urlPath.split('/').pop();
+
     useEffect(() => {
+        if (!clinicId) return
         const fetchClinicSlots = async () => {
             try {
-                const clinicSlots = await getAllClinicSlots();
+                const clinicSlots = await getAllClinicSlots(clinicId);
 
                 const selectedDate = new Date(date);
                 const weekdayIndex = selectedDate.getDay();  // Calculate weekday index
@@ -135,7 +139,7 @@ const TimeSlots = ({ formData, setFormData, onClose, onSlotSelect, date }: TimeS
                 console.error('Error fetching clinic slots:', error);
             }
         };
-
+        
         fetchClinicSlots();
     }, [date]);
 

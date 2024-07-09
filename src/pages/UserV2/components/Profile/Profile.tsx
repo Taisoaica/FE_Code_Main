@@ -3,16 +3,16 @@ import styles from './Profile.module.css'
 import SimpleButton from '../../../../components/User/Components/Buttons/SimpleButton';
 import { default_data, IUserAccount, UserInfo } from '../../../../utils/interfaces/User/UserDefinition';
 import { getUserData } from '../../../../utils/api/UserAccountUtils';
-
+import { useNavigate } from 'react-router-dom';
 
 interface ProfileProps {
-    setActiveIndex: Dispatch<SetStateAction<number | null>>;
-
+    setActiveIndex: (index: number) => void;
 }
 
 const Profile = ({ setActiveIndex }: ProfileProps) => {
 
     const [data, setData]: [IUserAccount | null, Dispatch<SetStateAction<IUserAccount>>] = useState(default_data);
+    const navigator = useNavigate();
 
     type AvatarState = {
         file: File | null;
@@ -51,7 +51,7 @@ const Profile = ({ setActiveIndex }: ProfileProps) => {
 
     return (
         <div className={styles.mainContentRightContainer}>
-            <h1 className={styles.mainContentMiddleTitleHeading}>Hồ sơ</h1>
+            <h2 className={styles.mainContentMiddleTitleHeading}>Hồ sơ</h2>
             <div className={styles.mainContentContainerBox}>
                 <div className={styles.mainContentContainerBoxRowProfileGeneralAlignLeft}>
                     <label htmlFor="file" className={styles.userProfileImagePlaceholder}>

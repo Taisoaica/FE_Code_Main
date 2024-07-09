@@ -7,6 +7,7 @@ import Profile from './Profile/Profile';
 import UserPayment from './Payment/UserPayment';
 import UserSchedule from './Schedule/UserSchedule';
 import UserAccount from './Account/UserAccount';
+import AppointmentDetailWrapper from './Schedule/components/AppointmentDetailWrapper';
 
 
 const default_config: MenuListProperty = {
@@ -31,9 +32,8 @@ const default_config: MenuListProperty = {
     active: 0,
 }
 
-
 const UserProfileContent = () => {
-    const navigator = useNavigate();
+    const navigate = useNavigate();
 
 
     type AvatarState = {
@@ -47,10 +47,10 @@ const UserProfileContent = () => {
 
     const [activeIndex, setActiveIndex] = useState<number | null>(default_config.active);
 
+
     const handleNavigation = (index: number) => {
         setActiveIndex(index);
     };
-
 
     const renderContent = () => {
         switch (activeIndex) {
@@ -59,9 +59,11 @@ const UserProfileContent = () => {
             case 1:
                 return <UserPayment />;
             case 2:
-                return <UserSchedule />;
+                return <UserSchedule setActiveIndex={setActiveIndex} />;
             case 3:
                 return <UserAccount />;
+            case 4:
+                return <AppointmentDetailWrapper setActiveIndex={setActiveIndex} />
             default:
                 return <Profile setActiveIndex={setActiveIndex} />;
         }
@@ -74,9 +76,8 @@ const UserProfileContent = () => {
                     {default_config.links.map((link, index) => (
                         <li
                             key={index}
-                            className={`${styles.profileNavLink} ${activeIndex === index ? styles.active : ''}`}
-                            onClick={() => handleNavigation(index)}
-                        >
+                            className={`${styles.profileNavLink} ${location.pathname === link.linkValue ? styles.active : ''}`}
+                            onClick={() => handleNavigation(index)} >
                             <p className={styles.profileNavText}>{link.linkName}</p>
                         </li>
                     ))}
@@ -84,7 +85,7 @@ const UserProfileContent = () => {
             </div>
 
             {renderContent()}
-        </Box>
+        </Box >
     )
 }
 

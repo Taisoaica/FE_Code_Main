@@ -123,3 +123,22 @@ th {
 .unconfirmedButton:hover {
     background-color: #d32f2f;
 }
+
+/* Tooltip.module.css */
+
+.infoIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background-color: #e3f2fd;
+    color: #0d47a1;
+    border: 2px solid #0d47a1;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 5px;
+    position: relative;
+}

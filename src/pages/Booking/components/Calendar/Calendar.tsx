@@ -39,19 +39,26 @@ export default function BasicDateCalendar({ formData, setFormData, onStepComplet
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [clinicSlots, setClinicSlots] = useState<ClinicSlotInfoModel[][]>([]);
 
+  const urlPath = window.location.pathname;
+  const clinicId = urlPath.split('/').pop();
 
   useEffect(() => {
-    const fetchClinicSlots = async () => {
-      try {
-        const slots = await getAllClinicSlots();
-        setClinicSlots(slots);
-      } catch (error) {
-        console.error('Error fetching clinic slots:', error);
-      }
-    };
-
-    fetchClinicSlots();
+    if (clinicId) {
+      const fetchClinicSlots = async () => {
+        try {
+          const slots = await getAllClinicSlots(clinicId);
+          setClinicSlots(slots);
+        } catch (error) {
+          console.error('Error fetching clinic slots:', error);
+        }
+      };
+  
+      fetchClinicSlots();
+    } else {
+      console.error('clinicId is undefined');
+    }
   }, []);
+  
 
 
   const today = new Date();
@@ -67,7 +74,7 @@ export default function BasicDateCalendar({ formData, setFormData, onStepComplet
         is_available = false;
       }
     }
-    if(!is_available) return;
+    if (!is_available) return;
 
     setFormData(prevState => ({ ...prevState, date: event.dateStr }));
     setSelectedDate(event.dateStr);
@@ -187,7 +194,7 @@ export default function BasicDateCalendar({ formData, setFormData, onStepComplet
             }}
             // events={events}
             firstDay={0}
-            // dayCellDidMount={(info) => dayCellDidMount(info, weekdaysWithSlots)}
+          // dayCellDidMount={(info) => dayCellDidMount(info, weekdaysWithSlots)}
           />
         </div>
       </Box>

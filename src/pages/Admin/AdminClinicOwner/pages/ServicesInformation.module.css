@@ -63,4 +63,9 @@ th {
     background-color: #e3f2fd;
 }
 
-
+.buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}

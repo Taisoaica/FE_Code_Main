@@ -8,9 +8,27 @@
 }
 
 .breadcrumbs {
-    width: 90%;
+    width: 80%;
+    padding: 1em;
     text-align: right;
     color: black;
+}
+
+.breadcrumbLink {
+    color: #1975dc;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.2em;
+}
+
+.breadcrumbLink:hover {
+    text-decoration: underline;
+}
+
+.breadcrumbText {
+    color: #555;
+    font-weight: bold;
+    font-size: 1.2em;
 }
 
 .divider {
@@ -39,7 +57,8 @@
 }
 
 .clinicName {
-    font-weight: bold;
+    font-size: 2.4em;
+    font-weight: 500;
 }
 
 .imageList {
@@ -53,20 +72,48 @@
     border-radius: 5px;
 }
 
-.detailSection {
+.main {
     width: 80%;
-    margin-top: 5em;
+    margin: 0 auto;
+    padding: 2em 0;
+    font-family: Arial, sans-serif;
+}
+
+.section {
+    margin-bottom: 2em;
 }
 
 .sectionTitle {
+    font-size: 1.5em;
     font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5em;
 }
 
 .sectionContent {
-    margin-top: 1em;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
 }
 
-.sectionBottom {
-    margin-top: 1em;
-    margin-bottom: 5em;
+.divider {
+    border: none;
+    height: 1px;
+    background-color: #ccc;
+    margin: 2em 0;
+}
+
+.contactInfo {
+    padding: 0.5em 0;
+}
+
+.contactItem {
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 0.5em;
+}
+
+.contactItem span {
+    color: #333;
 }

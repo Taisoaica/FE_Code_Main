@@ -1,5 +1,5 @@
 import styles from './UserAccount.module.css';
-import { default_data, IUserAccount } from '../../../../utils/interfaces/User/UserDefinition';
+import { default_data, IUserAccount, UserInfoModel } from '../../../../utils/interfaces/User/UserDefinition';
 import { Dispatch, SetStateAction, useLayoutEffect, useState } from 'react';
 import SimpleButton from '../../../../components/User/Components/Buttons/SimpleButton';
 import StatusBadge from '../../../../components/User/StatusBadge/StatusBadge';
@@ -8,6 +8,18 @@ import ChangePassword from '../../../../components/User/Layouts/ChangePassword/C
 import { getUserData, putUserData } from '../../../../utils/api/UserAccountUtils';
 
 
+function convertToUserInfoModel(userData: IUserAccount): UserInfoModel {
+    return {
+        id: userData.id ?? 0,
+        username: userData.username,
+        fullname: userData.fullname ?? '',
+        phone: userData.phone ?? '',
+        email: userData.email ?? '',
+        sex: userData.sex ?? '',
+        insurance: userData.insurance ?? '',
+        birthdate: userData.birthdate ?? '',
+    };
+}
 
 const UserAccount = () => {
     const [userData, setUserData]: [IUserAccount, Dispatch<SetStateAction<IUserAccount>>] = useState(default_data);
@@ -16,6 +28,7 @@ const UserAccount = () => {
 
     const saveUserData = async () => {
         const userId = localStorage.getItem('id');
+        console.log('user data', userData);
         const dataToSend = {
             ...default_data,
             ...userData,
@@ -24,17 +37,12 @@ const UserAccount = () => {
         if (userId !== null) {
             dataToSend.id = parseInt(userId, 10); // Explicitly use base 10 for parsing
         } else {
-            // Handle invalid or missing IDs gracefully
             console.warn("Invalid or missing user ID in localStorage.");
-
-            // Option 1: Set a default or fallback value
-            // dataToSend.id = 0; // Or some other sensible default
-
-            // Option 2: Remove the 'id' property if it's problematic
             delete dataToSend.id;
         }
         try {
-            await putUserData(dataToSend)
+            const userData = convertToUserInfoModel(dataToSend);
+            await putUserData(userData)
             setDisabled(true);
         } catch (error) {
             console.error('Error updating user data:', error);
@@ -48,7 +56,6 @@ const UserAccount = () => {
         } else {
             setUserData(prevData => ({ ...prevData, [name]: value }));
         }
-        console.log(userData);
     };
 
     const changePicture = () => {
@@ -58,7 +65,6 @@ const UserAccount = () => {
     const fetchUserData = async () => {
         try {
             const usersData = await getUserData();
-            console.log(usersData);
             const normalizedData = {
                 ...usersData,
                 insurance: usersData.insurance || '',
@@ -70,7 +76,6 @@ const UserAccount = () => {
     };
 
     useLayoutEffect(() => {
-        console.log(userData);
         fetchUserData();
     }, []);
 

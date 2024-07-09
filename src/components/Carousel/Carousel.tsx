@@ -26,36 +26,36 @@ const Carousel = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
 
-    useEffect(() => {
-        const fetchClinics = async () => {
-            try {
-                const clinics = (await getAllClinics('', 100, 0)).content;
-                const verifiedClinics = clinics.filter(clinic => clinic.status === 'verified');
+    const fetchClinics = async () => {
+        try {
+            const clinics = (await getAllClinics('', 100, 0)).content;
+            const verifiedClinics = clinics.filter(clinic => clinic.status === 'verified');
 
-                setItems(verifiedClinics);
+            setItems(verifiedClinics);
+            
 
-                // Fetch images for each clinic
-                const imagesPromises = clinics.map(async (clinic) => {
-                    const imageUrls = await fetchClinicImages(`clinics/${clinic.id}/logo/`);
-                    return { [clinic.id]: imageUrls };
-                });
+            const imagesPromises = clinics.map(async (clinic) => {
+                const imageUrls = await fetchClinicImages(`clinics/${clinic.id}/logo/`);
+                return { [clinic.id]: imageUrls };
+            });
 
-                const imagesResults = await Promise.all(imagesPromises);
-                const imagesMap = imagesResults.reduce((acc, img) => ({ ...acc, ...img }), {});
-                setImages(imagesMap);
+            const imagesResults = await Promise.all(imagesPromises);
+            const imagesMap = imagesResults.reduce((acc, img) => ({ ...acc, ...img }), {});
+            setImages(imagesMap);
 
-            } catch (err) {
-                if (err instanceof Error) {
-                    setError(err);
-                } else {
-                    console.error("An unexpected error occurred:", err);
-                    setError(new Error("Failed to fetch clinic data"));
-                }
-            } finally {
-                setLoading(false);
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err);
+            } else {
+                console.error("An unexpected error occurred:", err);
+                setError(new Error("Failed to fetch clinic data"));
             }
-        };
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchClinics();
     }, []);
 
@@ -73,7 +73,7 @@ const Carousel = () => {
     }
 
     const handleBookingButtonClick = (id: number) => {
-        if(localStorage.getItem('accessToken')) {
+        if (localStorage.getItem('accessToken')) {
             navigate(`/booking/${id}`)
         } else {
             navigate('/login')

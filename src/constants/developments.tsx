@@ -9,6 +9,7 @@ export const connection_path = {
         logout: "/auth/logout",
         checkAuth: "/auth/validate",
         googleAuth: "/auth/google",
+        refresh: "/auth/refresh"
     },
 
 
@@ -16,8 +17,8 @@ export const connection_path = {
         customer: "/customer",
         customer_update: "/customer",
         customer_register: "/customer/register",
-        activate_user: "/user/activate/:id",
-        inactivate_user: "/user/inactivate/:id",
+        activate_user: "/customer/activate",
+        inactivate_user: "/user/inactivate",
         clinic_register: "/clinic/register",
     },
 
@@ -28,12 +29,16 @@ export const connection_path = {
     clinic: {
         register_clinic_owner: "/clinic/register/clinic-owner",
         register_staff: "/dentist/staff/register",
+        active_staff: "/dentist/staff/activate",
+        deactive_staff: "/dentist/staff/deactivate",
         get_clinic_general_info: "/clinic/",
         put_clinic_general_info: "/clinic",
         get_all_clinic: "/clinic/search",
         get_clinic_staff: "/dentist/staff",
         get_clinic_service: "/service",
         put_clinic_service: "/service",
+        enable_clinic_service: "/service/:id/activate",
+        disable_clinic_service: "/service/:id/deactivate",
         post_clinic_schedule: "/schedule/slot/create",
         post_clinic_schedule_status: "/schedule/slot/:id/",
         get_clinic_schedule: "/schedule/:id/slots",
@@ -44,18 +49,24 @@ export const connection_path = {
 
     booking: {
         get_clinic_booking: '/booking/clinic/:id',
+        get_customer_booking: '/booking/customer/:id',
+        get_dentist_booking: '/booking/dentist/:id',
         available_date: '/booking/availabe-date',
         available_slot: '/booking/availabe-slot',
         check_available_dentist: '/booking/available/:id/dentist',
         place_book: '/booking/customer/book',
         get_booking: '/booking/schedule/staff',
-        get_cus_booking: '/booking/schedule/customer'
+        get_cus_booking: '/booking/schedule/customer',
+        create_payment: '/payment/vnpay',
+        confirm_payment: '/payment/vnpay/success',
     },
 
     admin: {
         register_service: '/admin/service/categories',
         get_clinics: '/clinic/search',
         get_users: '/admin/users',
+        get_dentists: '/admin/dentist',
+        get_customer: '/admin/customer',
         verify_clinic: '/admin/clinic/verify/:id',
     },
 

@@ -83,6 +83,7 @@ const ForOwnerContent: React.FC = () => {
                         Giải pháp toàn diện cho phòng khám của bạn
                     </Box>
                 </Box>
+
                 <Box className={styles.secondContent}>
                     <Box sx={{ gridColumn: 1 }}></Box>
                     <Box className={styles.stackedBoxesContainer}>

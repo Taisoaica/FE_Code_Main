@@ -1,37 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 import styles from "./EventModal.module.css";
 import { AppointmentViewModel } from "../../../../../../utils/api/ClinicOwnerUtils";
+import { DentistInfoViewModel } from "../../../../../../utils/api/BookingRegister";
+
 
 interface EventModalProps {
   isOpen: boolean;
   toggle: () => void;
-  appointment: AppointmentViewModel | undefined;
-  onSave: (appointment: AppointmentViewModel) => void;
+  appointment: AppointmentViewModel;
+  availableStaff: DentistInfoViewModel[]
 }
 
 const EventModal: React.FC<EventModalProps> = ({
   isOpen,
   toggle,
   appointment,
-  onSave,
+  availableStaff
 }) => {
-  const [dentistName, setDentistName] = useState<string>("");
 
-  useEffect(() => {
-    if (appointment) {
-      setDentistName(appointment.DentistFullname);
-    }
-  }, [appointment]);
-
-  const handleSave = () => {
-    if (appointment) {
-      onSave({
-        ...appointment,
-        DentistFullname: dentistName,
-      });
-    }
-  };
+  // const [selectedDentist, setSelectedDentist] = useState();
+  // const handleDentistChange = (event: ChangeEvent<HTMLSelectElement>) => {
+  //   setSelectedDentist(event.target.value);
+  // };
 
   const handleClose = () => {
     toggle();
@@ -53,7 +44,7 @@ const EventModal: React.FC<EventModalProps> = ({
               className="form-control"
               id="customerName"
               name="customerName"
-              value={appointment.CustomerFullName}
+              value={appointment.customerName}
               disabled
             />
           </div>
@@ -64,8 +55,8 @@ const EventModal: React.FC<EventModalProps> = ({
               className="form-control"
               id="dentistName"
               name="dentistName"
-              value={dentistName}
-              onChange={(e) => setDentistName(e.target.value)}
+              value={appointment.dentistName}
+              disabled
             />
           </div>
           <div className={styles.formGroup}>
@@ -75,7 +66,7 @@ const EventModal: React.FC<EventModalProps> = ({
               className="form-control"
               id="serviceType"
               name="serviceType"
-              value={appointment.SelectedServiceName}
+              value={appointment.selectedService}
               disabled
             />
           </div>
@@ -86,7 +77,7 @@ const EventModal: React.FC<EventModalProps> = ({
               className="form-control"
               id="start"
               name="start"
-              value={appointment.AppointmentTime}
+              value={appointment.slotStartTime}
               disabled
             />
           </div>
@@ -97,14 +88,14 @@ const EventModal: React.FC<EventModalProps> = ({
               className="form-control"
               id="end"
               name="end"
-              value={appointment.ExpectedEndTime}
+              value={appointment.slotEndTime}
               disabled
             />
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="dentistStatus">Trạng thái nha sĩ:</label>
             <Button
-              color={appointment.BookingStatus === "Confirmed" ? "success" : "secondary"}
+              color={appointment.status === "completed" ? "success" : appointment.status == "pending" ? "secondary" : "danger"}
               className={`${styles.toggleButton} ml-2`}
               disabled
             >
@@ -112,21 +103,25 @@ const EventModal: React.FC<EventModalProps> = ({
             </Button>
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="bookingStatus">Booking Status:</label>
+            <label htmlFor="bookingStatus">Trạng thái booking:</label>
             <Button
-              color={appointment.BookingStatus === "Confirmed" ? "success" : "secondary"}
+              color={appointment.status === "completed" ? "success" : appointment.status == "pending" ? "secondary" : "danger"}
               className={`${styles.toggleButton} ml-2`}
               disabled
             >
-              {appointment.BookingStatus === "Confirmed" ? "Đã xác nhận" : "Đang chờ xác nhận"}
+              {appointment.status === "completed" ? "Hoàn thành" : appointment.status == "pending" ? "Chờ" : "Hủy"}
             </Button>
+          </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="bookingStatus">Note:</label>
+            <input type="textarea" disabled/>
           </div>
         </form>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={handleSave}>
+        {/* <Button color="primary" onClick={handleSave}>
           Thay đổi
-        </Button>{" "}
+        </Button>{" "} */}
         <Button color="secondary" onClick={handleClose}>
           Hủy
         </Button>
@@ -137,3 +132,18 @@ const EventModal: React.FC<EventModalProps> = ({
 
 
 export default EventModal;
+
+// <select
+//               className="form-control"
+//               id="dentistName"
+//               name="dentistName"
+//               value={selectedDentist}
+//               onChange={handleDentistChange}
+//             >
+//               <option value="">Chọn nha sĩ</option>
+//               {availableStaff.map((dentist) => (
+//                 <option key={dentist.dentistId} value={dentist.fullname}>
+//                   {dentist.fullname}
+//                 </option>
+//               ))}
+//             </select>

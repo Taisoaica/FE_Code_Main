@@ -1,9 +1,10 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { connection_path } from '../../constants/developments'; // Adjust the import according to your project structure
 import { GoogleCredentialResponse } from '@react-oauth/google';
-import { getAllUsers } from './SystemAdminUtils';
+import { getAllUsers, UserInfoModel } from './SystemAdminUtils';
 
 import decodeToken from "../../utils/decoder/accessTokenDecoder";
+import { apiCallWithTokenRefresh } from './apiCallWithRefreshToken';
 
 interface JwtPayload {
     role: string;
@@ -35,6 +36,7 @@ export const login = async (payload: { username: string; password: string }, nav
 
 
                 if (decodedToken.role === 'Dentist') {
+                    localStorage.set('remember', 'true');
                     navigate('/admin/clinic-owner');
                 } else {
                     navigate('/');
@@ -51,64 +53,85 @@ export const login = async (payload: { username: string; password: string }, nav
         console.log(error);
     }
 };
-export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navigate: (path: string) => void, redirectPath: string) => {
-    event.preventDefault();
 
-    const data = new FormData(event.currentTarget);
-    const payload = {
-        username: data.get('username'),
-        password: data.get('password'),
-    }
+export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navigate: (path: string) => void, redirectPath: string, remember: boolean) => {
+    const apiCall = async () => {
 
-    const api_url: string = connection_path.base_url + connection_path.auth.login;
+        event.preventDefault();
 
-    const configuration: AxiosRequestConfig = {
-        method: "POST",
-        url: api_url,
-        data: payload
-    };
+        const data = new FormData(event.currentTarget);
+        const payload = {
+            username: data.get('username'),
+            password: data.get('password'),
+        }
 
-    try {
-        const response = await axios(configuration);
+        const api_url: string = connection_path.base_url + connection_path.auth.login;
 
-        if (response.status === 200 && response.data.content.accessToken !== undefined) {
-            const accessToken = response.data.content.accessToken;
-            const refreshToken = response.data.content.refreshToken;
+        const configuration: AxiosRequestConfig = {
+            method: "POST",
+            url: api_url,
+            data: payload
+        };
 
-            localStorage.setItem("accessToken", accessToken);
-            localStorage.setItem("refreshToken", refreshToken);
+        try {
+            const response = await axios(configuration);
 
-            const decodedToken = decodeToken(accessToken);
+            if (response.status === 200 && response.data.content.accessToken !== undefined) {
+                const accessToken = response.data.content.accessToken;
+                const refreshToken = response.data.content.refreshToken;
 
-            if (decodedToken && 'role' in decodedToken && 'id' in decodedToken) {
-                const users = await getAllUsers();
 
-                const loggedInUser = Array.isArray(users) ? users.find(user => user.id.toString() === decodedToken.id) : null;
+                localStorage.setItem("accessToken", accessToken);
+                localStorage.setItem("refreshToken", refreshToken);
 
-                if (loggedInUser) {
-                    localStorage.setItem('userDetails', JSON.stringify(loggedInUser));
+                const decodedToken = decodeToken(accessToken);
+
+                if (decodedToken && 'role' in decodedToken && 'id' in decodedToken) {
+
+                    localStorage.setItem('id', decodedToken.id as string);
+                    const userId = Number(localStorage.getItem('id'));
+                    localStorage.setItem('role', decodedToken.role as string);
+                    const allUsers: UserInfoModel[] = await getAllUsers();
+                  
+                    const currentUser = allUsers.find(user => user.id === userId);
+                    console.log('Current User:', currentUser)
+                    if (currentUser) {
+                        if (currentUser.role === 'Dentist') {
+                            if (currentUser.isOwner) {
+                                navigate('/admin/clinic-owner');
+                            } else {
+                                navigate('/dentist');
+                            }
+                        } else {
+                            navigate(redirectPath || '/');
+                        }
+                    } else {
+                        console.error('User not found in the list:', decodedToken.id);
+                    }
+                    // if (decodedToken.role === 'Dentist') {
+                    //     navigate('/admin/clinic-owner');
+                    // } else {
+                    //     navigate(redirectPath || '/');
+                    // }
+                } else {
+                    console.error('Invalid decoded token:', decodedToken);
                 }
 
-                localStorage.setItem('id', decodedToken.id as string);
-                localStorage.setItem('role', decodedToken.role as string);
-
-                if (decodedToken.role === 'Dentist') {
-                    navigate('/admin/clinic-owner');
+                if (remember) {
+                    localStorage.setItem('remember', 'true');
                 } else {
-                    navigate(redirectPath || '/');
+                    localStorage.removeItem('remember');
                 }
             } else {
-                console.error('Invalid decoded token:', decodedToken);
+                console.log(response);
+                alert("Không đăng nhập thành công");
             }
-
-        } else {
-            console.log(response);
-            alert("Không đăng nhập thành công");
+        } catch (error) {
+            alert('Đăng nhập thất bại, vui lòng thử lại sau.');
+            console.log(error);
         }
-    } catch (error) {
-        alert('Đăng nhập thất bại, vui lòng thử lại sau.');
-        console.log(error);
     }
+    return await apiCallWithTokenRefresh(apiCall);
 };
 
 export const handleLogout = async (navigate: (path: string) => void) => {
@@ -117,12 +140,11 @@ export const handleLogout = async (navigate: (path: string) => void) => {
     var refreshToken = localStorage.getItem('refreshToken');
 
 
-
     if (!accessToken) {
         console.error('Access token not found in localStorage');
         return;
     }
-
+    localStorage.clear();
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     navigate('/');
@@ -132,41 +154,78 @@ export const handleLogout = async (navigate: (path: string) => void) => {
 
 
 export const handleRegister = async (event: React.FormEvent<HTMLFormElement>, onSuccess: () => void) => {
-    const api_url: string = connection_path.base_url + connection_path.user.customer_register;
+    const apiCall = async () => {
 
-    const data = new FormData(event.currentTarget);
+        const api_url: string = connection_path.base_url + connection_path.user.customer_register;
 
-    const payload = {
-        username: data.get('username'),
-        email: data.get('email'),
-        password: data.get('password'),
-        clinicOwner: false,
-        clinic: 0,
-    };
+        const data = new FormData(event.currentTarget);
 
-    const configuration: AxiosRequestConfig = {
-        method: 'POST',
-        url: api_url,
-        data: payload
-    };
+        const payload = {
+            username: data.get('username'),
+            email: data.get('email'),
+            password: data.get('password'),
+            clinicOwner: false,
+            clinic: 0,
+        };
 
-    try {
-        const response = await axios(configuration);
-        console.log('Register response:', response);
+        const configuration: AxiosRequestConfig = {
+            method: 'POST',
+            url: api_url,
+            data: payload
+        };
 
-        if (response.status === 200) {
-            onSuccess();
+        try {
+            const response = await axios(configuration);
 
-        } else {
-            console.error('Register failed with status:', response.status);
-            alert('Register failed');
+            if (response.status === 200) {
+
+                onSuccess();
+
+            } else {
+                console.error('Register failed with status:', response.status);
+            }
+        } catch (error) {
+            console.error('Register error:', error);
         }
-    } catch (error) {
-        console.error('Register error:', error);
-        alert('Register failed, please try again later.');
     }
-
+    return await apiCallWithTokenRefresh(apiCall);
 };
+
+export const activateUserAccount = async (userId: number, token: string) => {
+    const apiCall = async () => {
+
+
+        const api_url: string = `${connection_path.base_url}${connection_path.user.activate_user}`;
+
+        const configuration: AxiosRequestConfig = {
+            method: 'PUT',
+            url: api_url,
+            params: {
+                userId,
+                token,
+            },
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+
+        try {
+            console.log('Request Configuration:', configuration);
+            const response = await axios(configuration);
+            console.log('Activate User Account response:', response);
+
+            if (response.status === 200) {
+                console.log('User account activated successfully.');
+            } else {
+                console.error('Activate user account failed with status:', response.status);
+            }
+        } catch (error) {
+            console.error('Activate user account error:', error);
+        }
+    }
+    return await apiCallWithTokenRefresh(apiCall);
+};
+
 
 export const handleGoogleOnSuccess = async (response: GoogleCredentialResponse, navigate: (path: string) => void) => {
     const api_url: string =
@@ -197,3 +256,49 @@ export const handleGoogleOnFailure = (navigate: (path: string) => void) => {
 };
 
 
+export const checkAuth = async (): Promise<boolean> => {
+    const remember = localStorage.getItem('remember');
+    const refreshToken = localStorage.getItem('refreshToken');
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (accessToken) {
+        return true;
+    } else if (remember === "true" && refreshToken) {
+        return await refreshAccessToken();
+    }
+    return false;
+}
+
+export const refreshAccessToken = async (): Promise<boolean> => {
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+
+    const api_url: string = connection_path.base_url + connection_path.auth.refresh;
+    const config: AxiosRequestConfig = {
+        method: 'POST',
+        url: api_url,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + accessToken,
+        },
+        data: {
+            accessToken,
+            refreshToken,
+        }
+    }
+
+    try {
+        const response = await axios(config);
+        if (response.status == 200) {
+            localStorage.setItem('accessToken', response.data.content.accessToken);
+
+            localStorage.setItem('refreshToken', response.data.content.refreshToken);
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        console.error('Error refreshing access token:', error);
+        return false;
+    }
+}

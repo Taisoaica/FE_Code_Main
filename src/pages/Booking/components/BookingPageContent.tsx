@@ -10,9 +10,9 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { BookingInformation, SetBookingInformation, PaymentInformation, BookingRegistrationModel } from '../../../utils/interfaces/interfaces';
 import styles from './BookingPageContent.module.css';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
-import { AppointmentRegistrationModel, createNewCustomerAppointment } from '../../../utils/api/BookingRegister';
+import { AppointmentRegistrationModel, createNewCustomerAppointment, PaymentModel, createPayment } from '../../../utils/api/BookingRegister';
 import DentistList from './DentistList/DentistList';
-import axios from 'axios';
+import { app } from '../../../../firebase';
 
 const BookingPageContent = () => {
     const { clinicId } = useParams<{ clinicId: string }>();
@@ -30,17 +30,14 @@ const BookingPageContent = () => {
         serviceName: ''
     });
 
-    const [paymentData, setPaymentData]: [PaymentInformation, Dispatch<SetStateAction<PaymentInformation>>] = useState({
-        paymentMethod: '',
-        amount: '',
-        orderID: '',
-        orderDetail: '',
+    const [paymentData, setPaymentData]: [PaymentModel, Dispatch<SetStateAction<PaymentModel>>] = useState({
+        appointmentId: '',
+        amount: 0,
+        orderInfo: '',
+        returnUrl: ''
     });
-    // ================================================================
-
 
     const { steps, currentStep, step, isFirstStep, isFinalStep, next, back } = UseMultipleStepForm([
-        // <TypeOfBookingForm formData={formData} setFormData={setFormData} onStepComplete={() => next()} />,
         <ServiceList setFormData={setFormData} onStepComplete={() => next()} />,
         <DentistList setFormData={setFormData} onStepComplete={() => next()} />,
         <Calendar
@@ -65,43 +62,6 @@ const BookingPageContent = () => {
         back();
     };
 
-    const getCurrentDateInGmtPlus7 = () => {
-        const currentDate = new Date();
-
-
-        const gmtPlus7Offset = 7 * 60;
-        const gmtPlus7Date = new Date(currentDate.getTime() + (gmtPlus7Offset * 60 * 1000));
-
-        return gmtPlus7Date;
-    };
-
-    const getCreateDateInGmtPlus7 = () => {
-        const gmtPlus7Date = getCurrentDateInGmtPlus7();
-
-        const year = gmtPlus7Date.getFullYear();
-        const month = String(gmtPlus7Date.getMonth() + 1).padStart(2, '0');
-        const day = String(gmtPlus7Date.getDate()).padStart(2, '0');
-        const hours = String(gmtPlus7Date.getHours()).padStart(2, '0');
-        const minutes = String(gmtPlus7Date.getMinutes()).padStart(2, '0');
-        const seconds = String(gmtPlus7Date.getSeconds()).padStart(2, '0');
-
-        return `${year}${month}${day}${hours}${minutes}${seconds}`;
-    };
-
-    const getExpireDateInGmtPlus7 = () => {
-        const gmtPlus7Date = getCurrentDateInGmtPlus7();
-        gmtPlus7Date.setMinutes(gmtPlus7Date.getMinutes() + 15);
-
-        const year = gmtPlus7Date.getFullYear();
-        const month = String(gmtPlus7Date.getMonth() + 1).padStart(2, '0');
-        const day = String(gmtPlus7Date.getDate()).padStart(2, '0');
-        const hours = String(gmtPlus7Date.getHours()).padStart(2, '0');
-        const minutes = String(gmtPlus7Date.getMinutes()).padStart(2, '0');
-        const seconds = String(gmtPlus7Date.getSeconds()).padStart(2, '0');
-
-        return `${year}${month}${day}${hours}${minutes}${seconds}`;
-    };
-
     const handleSubmit = async () => {
         try {
             const customerId = localStorage.getItem('id');
@@ -120,41 +80,45 @@ const BookingPageContent = () => {
                 ServiceId: formData.serviceId || '',
                 MaxRecurring: 0,
                 OriginalAppointment: null,
-                Status: 'booked'
+                Status: 'pending'
             };
 
-            await createNewCustomerAppointment(payload, navigate, formData, clinicName)
-            if (paymentData.paymentMethod === 'VNPay') {
-                console.log(paymentData.orderDetail)
-                console.log(paymentData.orderID)
-                const response = await axios.get('https://localhost:7128/api/payment/paymentUrl', {
-                    params: {
-                        amount: 1200000,
-                        info: paymentData.orderDetail,
-                        orderInfo: paymentData.orderID,
-                        bookingInfo: JSON.stringify(payload),
-                        formData: JSON.stringify(formData),
-                        clinicName: clinicName
+            const response = await createNewCustomerAppointment(payload)
+
+            if (response.content) {
+    
+                if (typeof response.content === 'object' && response.content.id) {
+                    const paymentPayload: PaymentModel = {
+                        appointmentId: response.content.id,
+                        amount: response.content.appointmentFee.toString(),
+                        orderInfo: `Thanh toan dich vu kham benh ${response.content.id}`,
+                        returnUrl: 'http://localhost:5173/success'
+                    };
+    
+                    try {
+                        const paymentResponse = await createPayment(paymentPayload);
+                        if (paymentResponse && paymentResponse.content) {
+                            // window.open(paymentResponse.content, '_blank');
+                            window.location.href = paymentResponse.content;
+                        } else {
+                            console.error('Invalid payment response:', paymentResponse);
+                        }
+                    } catch (paymentError) {
+                        console.error('Payment creation failed:', paymentError);
                     }
-                });
-
-                if (response.status === 200) {
-                    const { paymentUrl } = response.data;
-
-                    window.location.href = paymentUrl;
                 } else {
-                    console.error('Failed to generate payment URL');
+                    console.error('Unexpected content format:', response.content);
                 }
-
+            } else if (response && response.statusCode === 400) {
+                console.error(response.message);
+                alert(response.message);
             } else {
-                console.error('Invalid payment method');
+                console.error('Unexpected response format:', response);
             }
-
         } catch (error) {
             console.error('Failed to create appointment:', error);
         }
     };
-
 
     function formatTime(time: string): string {
         if (!time || !time.includes(':')) {

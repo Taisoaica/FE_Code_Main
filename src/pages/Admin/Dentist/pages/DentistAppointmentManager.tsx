@@ -35,6 +35,7 @@ import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import { useEffect, useRef, useState } from "react";
 import viLocale from '@fullcalendar/core/locales/vi';
 import { EventClickArg } from "@fullcalendar/core/index.js";
+import { AppointmentViewModel } from "../../../../utils/api/ClinicOwnerUtils";
 
 interface AppointmentRegistrationModel {
   timeSlotId: number;
@@ -50,33 +51,34 @@ interface AppointmentRegistrationModel {
   recurrenceEnd?: string | null;
   status: string;
 }
-const sampleEvents: AppointmentRegistrationModel[] = [
-  {
-    timeSlotId: 1,
-    appointmentType: 'Khám',
-    appointmentDate: new Date('2024-06-30T09:00:00'),
-    customerId: 0,
-    dentistId: 0,
-    clinicId: 0,
-    serviceId: null,
-    maxRecurring: 0,
-    originalAppointment: null,
-    status: 'Đang chờ xác nhận',
-  },
-  {
-    timeSlotId: 2,
-    appointmentType: 'Khám',
-    appointmentDate: new Date('2024-07-07T09:30:00'),
-    customerId: 0,
-    dentistId: 0,
-    clinicId: 0,
-    serviceId: null,
-    maxRecurring: 0,
-    originalAppointment: null,
-    status: 'Đang chờ xác nhận',
-  },
-  // Include other events similarly...
-];
+
+// const sampleEvents: AppointmentRegistrationModel[] = [
+//   {
+//     timeSlotId: 1,
+//     appointmentType: 'Khám',
+//     appointmentDate: new Date('2024-06-30T09:00:00'),
+//     customerId: 0,
+//     dentistId: 0,
+//     clinicId: 0,
+//     serviceId: null,
+//     maxRecurring: 0,
+//     originalAppointment: null,
+//     status: 'Đang chờ xác nhận',
+//   },
+//   {
+//     timeSlotId: 2,
+//     appointmentType: 'Khám',
+//     appointmentDate: new Date('2024-07-07T09:30:00'),
+//     customerId: 0,
+//     dentistId: 0,
+//     clinicId: 0,
+//     serviceId: null,
+//     maxRecurring: 0,
+//     originalAppointment: null,
+//     status: 'Đang chờ xác nhận',
+//   },
+//   // Include other events similarly...
+// ];
 
 
 const drawerWidth: number = 240;
@@ -136,7 +138,8 @@ const DentistAppointmentManager = () => {
   };
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [appointment, setAppointment] = useState<AppointmentRegistrationModel[]>(sampleEvents);
+  const [appointment, setAppointment] = useState<AppointmentViewModel[]>();
+  // const [appointment, setAppointment] = useState<AppointmentRegistrationModel[]>(sampleEvents);
   const [selectedEvent, setSelectedEvent] = useState<AppointmentRegistrationModel | null>(null);
   const [repetitionInterval, setRepetitionInterval] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [recurringCount, setRecurringCount] = useState<number>(1);
@@ -156,14 +159,6 @@ const DentistAppointmentManager = () => {
   };
 
   const calendarRef = useRef<FullCalendar>(null);
-
-  // const calendarApi = calendarRef.current?.getApi();
-  // const updateTitle = (dateInfo: { start: Date }) => {
-  //   const titleElement = document.querySelector('.fc-toolbar-title');
-  //   if (titleElement) {
-  //     titleElement.textContent = formatDateTitle(dateInfo);
-  //   }
-  // };
 
   function formatDateTitle(dateInfo: { start: Date }): string {
     const startDate = dateInfo.start;
@@ -200,129 +195,65 @@ const DentistAppointmentManager = () => {
 
     return [startOfWeek, endOfWeek];
   }
-  const handleRepeatAppointment = () => {
-    try {
-      if (!selectedEvent || !repetitionInterval || recurringCount <= 0) {
-        return; // Exit early if essential data is missing or invalid
-      }
 
-      const recurrenceDates: AppointmentRegistrationModel[] = [];
-      const originalDate = new Date(selectedEvent.appointmentDate);
+  // const handleRepeatAppointment = () => {
+  //   try {
+  //     if (!selectedEvent || !repetitionInterval || recurringCount <= 0) {
+  //       return; // Exit early if essential data is missing or invalid
+  //     }
 
-      for (let i = 1; i <= recurringCount; i++) {
-        const currentDate = new Date(originalDate);
+  //     const recurrenceDates: AppointmentRegistrationModel[] = [];
+  //     const originalDate = new Date(selectedEvent.appointmentDate);
 
-        // Adjust the current date based on the repetition interval
-        if (repetitionInterval === 'weekly') {
-          currentDate.setDate(originalDate.getDate() + 7 * i); // Move to next week
-        } else if (repetitionInterval === 'daily') {
-          console.log(currentDate)
-          currentDate.setDate(originalDate.getDate() + i); // Move to next day
-        } else if (repetitionInterval === 'monthly') {
-          currentDate.setMonth(originalDate.getMonth() + i); // Move to next month
+  //     for (let i = 1; i <= recurringCount; i++) {
+  //       const currentDate = new Date(originalDate);
 
-          // Ensure the time slot is valid for the new month's day
-          const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-          if (originalDate.getDate() > daysInMonth) {
-            currentDate.setDate(daysInMonth);
-          }
-        }
+  //       // Adjust the current date based on the repetition interval
+  //       if (repetitionInterval === 'weekly') {
+  //         currentDate.setDate(originalDate.getDate() + 7 * i); // Move to next week
+  //       } else if (repetitionInterval === 'daily') {
+  //         console.log(currentDate)
+  //         currentDate.setDate(originalDate.getDate() + i); // Move to next day
+  //       } else if (repetitionInterval === 'monthly') {
+  //         currentDate.setMonth(originalDate.getMonth() + i); // Move to next month
 
-        // Create a new appointment with the adjusted date and time slot ID
-        const newTimeSlotId = calculateSlotId(currentDate); // Assume calculateSlotId is defined
+  //         // Ensure the time slot is valid for the new month's day
+  //         const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+  //         if (originalDate.getDate() > daysInMonth) {
+  //           currentDate.setDate(daysInMonth);
+  //         }
+  //       }
 
-        const newAppointment: AppointmentRegistrationModel = {
-          ...selectedEvent,
-          originalAppointment: selectedEvent.timeSlotId,
-          appointmentDate: currentDate, // Convert to ISO string if necessary
-          timeSlotId: newTimeSlotId,
-          recurrenceInterval: repetitionInterval,
-        };
+  //       // Create a new appointment with the adjusted date and time slot ID
+  //       const newTimeSlotId = calculateSlotId(currentDate); // Assume calculateSlotId is defined
 
-        recurrenceDates.push(newAppointment);
-      }
+  //       const newAppointment: AppointmentRegistrationModel = {
+  //         ...selectedEvent,
+  //         originalAppointment: selectedEvent.timeSlotId,
+  //         appointmentDate: currentDate, // Convert to ISO string if necessary
+  //         timeSlotId: newTimeSlotId,
+  //         recurrenceInterval: repetitionInterval,
+  //       };
 
-      // Update state with the new recurrence appointments
-      setAppointment([...appointment, ...recurrenceDates]);
-      toggleModal(); // Close the modal after processing
-    } catch (error) {
-      console.error('Error while handling repeat appointment:', error);
-      // Handle the error or show a message to the user
-    }
-  };
+  //       recurrenceDates.push(newAppointment);
+  //     }
 
+  //     setAppointment([...appointment, ...recurrenceDates]);
+  //     toggleModal();
+  //   } catch (error) {
+  //     console.error('Error while handling repeat appointment:', error);
+  //   }
+  // };
 
 
   const calculateSlotId = (startTime: Date): number => {
     const hours = startTime.getHours();
     const minutes = startTime.getMinutes();
 
-    // Calculate the slot ID based on time ranges
-    if (hours >= 6 && hours < 7 && minutes < 30) {
-      return 1; // Slot 1: 6:00 - 6:30
-    } else if (hours >= 6 && hours < 7 && minutes >= 30) {
-      return 2; // Slot 2: 6:30 - 7:00
-    } else if (hours >= 7 && hours < 8 && minutes < 30) {
-      return 3; // Slot 3: 7:00 - 7:30
-    } else if (hours >= 7 && hours < 8 && minutes >= 30) {
-      return 4; // Slot 4: 7:30 - 8:00
-    } else if (hours >= 8 && hours < 9 && minutes < 30) {
-      return 5; // Slot 5: 8:00 - 8:30
-    } else if (hours >= 8 && hours < 9 && minutes >= 30) {
-      return 6; // Slot 6: 8:30 - 9:00
-    } else if (hours >= 9 && hours < 10 && minutes < 30) {
-      return 7; // Slot 7: 9:00 - 9:30
-    } else if (hours >= 9 && hours < 10 && minutes >= 30) {
-      return 8; // Slot 8: 9:30 - 10:00
-    } else if (hours >= 10 && hours < 11 && minutes < 30) {
-      return 9; // Slot 9: 10:00 - 10:30
-    } else if (hours >= 10 && hours < 11 && minutes >= 30) {
-      return 10; // Slot 10: 10:30 - 11:00
-    } else if (hours >= 11 && hours < 12 && minutes < 30) {
-      return 11; // Slot 11: 11:00 - 11:30
-    } else if (hours >= 11 && hours < 12 && minutes >= 30) {
-      return 12; // Slot 12: 11:30 - 12:00
-    } else if (hours >= 12 && hours < 13 && minutes < 30) {
-      return 13; // Slot 13: 12:00 - 12:30
-    } else if (hours >= 12 && hours < 13 && minutes >= 30) {
-      return 14; // Slot 14: 12:30 - 13:00
-    } else if (hours >= 13 && hours < 14 && minutes < 30) {
-      return 15; // Slot 15: 13:00 - 13:30
-    } else if (hours >= 13 && hours < 14 && minutes >= 30) {
-      return 16; // Slot 16: 13:30 - 14:00
-    } else if (hours >= 14 && hours < 15 && minutes < 30) {
-      return 17; // Slot 17: 14:00 - 14:30
-    } else if (hours >= 14 && hours < 15 && minutes >= 30) {
-      return 18; // Slot 18: 14:30 - 15:00
-    } else if (hours >= 15 && hours < 16 && minutes < 30) {
-      return 19; // Slot 19: 15:00 - 15:30
-    } else if (hours >= 15 && hours < 16 && minutes >= 30) {
-      return 20; // Slot 20: 15:30 - 16:00
-    } else if (hours >= 16 && hours < 17 && minutes < 30) {
-      return 21; // Slot 21: 16:00 - 16:30
-    } else if (hours >= 16 && hours < 17 && minutes >= 30) {
-      return 22; // Slot 22: 16:30 - 17:00
-    } else if (hours >= 17 && hours < 18 && minutes < 30) {
-      return 23; // Slot 23: 17:00 - 17:30
-    } else if (hours >= 17 && hours < 18 && minutes >= 30) {
-      return 24; // Slot 24: 17:30 - 18:00
-    } else if (hours >= 18 && hours < 19 && minutes < 30) {
-      return 25; // Slot 25: 18:00 - 18:30
-    } else if (hours >= 18 && hours < 19 && minutes >= 30) {
-      return 26; // Slot 26: 18:30 - 19:00
-    } else if (hours >= 19 && hours < 20 && minutes < 30) {
-      return 27; // Slot 27: 19:00 - 19:30
-    } else if (hours >= 19 && hours < 20 && minutes >= 30) {
-      return 28; // Slot 28: 19:30 - 20:00
-    } else if (hours >= 20 && hours < 21 && minutes < 30) {
-      return 29; // Slot 29: 20:00 - 20:30
-    } else if (hours >= 20 && hours < 21 && minutes >= 30) {
-      return 30; // Slot 30: 20:30 - 21:00
-    }
+    const slotId = (hours * 2) + (minutes >= 30 ? 1 : 0) + 1;
 
-    return 0;
+    return slotId;
   };
-
 
   const slotLabelContent = (info: any) => {
     const start = info.date;
@@ -335,16 +266,16 @@ const DentistAppointmentManager = () => {
     return `${startStr} - ${endStr}`;
   };
 
-  const mapAppointmentToEvent = (appointment: AppointmentRegistrationModel) => {
-    return {
-      id: appointment.timeSlotId.toString(),
-      title: appointment.appointmentType,
-      start: appointment.appointmentDate,
-      end: new Date(new Date(appointment.appointmentDate).getTime() + 30 * 60000),
-      extendedProps: { ...appointment },
-      classNames: [appointment.status === 'booked' ? 'event-status-booked' : 'event-status-available'],
-    };
-  };
+  // const mapAppointmentToEvent = (appointment: AppointmentRegistrationModel) => {
+  //   return {
+  //     id: appointment.timeSlotId.toString(),
+  //     title: appointment.appointmentType,
+  //     start: appointment.appointmentDate,
+  //     end: new Date(new Date(appointment.appointmentDate).getTime() + 30 * 60000),
+  //     extendedProps: { ...appointment },
+  //     classNames: [appointment.status === 'booked' ? 'event-status-booked' : 'event-status-available'],
+  //   };
+  // };
 
   return (
     <Box sx={{ display: "flex", height: '100%' }}>
@@ -435,7 +366,7 @@ const DentistAppointmentManager = () => {
                           }}
                           initialView="timeGridWeek"
                           editable={false}
-                          events={appointment.map(mapAppointmentToEvent)}
+                          // events={appointment.map(mapAppointmentToEvent)}
                           selectable={false}
                           nowIndicator={true}
                           selectMirror={true}
@@ -456,12 +387,12 @@ const DentistAppointmentManager = () => {
                         <ModalBody>
                           {selectedEvent && (
                             <>
-                              <p><strong>Patient:</strong> {selectedEvent.customerId}</p>
-                              <p><strong>Type:</strong> {selectedEvent.appointmentType}</p>
-                              <p><strong>Service:</strong> {selectedEvent.serviceId}</p>
-                              <p><strong>Date:</strong> {selectedEvent.appointmentDate.toDateString()}</p>
-                              <p><strong>Status:</strong> {selectedEvent.status}</p>
-                              <Label for="recurringCount">Number of repetitions:</Label>
+                              <p><strong>Bệnh nhân:</strong> {selectedEvent.customerId}</p>
+                              <p><strong>Hình thức:</strong> {selectedEvent.appointmentType}</p>
+                              <p><strong>Dịch vụ:</strong> {selectedEvent.serviceId}</p>
+                              <p><strong>Ngày:</strong> {selectedEvent.appointmentDate.toDateString()}</p>
+                              <p><strong>Trạng thái:</strong> {selectedEvent.status}</p>
+                              <Label for="recurringCount">Số lần lặp:</Label>
                               <Input
                                 type="number"
                                 name="recurringCount"
@@ -471,19 +402,19 @@ const DentistAppointmentManager = () => {
                                 onChange={(e) => setRecurringCount(parseInt(e.target.value))}
                               />
                               <FormGroup>
-                                <Label for="repetitionInterval">Select repetition interval:</Label>
+                                <Label for="repetitionInterval">Chọn số lần lặp:</Label>
                                 <Input
                                   type="select"
                                   name="repetitionInterval"
                                   id="repetitionInterval"
                                   onChange={(e) => setRepetitionInterval(e.target.value as 'daily' | 'weekly' | 'monthly')}
                                 >
-                                  <option value="daily">Daily</option>
-                                  <option value="weekly">Weekly</option>
-                                  <option value="monthly">Monthly</option>
+                                  <option value="daily">Hằng ngày</option>
+                                  <option value="weekly">Hằng tuần</option>
+                                  <option value="monthly">Hằng tháng</option>
                                 </Input>
                               </FormGroup>
-                              <Button color="primary" onClick={handleRepeatAppointment}>Repeat Appointment</Button>
+                              <Button color="primary" onClick={handleRepeatAppointment}>Đặt lịch khám định kì</Button>
                             </>
                           )}
                         </ModalBody>

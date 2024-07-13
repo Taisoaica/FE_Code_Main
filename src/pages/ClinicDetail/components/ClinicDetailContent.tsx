@@ -9,6 +9,8 @@ import { ClinicInfoModel } from '../../../utils/interfaces/ClinicRegister/Clinic
 import { getClinicInformation } from '../../../utils/api/MiscUtils';  // Adjust the path as per your file structure
 import { ClinicServiceInfoModel } from '../../../utils/api/BookingRegister';
 import { getClinicServices } from '../../../utils/api/ClinicOwnerUtils';
+import HomeIcon from '@mui/icons-material/Home';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 
 const ClinicDetailContent = () => {
     const { id } = useParams<{ id: string }>();
@@ -90,14 +92,47 @@ const ClinicDetailContent = () => {
             {clinic && (
                 <>
                     <Box className={styles.breadcrumbs}>
-                        <Breadcrumbs>
-                            <Link underline="hover" color="inherit" href="/" className={styles.breadcrumbLink}>
-                                Trang chủ
+                        <Breadcrumbs
+                            separator={<Typography sx={{ color: 'rgba(255,255,255,0.7)', mx: 1, fontWeight: 'bold' }}>/</Typography>}
+                            sx={{
+                                '& .MuiBreadcrumbs-ol': {
+                                    alignItems: 'center',
+                                },
+                            }}
+                        >
+                            <Link
+                                underline="hover"
+                                href="/"
+                                sx={{
+                                    fontSize: 18,
+                                    color: 'rgba(255,255,255,0.9)',
+                                    textDecoration: 'none',
+                                    '&:hover': {
+                                        color: '#FFFFFF',
+                                        textDecoration: 'underline',
+                                    },
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <HomeIcon sx={{ mr: 0.5, fontSize: 20 }} />
+                                Trang phòng khám
                             </Link>
-                            <div className={styles.breadcrumbText}>Trang phòng khám</div>
+                            <Typography
+                                sx={{
+                                    fontSize: 18,
+                                    color: '#FFFFFF',
+                                    fontWeight: 'bold',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <BookmarkIcon sx={{ mr: 0.5, fontSize: 20 }} />
+                                Trang đặt khám
+                            </Typography>
                         </Breadcrumbs>
                     </Box>
-                    <Divider className={styles.divider} />
+
                     <Box className={styles.clinicHeader}>
                         <div className={styles.avatar}>
                             <img
@@ -111,8 +146,6 @@ const ClinicDetailContent = () => {
                         </div>
                     </Box>
 
-                    <Divider className={styles.divider} />
-
                     <Box className={styles.imageList}>
                         <ImageList images={images} />
                     </Box>
@@ -123,14 +156,14 @@ const ClinicDetailContent = () => {
                         </Button>
                     </Box>
 
-                    <div className={styles.main}>
+                    <Box className={styles.main}>
                         <div className={styles.section}>
                             <h4 className={styles.sectionTitle}>Giới thiệu</h4>
                             <p className={styles.sectionContent}>
                                 {clinic.description}
                             </p>
                         </div>
-                        <hr className={styles.divider} />
+                        <Divider className={styles.divider} />
 
                         <div className={styles.section}>
                             <h4 className={styles.sectionTitle}>Thời gian khám</h4>
@@ -145,7 +178,6 @@ const ClinicDetailContent = () => {
                                 {clinic.address}
                             </p>
                         </div>
-
 
                         <div className={styles.section}>
                             <h4 className={styles.sectionTitle}>Thông tin liên hệ</h4>
@@ -163,42 +195,7 @@ const ClinicDetailContent = () => {
                             <h4 className={styles.sectionTitle}>Dịch vụ</h4>
                             <ClinicServices services={services} />
                         </div>
-                    </div>
-
-
-                    {/* <Box className={styles.detailSection}>
-                        <Box className={styles.sectionContent}>
-                            <Typography variant="h4" className={styles.sectionTitle}>
-                                Giới thiệu chi tiết
-                            </Typography>
-                            <Typography variant="body1" className={styles.sectionContent}>
-                                {clinic.description}
-                            </Typography>
-                        </Box>
-                        <Box className={styles.sectionContent}>
-                            <Typography variant="h6" className={styles.sectionTitle}>
-                                Thời gian khám:
-                            </Typography>
-                            <Typography variant="body1" className={styles.sectionContent}>
-                                {clinic.openHour} - {clinic.closeHour}
-                            </Typography>
-                        </Box>
-
-                        <Box className={styles.sectionContent}>
-                            <Typography variant="h6" className={styles.sectionTitle}>
-                                Địa chỉ:
-                            </Typography>
-                            <Typography variant="body1" className={styles.sectionContent}>
-                                {clinic.address}
-                            </Typography>
-                        </Box>
-
-                        <Box className={styles.sectionBottom}>
-                            <Typography variant="h6" className={styles.sectionTitle}>
-                                Dịch vụ nổi bật:
-                            </Typography>
-                        </Box>
-                    </Box> */}
+                    </Box>
                 </>
             )}
         </Box>

@@ -30,6 +30,7 @@ import { getStorage, ref } from "firebase/storage";
 import { deleteFile } from "../../../../utils/UploadFireBase";
 import { Carousel } from "reactstrap";
 import ConfirmationDialog from "../../../../components/ConfirmationDialog/ConfirmationDialog";
+import { fetchDentistInfo } from "../../../../utils/api/ClinicOwnerUtils";
 
 
 const drawerWidth: number = 270;
@@ -98,11 +99,12 @@ export default function ClinicInformation() {
   const [progress, setProgress] = useState<number>(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
-
-  const clinic = localStorage.getItem('clinic');
-  const clinicId = clinic ? JSON.parse(clinic).id : null;
+  const [clinicId, setClinicId] = useState<string>();
 
   const fetchImages = async (folderName: string) => {
+    const id = await fetchDentistInfo();
+    const clinicId = id.content.clinicId;
+    setClinicId(id.content.clinicId);
     const folderPath = `clinics/${clinicId}/${folderName}/`;
     try {
       const imageUrls = await fetchClinicImages(folderPath);
@@ -118,11 +120,15 @@ export default function ClinicInformation() {
     }
   };
 
+
+
   useEffect(() => {
+
     fetchImages('carousel');
     fetchImages('logo');
   }, []);
 
+  console.log(clinicId)
 
   const handleLogoChange = (files: File[]) => {
     const updatedFiles = files.map((file) => ({ file }));

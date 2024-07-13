@@ -12,13 +12,17 @@ import styles from './BookingPageContent.module.css';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { AppointmentRegistrationModel, createNewCustomerAppointment, PaymentModel, createPayment } from '../../../utils/api/BookingRegister';
 import DentistList from './DentistList/DentistList';
+import HomeIcon from '@mui/icons-material/Home';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { app } from '../../../../firebase';
+import { getAllCustomer } from '../../../utils/api/SystemAdminUtils';
 
 const BookingPageContent = () => {
     const { clinicId } = useParams<{ clinicId: string }>();
     const location = useLocation();
     const clinicName = location.state?.clinicName || '';
     const navigate = useNavigate();
+    const [paymentMethod, setPaymentMethod] = useState<string>('Other');
     // ================= Booking information =============================
     const [formData, setFormData]: [BookingInformation, SetBookingInformation] = useState({
         clinic: clinicId || '',
@@ -37,6 +41,10 @@ const BookingPageContent = () => {
         returnUrl: ''
     });
 
+    const handlePaymentMethodChange = (method: string) => {
+        setPaymentMethod(method);
+    };
+
     const { steps, currentStep, step, isFirstStep, isFinalStep, next, back } = UseMultipleStepForm([
         <ServiceList setFormData={setFormData} onStepComplete={() => next()} />,
         <DentistList setFormData={setFormData} onStepComplete={() => next()} />,
@@ -45,9 +53,8 @@ const BookingPageContent = () => {
             setFormData={setFormData}
             onStepComplete={() => next()}
         />,
-        <CheckoutForm paymentData={paymentData} setPaymentData={setPaymentData} />,
+        <CheckoutForm paymentData={paymentData} setPaymentData={setPaymentData} setPaymentMethodCallback={handlePaymentMethodChange} />,
     ]);
-
 
     const handleBack = () => {
         if (currentStep === 1) {
@@ -64,7 +71,7 @@ const BookingPageContent = () => {
 
     const handleSubmit = async () => {
         try {
-            const customerId = localStorage.getItem('id');
+            const customerId = localStorage.getItem('customerId');
             if (!customerId || isNaN(parseInt(customerId))) {
                 console.error('Invalid Customer ID');
                 return;
@@ -86,28 +93,31 @@ const BookingPageContent = () => {
             const response = await createNewCustomerAppointment(payload)
 
             if (response.content) {
-    
-                if (typeof response.content === 'object' && response.content.id) {
-                    const paymentPayload: PaymentModel = {
-                        appointmentId: response.content.id,
-                        amount: response.content.appointmentFee.toString(),
-                        orderInfo: `Thanh toan dich vu kham benh ${response.content.id}`,
-                        returnUrl: 'http://localhost:5173/success'
-                    };
-    
-                    try {
-                        const paymentResponse = await createPayment(paymentPayload);
-                        if (paymentResponse && paymentResponse.content) {
-                            // window.open(paymentResponse.content, '_blank');
-                            window.location.href = paymentResponse.content;
-                        } else {
-                            console.error('Invalid payment response:', paymentResponse);
+                if (paymentMethod === 'VNPay') {
+                    if (response.content.bookId) {
+                        const paymentPayload: PaymentModel = {
+                            appointmentId: response.content.bookId,
+                            orderInfo: `Thanh toan dich vu kham benh ${response.content.bookId}`,
+                            returnUrl: 'http://localhost:5173/success'
+                        };
+
+                        try {
+                            const paymentResponse = await createPayment(paymentPayload);
+                            if (paymentResponse && paymentResponse.content) {
+                                console.log(paymentResponse)
+                                // window.location.href = paymentResponse.content;
+                            } else {
+                                console.error('Invalid payment response:', paymentResponse);
+                            }
+                        } catch (paymentError) {
+                            console.error('Payment creation failed:', paymentError);
                         }
-                    } catch (paymentError) {
-                        console.error('Payment creation failed:', paymentError);
+                    } else {
+                        console.error('Unexpected content format:', response.content);
                     }
                 } else {
-                    console.error('Unexpected content format:', response.content);
+                    console.log('Booking successfully');
+                    navigate('/success?paymentMethod=Other&appointmentId=' + response.content.bookId);
                 }
             } else if (response && response.statusCode === 400) {
                 console.error(response.message);
@@ -137,11 +147,44 @@ const BookingPageContent = () => {
     return (
         <Box className={styles.container}>
             <Box className={styles.breadcrumbsContainer}>
-                <Breadcrumbs separator={<Typography sx={{ color: '#FFFFFF', mx: 1, fontWeight: 'bold' }}>/</Typography>}>
-                    <Link underline="hover" href="/" sx={{ fontSize: 22, color: ' #F8F8F8' }}>
+                <Breadcrumbs
+                    separator={<Typography sx={{ color: 'rgba(255,255,255,0.7)', mx: 1, fontWeight: 'bold' }}>/</Typography>}
+                    sx={{
+                        '& .MuiBreadcrumbs-ol': {
+                            alignItems: 'center',
+                        },
+                    }}
+                >
+                    <Link
+                        underline="hover"
+                        href="/"
+                        sx={{
+                            fontSize: 18,
+                            color: 'rgba(255,255,255,0.9)',
+                            textDecoration: 'none',
+                            '&:hover': {
+                                color: '#FFFFFF',
+                                textDecoration: 'underline',
+                            },
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <HomeIcon sx={{ mr: 0.5, fontSize: 20 }} />
                         Trang chủ
                     </Link>
-                    <Box sx={{ fontSize: 24, color: ' #F8F8F8' }}>Trang đặt khám</Box>
+                    <Typography
+                        sx={{
+                            fontSize: 18,
+                            color: '#FFFFFF',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <BookmarkIcon sx={{ mr: 0.5, fontSize: 20 }} />
+                        Trang đặt khám
+                    </Typography>
                 </Breadcrumbs>
             </Box>
             <Box className={styles.contentBox}>
@@ -162,12 +205,12 @@ const BookingPageContent = () => {
                         </Box>
                         <Box className={`${styles.buttonContainer} ${currentStep === 2 ? styles.step2 : ''}`}>
                             {!isFirstStep && (
-                                <Button variant="text" className={styles.backButton} onClick={handleBack}>
+                                <Button variant="outlined" className={styles.backButton} onClick={handleBack}>
                                     <ArrowBack />
                                     Quay lại
                                 </Button>
                             )}
-                            {currentStep == 2 && <Button variant="text" className={styles.nextButton} onClick={() => next()}>
+                            {currentStep == 2 && <Button variant="outlined" className={styles.nextButton} onClick={() => next()}>
                                 <ArrowForward />
                                 Xác nhận
                             </Button>}

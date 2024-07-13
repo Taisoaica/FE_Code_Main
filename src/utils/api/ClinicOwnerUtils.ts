@@ -75,29 +75,29 @@ export const updateClinicGeneralInfo = async (clinicInfo: ClinicToDisplay): Prom
 }
 
 export const fetchDentistInfo = async (): Promise<HttpResponseModel<DentistInfoViewModel>> => {
-    const apiCall = async () => {
-        const api_url = connection_path.base_url + connection_path.invoker.get_dentist_invoker;
-        const accessToken = localStorage.getItem('accessToken');
-        const config: AxiosRequestConfig = {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`
-            }
-        };
-
-        try {
-            const response = await axios.get<HttpResponseModel<DentistInfoViewModel>>(api_url, config);
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching dentist info:', error);
-            return {
-                statusCode: 500,
-                message: 'Failed to fetch dentist info',
-                detail: '',
-            };
+    // const apiCall = async () => {
+    const api_url = connection_path.base_url + connection_path.invoker.get_dentist_invoker;
+    const accessToken = localStorage.getItem('accessToken');
+    const config: AxiosRequestConfig = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`
         }
+    };
+
+    try {
+        const response = await axios.get<HttpResponseModel<DentistInfoViewModel>>(api_url, config);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching dentist info:', error);
+        return {
+            statusCode: 500,
+            message: 'Failed to fetch dentist info',
+            detail: '',
+        };
     }
-    return apiCallWithTokenRefresh(apiCall);
+    // }
+    // return apiCallWithTokenRefresh(apiCall);
 };
 
 export const fetchClinicStaff = async (): Promise<DentistInfoViewModel[]> => {
@@ -254,10 +254,10 @@ export const registerSlots = async (
         try {
             const response = await axios(configuration);
             if (response.status === 200) {
-                alert("Slots registered successfully");
+                // alert("Slots registered successfully");
                 return true;
             } else {
-                alert("Failed to register slots");
+                // alert("Failed to register slots");
                 return false;
             }
         } catch (error) {
@@ -269,7 +269,7 @@ export const registerSlots = async (
 };
 
 export const getAllClinicSlots = async (clinicId: string): Promise<ClinicSlotInfoModel[][]> => {
-    const apiCall = async () => {
+    // const apiCall = async () => {
         const token = localStorage.getItem('accessToken');
         const api_url = `${connection_path.base_url}${connection_path.clinic.get_clinic_schedule.replace(':id', clinicId)}`;
 
@@ -286,12 +286,10 @@ export const getAllClinicSlots = async (clinicId: string): Promise<ClinicSlotInf
 
             if (response.status === 200) {
                 const responseData = response.data;
-
                 if (responseData.statusCode === 200) {
                     if (responseData.content) {
                         const slotsFromAPI = responseData.content;
                         const convertedSlots: ClinicSlotInfoModel[][] = Array.from({ length: 7 }, () => []);
-
                         slotsFromAPI.forEach((slot) => {
                             const convertedSlot: ClinicSlotInfoModel = {
                                 clinicSlotId: slot.clinicSlotId,
@@ -304,7 +302,6 @@ export const getAllClinicSlots = async (clinicId: string): Promise<ClinicSlotInf
                                 endTime: slot.endTime,
                                 status: slot.status,
                             };
-
                             convertedSlots[slot.weekday].push(convertedSlot);
                         });
 
@@ -322,8 +319,8 @@ export const getAllClinicSlots = async (clinicId: string): Promise<ClinicSlotInf
             console.error('Error fetching clinic slots:', error);
             throw error;
         }
-    }
-    return await apiCallWithTokenRefresh(apiCall);
+    // }
+    // return await apiCallWithTokenRefresh(apiCall);
 };
 
 
@@ -402,97 +399,97 @@ export interface ClinicServiceRegistrationModel {
 }
 
 export const addClinicService = async (serviceInfo: ClinicServiceRegistrationModel): Promise<void> => {
-    const apiCall = async () => {
-        const api_url = `${connection_path.base_url}${connection_path.clinic.post_clinic_service}`;
-        const accessToken = localStorage.getItem('accessToken');
+    // const apiCall = async () => {
+    const api_url = `${connection_path.base_url}${connection_path.clinic.post_clinic_service}`;
+    const accessToken = localStorage.getItem('accessToken');
 
-        const configuration: AxiosRequestConfig = {
-            method: 'POST',
-            url: api_url,
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify(serviceInfo)
-        };
+    const configuration: AxiosRequestConfig = {
+        method: 'POST',
+        url: api_url,
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(serviceInfo)
+    };
 
-        try {
-            const response = await axios(configuration);
+    try {
+        const response = await axios(configuration);
 
-            if (response.status === 200) {
-                const service = response.data.content;
-                const serviceId = service.clinicServiceId;
-                if (serviceId) {
-                    await enableClinicService(serviceId);
-                }
-            } else {
-                console.error('Failed to add service:', response.statusText);
-                throw new Error(`Failed to add service: ${response.statusText}`);
+        if (response.status === 200) {
+            const service = response.data.content;
+            const serviceId = service.clinicServiceId;
+            if (serviceId) {
+                await enableClinicService(serviceId);
             }
-        } catch (error) {
-            console.error('Axios error:', error);
-            throw new Error('Failed to add service');
+        } else {
+            console.error('Failed to add service:', response.statusText);
+            throw new Error(`Failed to add service: ${response.statusText}`);
         }
+    } catch (error) {
+        console.error('Axios error:', error);
+        throw new Error('Failed to add service');
     }
-    return apiCallWithTokenRefresh(apiCall);
+    // }
+    // return apiCallWithTokenRefresh(apiCall);
 };
 
 export const enableClinicService = async (serviceId: string): Promise<void> => {
-    const apiCall = async () => {
-        const api_url = `${connection_path.base_url}${connection_path.clinic.enable_clinic_service.replace(':id', serviceId)}`;
-        const accessToken = localStorage.getItem('accessToken');
+    // const apiCall = async () => {
+    const api_url = `${connection_path.base_url}${connection_path.clinic.enable_clinic_service.replace(':id', serviceId)}`;
+    const accessToken = localStorage.getItem('accessToken');
 
-        const configuration: AxiosRequestConfig = {
-            method: 'PUT',
-            url: api_url,
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
-            }
-        };
-
-        try {
-            const response = await axios(configuration);
-            if (response) {
-                console.log('Service enabled successfully:', response.data);
-            } else {
-                console.log('Failed to enable service:', response);
-            }
-        } catch (error) {
-            console.error('Axios error:', error);
+    const configuration: AxiosRequestConfig = {
+        method: 'PUT',
+        url: api_url,
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
         }
+    };
+
+    try {
+        const response = await axios(configuration);
+        if (response) {
+            console.log('Service enabled successfully:', response.data);
+        } else {
+            console.log('Failed to enable service:', response);
+        }
+    } catch (error) {
+        console.error('Axios error:', error);
     }
-    return await apiCallWithTokenRefresh(apiCall);
+    // }
+    // return await apiCallWithTokenRefresh(apiCall);
 }
 
 
 export const getClinicServices = async (clinicId: number): Promise<ClinicServiceInfoModel[]> => {
-    const apiCall = async () => {
-        const api_url = `${connection_path.base_url}${connection_path.clinic.get_clinic_service}?clinicId=${clinicId}`;
-        const accessToken = localStorage.getItem('accessToken');
+    // const apiCall = async () => {
+    const api_url = `${connection_path.base_url}${connection_path.clinic.get_clinic_service}?clinicId=${clinicId}`;
+    const accessToken = localStorage.getItem('accessToken');
 
-        const configuration: AxiosRequestConfig = {
-            method: 'GET',
-            url: api_url,
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
-            }
-        };
-
-        try {
-            const response: AxiosResponse = await axios(configuration);
-            if (response.status === 200) {
-                return response.data.content; // Assuming response.data contains the list of clinic services
-            } else {
-                throw new Error(`Failed to fetch clinic services: ${response.statusText}`);
-            }
-        } catch (error) {
-            console.error('Axios error:', error);
-            throw new Error('Failed to fetch clinic services');
+    const configuration: AxiosRequestConfig = {
+        method: 'GET',
+        url: api_url,
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
         }
+    };
+
+    try {
+        const response: AxiosResponse = await axios(configuration);
+        if (response.status === 200) {
+            return response.data.content; // Assuming response.data contains the list of clinic services
+        } else {
+            throw new Error(`Failed to fetch clinic services: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error('Axios error:', error);
+        throw new Error('Failed to fetch clinic services');
     }
-    return await apiCallWithTokenRefresh(apiCall);
+    // }
+    // return await apiCallWithTokenRefresh(apiCall);
 };
 
 export const getClinicServiceById = async (serviceId: string): Promise<ClinicServiceInfoModel> => {
@@ -590,27 +587,27 @@ export interface AppointmentViewModelFetch {
 }
 
 export const getClinicAppointments = async (clinicId: string, from_date?: string, to_date?: string, from_time?: string, to_time?: string, requestOldItems?: boolean, page_size?: number, page_index?: number): Promise<AppointmentViewModel[]> => {
-    const apiCall = async () => {
+    // const apiCall = async () => {
         const api_url = connection_path.base_url + connection_path.booking.get_clinic_booking.replace(':id', clinicId);
         const configuration: AxiosRequestConfig = {
             method: 'GET',
             url: api_url,
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization' : `Bearer ${localStorage.getItem('accessToken')}`
             },
             params: {
-                fromDate: from_date,
-                toDate: to_date,
-                fromTime: from_time,
-                toTime: to_time,
+                from_date: from_date,
+                to_date: to_date,
+                from_time: from_time,
+                to_time: to_time,
                 requestOldItems: requestOldItems,
-                pageSize: page_size,
-                pageIndex: page_index
+                page_size: page_size,
+                page_index: page_index
 
             }
 
         }
-
         try {
             const response = await axios(configuration);
             if (response.status === 200) {
@@ -623,7 +620,44 @@ export const getClinicAppointments = async (clinicId: string, from_date?: string
             console.error('Error fetching clinic appointments:', error);
             return [];
         }
+    // }
+    // return await apiCallWithTokenRefresh(apiCall);
+};
+
+
+export const getClinicAppointmentsWithClinicSlotId = async (clinicId: string, from_date?: Date, to_date?: Date, from_time?: string, to_time?: string, requestOldItems = true, page_size?: number, page_index?: number): Promise<AppointmentViewModel[]> => {
+    const api_url = connection_path.base_url + connection_path.booking.get_clinic_booking.replace(':id', clinicId);
+    const configuration: AxiosRequestConfig = {
+        method: 'GET',
+        url: api_url,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        params: {
+            fromDate: from_date,
+            toDate: to_date,
+            fromTime: from_time,
+            toTime: to_time,
+            requestOldItems: requestOldItems,
+            pageSize: page_size,
+            pageIndex: page_index
+
+        }
     }
-    return await apiCallWithTokenRefresh(apiCall);
+
+    try {
+        const response = await axios(configuration);
+        if (response.status === 200) {
+            const appointments: AppointmentViewModel[] = response.data.content;
+            console.log(appointments);
+            return appointments;
+        } else {
+            console.error('Failed to fetch clinic appointments:', response.data);
+            return [];
+        }
+    } catch (error) {
+        console.error('Error fetching clinic appointments:', error);
+        return [];
+    }
 };
 

@@ -1,0 +1,106 @@
+.slick-slide {
+    padding: 10px;
+}
+
+.slick-prev,
+.slick-next {
+    z-index: 1;
+    width: 40px;
+    height: 40px;
+}
+
+.slick-prev {
+    left: -30px;
+}
+
+.slick-next {
+    right: -30px;
+}
+
+.slick-prev:before,
+.slick-next:before {
+    font-size: 40px;
+    color: gray;  
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.slick-prev:hover:before,
+.slick-next:hover:before {
+    color: gray;  
+    opacity: 1;
+}
+
+.sliderContainer {
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    width: 95%;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(33, 150, 243, 0.1);  /* Blue-tinted shadow */
+}
+
+.sliderTitle {
+    color: #1976D2; 
+    margin-bottom: 10px;
+    font-weight: 500;
+    font-size: 30px;
+}
+
+.sliderDentist .slick-slide {
+    padding: 10px;
+}
+
+.sliderDentist .slick-prev,
+.sliderDentist .slick-next {
+    z-index: 1;
+    width: 40px;
+    height: 40px;
+}
+
+.sliderDentist .slick-prev {
+    left: -25px;
+}
+
+.sliderDentist .slick-next {
+    right: -25px;
+}
+
+.appointmentCard {
+    background-color: #E3F2FD;  
+    border: 1px solid #BBDEFB;  
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.appointmentCard:hover {
+    box-shadow: 0 6px 12px rgba(33, 150, 243, 0.2);  /* Blue-tinted shadow on hover */
+    transform: translateY(-5px);
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cardTitle {
+    color: #1565C0;  /* Darker blue for the title */
+    font-weight: bold;
+}
+
+.cardInfo {
+    color: #2196F3;  /* Medium blue for info text */
+}
+
+/* Button styles remain unchanged as requested */
+.viewButton {
+    margin-top: 10px !important;
+    background-color: #0d47a1 !important;
+    color: white !important;
+    transition: all 0.3s ease !important;
+}
+
+.viewButton:hover {
+    background-color: #1565c0 !important;
+}

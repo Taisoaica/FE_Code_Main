@@ -1,20 +1,26 @@
-import { Box, Collapse, List, ListItemIcon, ListItemText } from "@mui/material";
+import { Box, Collapse, Divider, List, ListItemIcon, ListItemText } from "@mui/material";
 import ListItemButton from "@mui/material/ListItemButton";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react"
 import PeopleIcon from "@mui/icons-material/People";
 import MaterialIcon from "@mui/icons-material/Icon";
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 export const NestedListItems = () => {
     const [open, setOpen] = useState<string | null>(null);
+    const navigate = useNavigate();
+
     const handleClick = (title: string) => {
         setOpen(open === title ? null : title)
     }
 
+    const handleLogout = () => { 
+        navigate('/login');
+        localStorage.clear();
+    }
 
     return (
         <Box>
@@ -51,6 +57,13 @@ export const NestedListItems = () => {
                     <ListItemText primary="Danh mục dịch vụ" />
                 </ListItemButton>
             </List>
+            <Divider sx={{ width: '90%', margin: '16px auto', borderBottomWidth: '2px', backgroundColor: '#000' }} />
+            <ListItemButton onClick={handleLogout}>
+                <ListItemIcon>
+                    <ExitToAppIcon />
+                </ListItemIcon>
+                <ListItemText primary="Đăng xuất" />
+            </ListItemButton>
         </Box>
     )
 }

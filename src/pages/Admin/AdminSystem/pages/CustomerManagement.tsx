@@ -172,7 +172,7 @@ const CustomerManagement = () => {
                         </IconButton>
                     </Toolbar>
                     <Divider />
-                    <NestedListItems  />
+                    <NestedListItems />
                     {/* <List component="nav">
                         {mainListItems}
                     </List> */}
@@ -194,12 +194,12 @@ const CustomerManagement = () => {
                     <Box className={styles.mainContainer}>
                         <div className={styles.tableContainer}>
                             <div className={styles.tableHeader}>Người dùng của hệ thống - Khách hàng</div>
-                            <Box className={styles.toolbar}>
+                            {/* <Box className={styles.toolbar}>
                                 <Box className={styles.searchbar}>
                                     <input type="text" placeholder="Tìm kiếm người dùng" className={styles.searchInput} />
                                     <button className={styles.searchButton}>Tìm kiếm</button>
                                 </Box>
-                            </Box>
+                            </Box> */}
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
@@ -216,15 +216,7 @@ const CustomerManagement = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {loading ? (
-                                        <tr>
-                                            <td colSpan={13}>Loading...</td>
-                                        </tr>
-                                    ) : error ? (
-                                        <tr>
-                                            <td colSpan={13}>Error: {error}</td>
-                                        </tr>
-                                    ) : (
+                                    {
                                         users.map((user) => (
                                             <tr key={user.id} className={styles.tableRow}>
                                                 <td>{user.id}</td>
@@ -245,7 +237,7 @@ const CustomerManagement = () => {
                                                 </td>
                                             </tr>
                                         ))
-                                    )}
+                                    }
                                 </tbody>
                             </table>
                         </div>

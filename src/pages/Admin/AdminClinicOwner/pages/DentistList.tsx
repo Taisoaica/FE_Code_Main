@@ -244,9 +244,9 @@ const DentistList = () => {
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
-                                        <th style={{ width: '10%' }}>ID</th>
+                                        {/* <th style={{ width: '10%' }}>ID</th> */}
                                         <th style={{ width: '15%' }}>Username</th>
-                                        <th style={{ width: '15%' }}>Họ tên</th>
+                                        <th style={{ width: '25%' }}>Họ tên</th>
                                         <th style={{ width: '15%' }}>Ngày tạo</th>
                                         <th style={{ width: '10%' }}>Email</th>
                                         <th style={{ width: '10%' }}>Phone</th>
@@ -270,7 +270,7 @@ const DentistList = () => {
                                     ) : (
                                         staff.map((user) => (
                                             <tr key={user.dentistId} className={styles.tableRow}>
-                                                <td>{user.dentistId}</td>
+                                                {/* <td>{user.dentistId}</td> */}
                                                 <td>{user.username}</td>
                                                 <td>{user.fullname}</td>
                                                 <td>{user.joinedDate ? formatDate(user.joinedDate.toString()) : ''}</td>

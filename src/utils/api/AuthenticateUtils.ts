@@ -5,6 +5,7 @@ import { getAllUsers, UserInfoModel } from './SystemAdminUtils';
 
 import decodeToken from "../../utils/decoder/accessTokenDecoder";
 import { apiCallWithTokenRefresh } from './apiCallWithRefreshToken';
+import { fetchDentistInfo } from './ClinicOwnerUtils';
 
 interface JwtPayload {
     role: string;
@@ -55,83 +56,77 @@ export const login = async (payload: { username: string; password: string }, nav
 };
 
 export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navigate: (path: string) => void, redirectPath: string, remember: boolean) => {
-    const apiCall = async () => {
+    // const apiCall = async () => {
 
-        event.preventDefault();
+    event.preventDefault();
 
-        const data = new FormData(event.currentTarget);
-        const payload = {
-            username: data.get('username'),
-            password: data.get('password'),
-        }
+    const data = new FormData(event.currentTarget);
+    const payload = {
+        username: data.get('username'),
+        password: data.get('password'),
+    }
 
-        const api_url: string = connection_path.base_url + connection_path.auth.login;
+    const api_url: string = connection_path.base_url + connection_path.auth.login;
 
-        const configuration: AxiosRequestConfig = {
-            method: "POST",
-            url: api_url,
-            data: payload
-        };
+    const configuration: AxiosRequestConfig = {
+        method: "POST",
+        url: api_url,
+        data: payload
+    };
 
-        try {
-            const response = await axios(configuration);
+    try {
+        const response = await axios(configuration);
 
-            if (response.status === 200 && response.data.content.accessToken !== undefined) {
-                const accessToken = response.data.content.accessToken;
-                const refreshToken = response.data.content.refreshToken;
+        if (response.status === 200 && response.data.content.accessToken !== undefined) {
+            const accessToken = response.data.content.accessToken;
+            const refreshToken = response.data.content.refreshToken;
 
 
-                localStorage.setItem("accessToken", accessToken);
-                localStorage.setItem("refreshToken", refreshToken);
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
 
-                const decodedToken = decodeToken(accessToken);
+            const decodedToken = decodeToken(accessToken);
 
-                if (decodedToken && 'role' in decodedToken && 'id' in decodedToken) {
+            if (decodedToken && 'role' in decodedToken && 'id' in decodedToken && 'IsOwner' in decodedToken) {
 
-                    localStorage.setItem('id', decodedToken.id as string);
-                    const userId = Number(localStorage.getItem('id'));
-                    localStorage.setItem('role', decodedToken.role as string);
-                    const allUsers: UserInfoModel[] = await getAllUsers();
-                  
-                    const currentUser = allUsers.find(user => user.id === userId);
-                    console.log('Current User:', currentUser)
-                    if (currentUser) {
-                        if (currentUser.role === 'Dentist') {
-                            if (currentUser.isOwner) {
-                                navigate('/admin/clinic-owner');
-                            } else {
-                                navigate('/dentist');
-                            }
-                        } else {
-                            navigate(redirectPath || '/');
-                        }
-                    } else {
-                        console.error('User not found in the list:', decodedToken.id);
-                    }
-                    // if (decodedToken.role === 'Dentist') {
-                    //     navigate('/admin/clinic-owner');
-                    // } else {
-                    //     navigate(redirectPath || '/');
-                    // }
-                } else {
-                    console.error('Invalid decoded token:', decodedToken);
+                localStorage.setItem('id', decodedToken.id as string);
+                localStorage.setItem('role', decodedToken.role as string);
+                localStorage.setItem('IsOwner', decodedToken.IsOwner as string)
+
+                const role = localStorage.getItem('role');
+                const isOwner = localStorage.getItem('IsOwner')
+
+                if (role === 'Admin') {
+                    navigate('/system-admin')
                 }
-
-                if (remember) {
-                    localStorage.setItem('remember', 'true');
+                else if (role === "Customer") {
+                    await getCustomerInvoker();
+                    navigate('/');
+                } else if (role === 'Dentist' && isOwner == '1') {
+                    await fetchDentistInfo()
+                    navigate('/admin/clinic-owner')
                 } else {
-                    localStorage.removeItem('remember');
+                    await fetchDentistInfo()
+                    navigate('/dentist')
                 }
             } else {
-                console.log(response);
-                alert("Không đăng nhập thành công");
+                console.error('Invalid decoded token:', decodedToken);
             }
-        } catch (error) {
-            alert('Đăng nhập thất bại, vui lòng thử lại sau.');
-            console.log(error);
+            if (remember) {
+                localStorage.setItem('remember', 'true');
+            } else {
+                localStorage.removeItem('remember');
+            }
+        } else {
+            console.log(response);
+            alert("Không đăng nhập thành công");
         }
+    } catch (error) {
+        alert('Đăng nhập thất bại, vui lòng thử lại sau.');
+        console.log(error);
     }
-    return await apiCallWithTokenRefresh(apiCall);
+    // }
+    // return await apiCallWithTokenRefresh(apiCall);
 };
 
 export const handleLogout = async (navigate: (path: string) => void) => {
@@ -149,8 +144,6 @@ export const handleLogout = async (navigate: (path: string) => void) => {
     localStorage.removeItem('refreshToken');
     navigate('/');
 };
-
-
 
 
 export const handleRegister = async (event: React.FormEvent<HTMLFormElement>, onSuccess: () => void) => {
@@ -300,5 +293,28 @@ export const refreshAccessToken = async (): Promise<boolean> => {
     } catch (error) {
         console.error('Error refreshing access token:', error);
         return false;
+    }
+}
+
+export const getCustomerInvoker = async () => {
+    const api_url = connection_path.base_url + connection_path.invoker.get_customer_invoker;
+    const accessToken = localStorage.getItem('accessToken');
+
+    const configuration: AxiosRequestConfig = {
+        method: 'GET',
+        url: api_url,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + accessToken,
+        },
+    }
+
+    try {
+        const response = await axios(configuration);
+        if (response.status == 200) {
+            localStorage.setItem('customerId', response.data.content.customerId);
+        }
+    } catch (error) {
+        console.log(error);
     }
 }

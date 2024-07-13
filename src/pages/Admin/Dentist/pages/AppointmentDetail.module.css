@@ -1,0 +1,111 @@
+.mainContainer {
+    height: 100%;
+    background: linear-gradient(to left, #e3f2fd, #f8fbff);
+    padding-top: 20px;
+    color: #0d47a1;
+}
+
+.content {
+    width: 95%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.buttonContainer {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.backButton {
+    border: none;
+    background-color: #f0f0f0;
+    color: #000;
+}
+
+.backButton:hover {
+    background-color: #e0e0e0;
+}
+
+.editButton {
+    border: none;
+    background-color: #2196F3;
+    color: #fff;
+}
+
+.editButton:hover {
+    background-color: #1976d2;
+}
+
+.confirmButton {
+    border: none;
+    background-color: #4caf50;
+    color: #fff;
+}
+
+.confirmButton:hover {
+    background-color: #388e3c;
+}
+
+.cancelButton {
+    border: none;
+    background-color: #f44336;
+    color: #fff;
+}
+
+.cancelButton:hover {
+    background-color: #f44220;
+}
+
+.repeatButton {
+    color: #fff;
+    border: none;
+}
+
+.detailButton {
+    background-color: #00bcd4;
+    color: #fff;
+    border: none;
+}
+
+.detailButton:hover {
+    background-color: #00a5bb;
+}
+
+input[disabled] {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.mainContainer {
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+.card {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+.cardTitle {
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.sectionTitle {
+    font-size: 24px;
+    font-weight: 600;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+textarea {
+    resize: none;
+}

@@ -52,35 +52,6 @@ interface AppointmentRegistrationModel {
   status: string;
 }
 
-// const sampleEvents: AppointmentRegistrationModel[] = [
-//   {
-//     timeSlotId: 1,
-//     appointmentType: 'Khám',
-//     appointmentDate: new Date('2024-06-30T09:00:00'),
-//     customerId: 0,
-//     dentistId: 0,
-//     clinicId: 0,
-//     serviceId: null,
-//     maxRecurring: 0,
-//     originalAppointment: null,
-//     status: 'Đang chờ xác nhận',
-//   },
-//   {
-//     timeSlotId: 2,
-//     appointmentType: 'Khám',
-//     appointmentDate: new Date('2024-07-07T09:30:00'),
-//     customerId: 0,
-//     dentistId: 0,
-//     clinicId: 0,
-//     serviceId: null,
-//     maxRecurring: 0,
-//     originalAppointment: null,
-//     status: 'Đang chờ xác nhận',
-//   },
-//   // Include other events similarly...
-// ];
-
-
 const drawerWidth: number = 240;
 
 interface AppBarProps extends MuiAppBarProps {

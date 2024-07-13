@@ -12,7 +12,8 @@
     width: 95%;
     height: fit-content;
     gap: 10px;
-    margin: 20px auto 0 auto;
+    font-size: 20px;
+    margin: 30px auto 30px auto;
     background-color: white;
     padding: 20px;
     border-radius: 10px;
@@ -35,57 +36,14 @@
 }
 
 .tableHeader {
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 28px;
+    font-weight: 600;
     margin-bottom: 10px;
     text-align: left;
 }
 
 .tableContainer .MuiButton-contained:hover {
     opacity: 0.9;
-}
-
-.toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    background-color: white;
-    padding: 10px;
-    border: 3px solid #d3d3d3;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.searchbar {
-    display: flex;
-    align-items: center;
-}
-
-.searchInput {
-    padding: 10px;
-    font-size: 16px;
-    border: 2px solid #d3d3d3;
-    border-radius: 4px 0 0 4px;
-    outline: none;
-}
-
-.searchInput:focus {
-    border-color: #2196F3;
-}
-
-.searchButton {
-    padding: 10px 20px;
-    font-size: 16px;
-    border: 2px solid #2196F3;
-    background-color: #2196F3;
-    color: white;
-    border-radius: 0 4px 4px 0;
-    cursor: pointer;
-}
-
-.searchButton:hover {
-    background-color: #1976d2;
 }
 
 .table {
@@ -105,47 +63,79 @@ td {
 th {
     background-color: #e3f2fd;
 }
-/* 
-.confirmedButton {
-    background-color: #4caf50;
+
+.statusPending {
+    background-color: #f0ad4e;
     color: #fff;
 }
 
-.confirmedButton:hover {
-    background-color: #388e3c;
-}
-
-.pendingButton{
-    background-color: #ff9800;
-    color: #fff;
-}
-
-.pendingButton:hover {
-    background-color: #fb8c00;
-    color: #fff;
-}
-
-.unconfirmedButton {
-    background-color: #f44336;
-    color: #fff;
-}
-
-.unconfirmedButton:hover {
-    background-color: #d32f2f;
-} */
-
-
-.status.booked {
+.statusBooked {
     background-color: #007bff;
     color: #fff;
 }
 
-.status.pending {
-    background-color: #ffc107;
-    color: #333;
-}
-
-.status.completed {
+.statusFinished {
     background-color: #28a745;
     color: #fff;
+}
+
+.statusCanceled {
+    background-color: #d9534f;
+    color: #fff;
+}
+
+.statusNoShow {
+    background-color: #777;
+    color: #fff;
+}
+
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 2em;
+}
+
+.pagination li {
+    margin: 0 0.5em;
+}
+
+.pagination a {
+    color: #333;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination li.active a {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination a:hover:not(.active) {
+    background-color: #ddd;
+}
+
+.filterSortContainer {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.filterSortContainer div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.noAppointmentsMessage {
+    font-weight: bold;
+    margin: 20px 0;
 }

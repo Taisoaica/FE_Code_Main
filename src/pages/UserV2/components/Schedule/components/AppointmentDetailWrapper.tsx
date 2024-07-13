@@ -5,14 +5,15 @@ import useAppointments from '../../../../../hooks/useAppointments';
 
 interface AppointmentDetailWrapperProps {
     setActiveIndex: (index: number) => void;
+    source: number
 }
 
-const AppointmentDetailWrapper = ({setActiveIndex} : AppointmentDetailWrapperProps) => {
+const AppointmentDetailWrapper = ({setActiveIndex, source} : AppointmentDetailWrapperProps) => {
 
     const id = localStorage.getItem('bookId');
     const { appointments } = useAppointments();
 
-    return <AppointmentDetail appointmentId={id} appointments={appointments} setActiveIndex={setActiveIndex}/>;
+    return <AppointmentDetail appointmentId={id} appointments={appointments} setActiveIndex={setActiveIndex} source={source}/>;
 }
 
 export default AppointmentDetailWrapper

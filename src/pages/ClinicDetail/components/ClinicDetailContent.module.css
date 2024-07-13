@@ -1,93 +1,105 @@
 .container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    padding-top: 5em;
-    padding-bottom: 5em;
+    width: 100%;
+    padding: 0;
+    background-color: white;
 }
 
 .breadcrumbs {
-    width: 80%;
-    padding: 1em;
-    text-align: right;
-    color: black;
+    width: 100%;
+    padding: 20px 50px;
+    background-image: linear-gradient(to left, #657bd1, #049fbb);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .breadcrumbLink {
-    color: #1975dc;
+    color: rgba(255,255,255,0.9);
     text-decoration: none;
     font-weight: 500;
-    font-size: 1.2em;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
 }
 
 .breadcrumbLink:hover {
+    color: #FFFFFF;
     text-decoration: underline;
 }
 
 .breadcrumbText {
-    color: #555;
+    color: #FFFFFF;
     font-weight: bold;
-    font-size: 1.2em;
-}
-
-.divider {
-    background-color: black;
-    width: 100%;
-    margin: 1em auto;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
 }
 
 .clinicHeader {
     margin-top: 2em;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     padding: 1em;
     width: 80%;
 }
 
 .avatar {
-    height: 200px;
-    width: 200px;
+    height: 150px;
+    width: 150px;
     margin-right: 1em;
-    background-color: white;
-    border: 1px solid black;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
     overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .clinicName {
-    font-size: 2.4em;
-    font-weight: 500;
+    font-size: 2em;
+    font-weight: 600;
+    color: #333;
 }
 
 .imageList {
     width: 80%;
+    margin: 1em 0; 
 }
 
 .button {
     background-color: #1975dc;
     color: #fff;
-    width: 30%;
+    padding: 10px 20px;
     border-radius: 5px;
+    font-weight: 600;
+    width: 50%;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #1565c0;
 }
 
 .main {
     width: 80%;
-    margin: 0 auto;
-    padding: 2em 0;
-    font-family: Arial, sans-serif;
+    margin: 1.5em auto; 
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    padding: 1.5em; /* Reduced from 2em */
+    font-family: 'Roboto', Arial, sans-serif;
 }
 
 .section {
-    margin-bottom: 2em;
+    margin-bottom: 1.5em; /* Added this to reduce gap between sections */
 }
 
 .sectionTitle {
     font-size: 1.5em;
-    font-weight: bold;
+    font-weight: 600;
     color: #333;
     margin-bottom: 0.5em;
+    border-bottom: 2px solid black;
+    padding-bottom: 0.3em;
 }
 
 .sectionContent {
@@ -99,8 +111,8 @@
 .divider {
     border: none;
     height: 1px;
-    background-color: #ccc;
-    margin: 2em 0;
+    background-color: #e0e0e0;
+    margin: 1.5em 0; /* Reduced from 2em */
 }
 
 .contactInfo {
@@ -112,8 +124,15 @@
     color: #555;
     line-height: 1.6;
     margin-bottom: 0.5em;
+    display: flex;
+    align-items: center;
+}
+
+.contactItem strong {
+    min-width: 120px;
+    color: #333;
 }
 
 .contactItem span {
-    color: #333;
+    color: #555;
 }

@@ -1,28 +1,129 @@
-.slick-prev:before {
-    top: -10px;
-    position: absolute;
-    font-size: 50px;
-    right: 15px;
-    color:  #3f9dfd;
+/* Carousel.css */
 
-}
-
-.slick-next:before {
-    top: -10px;
-    position: absolute;
-    font-size: 50px;
-    left: 15px;
-    color:  #3f9dfd;
-
-}
-
-.slick-slide {
-    /* background-color: red; */
+/* Container styles */
+.carousel-container {
+    padding: 40px 0;
+  }
+  
+  /* Slide styles */
+  .slick-slide {
     padding: 10px;
-}
-
-.slick-prev:hover:before,
-.slick-next:hover:before {
+  }
+  
+  /* Arrow styles */
+  .slick-prev,
+  .slick-next {
+    z-index: 1;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .slick-prev {
+    left: -50px;
+  }
+  
+  .slick-next {
+    right: -50px;
+  }
+  
+  .slick-prev:before,
+  .slick-next:before {
+    font-size: 40px;
+    color: #3f9dfd;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+  }
+  
+  .slick-prev:hover:before,
+  .slick-next:hover:before {
     color: #0066cc;
-}
-
+    opacity: 1;
+  }
+  
+  /* Dots styles */
+  .slick-dots {
+    bottom: -40px;
+  }
+  
+  .slick-dots li button:before {
+    font-size: 12px;
+    color: #3f9dfd;
+    opacity: 0.5;
+  }
+  
+  .slick-dots li.slick-active button:before {
+    opacity: 1;
+  }
+  
+  /* Card styles */
+  .clinic-card {
+    background-color: #fff;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    height: 450px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .clinic-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .clinic-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  
+  .clinic-content {
+    padding: 20px;
+  }
+  
+  .clinic-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  .clinic-address {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 20px;
+    max-height: 60px;
+    overflow: hidden;
+  }
+  
+  .clinic-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .detail-button,
+  .booking-button {
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .detail-button {
+    color: #3f9dfd;
+    border: 1px solid #3f9dfd;
+  }
+  
+  .detail-button:hover {
+    background-color: #3f9dfd;
+    color: #fff;
+  }
+  
+  .booking-button {
+    background-color: #00aeeb;
+    color: #fff;
+  }
+  
+  .booking-button:hover {
+    background-color: #0066cc;
+  }

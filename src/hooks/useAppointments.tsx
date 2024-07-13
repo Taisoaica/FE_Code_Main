@@ -7,7 +7,7 @@ const useAppointments = () => {
 
     useEffect(() => {
         const fetchedAppointments = async () => {
-            const id = JSON.parse(localStorage.getItem('id') || '{}');
+            const id = localStorage.getItem('customerId');
             try {
                 const fetchedAppointments = await getCustomerAppointments(id);
                 if (fetchedAppointments) {

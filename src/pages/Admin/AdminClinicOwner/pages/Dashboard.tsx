@@ -1,32 +1,34 @@
-import * as React from "react";
 import { styled } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { Bar, Pie, Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, Chart } from 'chart.js';
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
+import 'chart.js/auto';
 
-
-import { mainListItems } from "../components/listItems";
 import styles from "./Dashboard.module.css";
 
 import {
   Box,
-  Link,
-  Typography,
 } from "@mui/material";
 
-import Scheduler from "../components/Scheduler/Scheduler";
-import ClinicInfo from "../components/ClinicInfo/ClinicInfo";
 import { useEffect, useRef, useState } from "react";
-import FullCalendar from "@fullcalendar/react";
 import { NestedListItems } from "../components/NestedListMenu";
-import { getAllClinics } from "../../../../utils/api/SystemAdminUtils";
 import { DentistInfoViewModel } from "../../../../utils/api/BookingRegister";
-import { fetchClinicStaff } from "../../../../utils/api/ClinicOwnerUtils";
+import { AppointmentViewModelFetch, fetchDentistInfo, getClinicAppointments } from "../../../../utils/api/ClinicOwnerUtils";
 
 const drawerWidth: number = 270;
 
@@ -80,44 +82,214 @@ const Drawer = styled(MuiDrawer, {
 
 const Dashboard = () => {
   const [open, setOpen] = useState(true);
-  const calendarRef = useRef<FullCalendar>(null);
   const [fullname, setFullname] = useState('');
-  const [clinicOpenHour, setClinicOpenHour] = useState('');
-  const [clinicCloseHour, setClinicCloseHour] = useState('');
   const [loading, setLoading] = useState(true);
   const [staff, setStaff] = useState<DentistInfoViewModel[]>();
+  const [appointments, setAppointments] = useState<AppointmentViewModelFetch[]>([]);
+  const barChartRef = useRef<HTMLCanvasElement>(null);
+  const pieChartRef = useRef<HTMLCanvasElement>(null);
+  const lineChartRef = useRef<HTMLCanvasElement>(null);
 
+  const barChartInstance = useRef<Chart | null>(null);
+  const pieChartInstance = useRef<Chart | null>(null);
+  const lineChartInstance = useRef<Chart | null>(null);
+
+  const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+  const appointmentCounts = daysOfWeek.map((day, index) => {
+    return appointments.filter(appt => new Date(appt.appointmentDate).getDay() === index).length;
+  });
+  const barData = {
+    labels: daysOfWeek,
+    datasets: [
+      {
+        label: 'Số lịch hẹn',
+        data: appointmentCounts,
+        backgroundColor: '#3f51b5',
+      },
+    ],
+  };
+
+  const barOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => `Số lịch hẹn: ${context.raw}`,
+        },
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Ngày trong tuần',
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Số lượng lịch hẹn',
+        },
+        beginAtZero: true,
+      },
+    },
+  };
+
+  const pieData = {
+    labels: ['Đã hoàn thành', 'Đã hủy', 'Đang chờ xác nhận', 'Đã đặt lịch', 'Không tới'],
+    datasets: [
+      {
+        data: [
+          appointments.filter(appt => appt.bookingStatus === "finished").length,
+          appointments.filter(appt => appt.bookingStatus === "cancelled").length,
+          appointments.filter(appt => appt.bookingStatus === "pending").length,
+          appointments.filter(appt => appt.bookingStatus === "booked").length,
+          appointments.filter(appt => appt.bookingStatus === "no_show").length,
+        ],
+        backgroundColor: ['#5cb85c', '#d9534f', '#f0ad4e', '#007bff', '#777'],
+      },
+    ],
+  };
+
+  const pieOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => `${context.label}: ${context.raw}`,
+        },
+      },
+    },
+  };
+
+  const lineData = {
+    labels: daysOfWeek,
+    datasets: [
+      {
+        label: 'Doanh thu',
+        data: appointmentCounts.map((count, index) => appointments
+          .filter(appt => new Date(appt.appointmentDate).getDay() === index)
+          .reduce((sum, appt) => sum + appt.finalFee, 0)
+        ),
+        fill: false,
+        borderColor: '#007bff',
+        tension: 0.1,
+      },
+    ],
+  };
+
+  const lineOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => `Doanh thu: ${context.raw.toLocaleString()} VND`,
+        },
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Ngày trong tuần',
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Doanh thu (VND)',
+        },
+        beginAtZero: true,
+      },
+    },
+  };
 
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
-  const ownerId = localStorage.getItem('id');
+  const getAppointmentsThisWeek = (appts) => {
+    const today = new Date();
+    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+    const endOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + 6));
+
+    return appts.filter(appt => {
+      const appointmentDate = new Date(appt.appointmentDate);
+      return appointmentDate >= startOfWeek && appointmentDate <= endOfWeek;
+    }).length;
+  };
+
+  const getUpcomingAppointments = (appts: AppointmentViewModelFetch[], days = 30) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const futureDate = new Date(today);
+    futureDate.setDate(futureDate.getDate() + days);
+    futureDate.setHours(23, 59, 59, 999);
+
+    const upcomingAppointments = appts.filter(appt => {
+      const appointmentDate = new Date(appt.appointmentDate);
+      appointmentDate.setHours(0, 0, 0, 0);
+
+      return appointmentDate >= today && appointmentDate <= futureDate;
+    });
+
+    return upcomingAppointments.length;
+  };
+
+  const getAppointmentStatus = (appts) => {
+    const finished = appts.filter(appt => appt.bookingStatus === "finished").length;
+    const cancelled = appts.filter(appt => appt.bookingStatus === "cancelled").length;
+    const pending = appts.filter(appt => appt.bookingStatus === "pending").length;
+    const booked = appts.filter(appt => appt.bookingStatus === "booked").length;
+    return { finished, cancelled, pending, booked };
+  };
+
+  const getMonthlyRevenue = (appts) => {
+    const currentMonth = new Date().getMonth();
+    return appts
+      .filter(appt => new Date(appt.appointmentDate).getMonth() === currentMonth)
+      .reduce((sum, appt) => sum + appt.finalFee, 0);
+  };
+
+  const getAverageRevenuePerAppointment = (appts) => {
+    const totalRevenue = appts.reduce((sum, appt) => sum + appt.finalFee, 0);
+    return appts.length > 0 ? totalRevenue / appts.length : 0;
+  };
+
+  const getNewPatients = (appts) => {
+    const uniquePatients = new Set(appts.map(appt => appt.customerId));
+    return uniquePatients.size;
+  };
+
+  // const getTopDentist = (appts) => {
+  //   const dentistAppointments = appts.reduce((acc, appt) => {
+  //     acc[appt.dentistFullname] = (acc[appt.dentistFullname] || 0) + 1;
+  //     return acc;
+  //   }, {});
+  //   return Object.entries(dentistAppointments).sort((a, b) => b[1] - a[1])[0][0];
+  // };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { content } = await getAllClinics(1, 100, '');
+        const dentistInfo = await fetchDentistInfo();
+        console.log(dentistInfo)
+        setFullname(dentistInfo.content.fullname);
 
-        const ownerClinic = content.find(clinic => clinic.ownerId.toString() === ownerId);
-        if (ownerClinic) {
-          localStorage.setItem('clinic', JSON.stringify(ownerClinic));
-          setClinicOpenHour(ownerClinic.openHour);
-          setClinicCloseHour(ownerClinic.closeHour);
-        } else {
-          console.error('No clinic found for the given ownerId');
-        }
+        const clinicId = dentistInfo.content.clinicId.toString();
+        const appointments = await getClinicAppointments(clinicId);
 
-        // const userDetails = localStorage.getItem('userDetails');
-        // if (userDetails) {
-        //   const user = JSON.parse(userDetails);
-        //   setFullname(user.fullname);
-        // } else {
-        //   console.error('No userDetails found in local storage');
-        // }
-
-        const data = await fetchClinicStaff();
-        setStaff(data.filter(user => !user.isOwner && user.isActive));
-
+        setAppointments(appointments);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching clinics or user details:', error);
@@ -126,9 +298,55 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, [ownerId]);
+  }, []);
 
-  console.log(staff, 'Hi')
+  useEffect(() => {
+    if (barChartRef.current) {
+      if (barChartInstance.current) {
+        barChartInstance.current.destroy();
+      }
+      barChartInstance.current = new Chart(barChartRef.current, {
+        type: 'bar',
+        data: barData,
+        options: barOptions,
+      });
+    }
+
+    if (pieChartRef.current) {
+      if (pieChartInstance.current) {
+        pieChartInstance.current.destroy();
+      }
+      pieChartInstance.current = new Chart(pieChartRef.current, {
+        type: 'pie',
+        data: pieData,
+        options: pieOptions,
+      });
+    }
+
+    if (lineChartRef.current) {
+      if (lineChartInstance.current) {
+        lineChartInstance.current.destroy();
+      }
+      lineChartInstance.current = new Chart(lineChartRef.current, {
+        type: 'line',
+        data: lineData,
+        options: lineOptions,
+      });
+    }
+
+    return () => {
+      if (barChartInstance.current) {
+        barChartInstance.current.destroy();
+      }
+      if (pieChartInstance.current) {
+        pieChartInstance.current.destroy();
+      }
+      if (lineChartInstance.current) {
+        lineChartInstance.current.destroy();
+      }
+    };
+  }, [appointments]);
+
   return (
     <Box sx={{ display: "flex", height: '100%' }}>
       <AppBar position="absolute" open={open}>
@@ -149,9 +367,6 @@ const Dashboard = () => {
           >
             <MenuIcon />
           </IconButton>
-          {/* <Box className={styles.logoBox}>
-            <Link href="/"><img src="../../../../../public/Logo.png" /></Link>
-          </Box> */}
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
@@ -200,92 +415,74 @@ const Dashboard = () => {
             borderBottomWidth: 2,
             backgroundColor: 'black'
           }} />
-
           <div className={styles.contentWrapper}>
-            <Box className={styles.content1}>
-              <Box>
-                <Box sx={{ fontSize: '22px', fontWeight: 700 }}>
-                  Lịch hẹn trong tuần này
-                </Box>
-                <Box sx={{ fontSize: '20px' }}>
-                  5 lịch hẹn
-                </Box>
-              </Box>
-              <Box>
-                <Box sx={{ fontSize: '22px', fontWeight: 700 }}>
-                  Lịch hẹn đã hoàn thành
-                </Box>
-                <Box sx={{ fontSize: '20px' }}>
-                  15 lịch hẹn
-                </Box>
-              </Box>
-              <Box>
-                <Box sx={{ fontSize: '22px', fontWeight: 700 }}>
-                  Lịch hẹn đã hủy
-                </Box>
-                <Box sx={{ fontSize: '20px' }}>
-                  2 lịch hẹn
-                </Box>
-              </Box>
-            </Box>
+            <div className={styles.container}>
+              <div className={styles.thirdFourthWidth}>
+                <a
+                  href="/admin/clinic-owner/appointment"
+                  className={styles.chartLink}
+                  title="Ấn để xem thông tin chi tiết"
+                >
+                  <div className={styles.chart}>
+                    <div className={styles.chartTitle}>Số lịch hẹn tuần này</div>
+                    <canvas ref={barChartRef} />
+                  </div>
+                </a>
+              </div>
 
-            {/* <Box className={styles.annualAppointments}>
-              <Box sx={{ fontSize: '22px', fontWeight: 700, marginBottom: '10px' }}>
-                Yêu cầu đặt lịch hẹn định kỳ
-              </Box>
-              <ul className={styles.annualAppointmentsList}>
-                <li>
-                  <span className={styles.appointmentService}>Khám Răng Định Kỳ</span>
-                  <span className={styles.appointmentDetails}>Lặp lại mỗi 2 tháng</span>
-                </li>
-                <li>
-                  <span className={styles.appointmentService}>Tẩy Trắng Răng Định Kỳ</span>
-                  <span className={styles.appointmentDetails}>Lặp lại mỗi 3 tháng</span>
-                </li>
-                <li>
-                  <span className={styles.appointmentService}>Nhổ Răng Khôn Định Kỳ</span>
-                  <span className={styles.appointmentDetails}>Lặp lại mỗi 6 tháng</span>
-                </li>
-                <li>
-                  <span className={styles.appointmentService}>Nhổ Răng Khôn Định Kỳ</span>
-                  <span className={styles.appointmentDetails}>Lặp lại mỗi 6 tháng</span>
-                </li>
-                <li>
-                  <span className={styles.appointmentService}>Nhổ Răng Khôn Định Kỳ</span>
-                  <span className={styles.appointmentDetails}>Lặp lại mỗi 6 tháng</span>
-                </li>
-              </ul>
-            </Box>
+              <div className={styles.oneFourthWidth}>
+                <div className={styles.halfWidth}>
+                  <div className={styles.metricBox}>
+                    <div className={styles.title}><strong>Lịch hẹn sắp tới (30 ngày)</strong></div>
+                    <div className={styles.content}>{getUpcomingAppointments(appointments)} lịch hẹn</div>
+                  </div>
+                  <div className={styles.metricBox}>
+                    <div className={styles.title}><strong>Lịch hẹn tuần này</strong></div>
+                    <div className={styles.content}>{getAppointmentsThisWeek(appointments)} lịch hẹn</div>
+                  </div>
+                </div>
+              </div>
 
-            <Box className={styles.topServices}>
-              <Box sx={{ fontSize: '22px', fontWeight: 700, marginBottom: '10px' }}>
-                Dịch vụ được đặt nhiều nhất
-              </Box>
-              <ul className={styles.servicesList}>
-                <li>
-                  <span className={styles.serviceName}>Khám Răng</span>
-                  <span className={styles.serviceCount}>25 khách</span>
-                </li>
-                <li>
-                  <span className={styles.serviceName}>Tẩy Trắng Răng</span>
-                  <span className={styles.serviceCount}>18 khách</span>
-                </li>
-                <li>
-                  <span className={styles.serviceName}>Nhổ Răng Khôn</span>
-                  <span className={styles.serviceCount}>15 khách</span>
-                </li>
-              </ul>
-            </Box> */}
+              <div className={styles.fullWidth}>
+                <div>
+                  <div className={styles.metricBox}>
+                    <div className={styles.title}><strong>Tài chính</strong></div>
+                    <div className={styles.smallContent}>
+                      <strong>Doanh thu tháng này: </strong> {getMonthlyRevenue(appointments).toLocaleString()} VND<br />
+                      <strong>Doanh thu trung bình/lịch hẹn: </strong> {getAverageRevenuePerAppointment(appointments).toLocaleString()} VND
+                    </div>
+                  </div>
+                  <div className={`${styles.chart} ${styles.lineChart}`}>
+                    <div className={styles.chartTitle}>Doanh thu tuần này</div>
+                    <canvas ref={lineChartRef} />
+                  </div>
+                </div>
 
-            <div className={styles.calendarContainer}>
-              <Divider sx={{
-                margin: '20px auto',
-                width: '100%',
-                borderBottomWidth: 2,
-                backgroundColor: 'black'
-              }} />
-              {loading ? <p>Loading....</p> : <Scheduler openHour={clinicOpenHour} closeHour={clinicCloseHour} availableStaff={staff} />}
+                <div>
+                  <div className={styles.metricBox}>
+                    <div className={styles.title}><strong>Trạng thái lịch hẹn</strong></div>
+                    <div className={styles.smallContent}>
+                      <strong>Hoàn thành: </strong>{getAppointmentStatus(appointments).finished} lịch hẹn<br />
+                      <strong>Đã đặt: </strong>{getAppointmentStatus(appointments).booked} lịch hẹn<br />
+                      <strong>Đã hủy: </strong> {getAppointmentStatus(appointments).cancelled} lịch hẹn<br />
+                      <strong>Đang chờ xác nhận: </strong>{getAppointmentStatus(appointments).pending} lịch hẹn
+                    </div>
+                  </div>
+                  <a
+                    href="/admin/clinic-owner/appointment"
+                    className={styles.chartLink}
+                    title="Ấn để xem thông tin chi tiết"
+                  >
+                    <div className={styles.chart}>
+                      <div className={styles.chartTitle}>Tỉ lệ trạng thái lịch hẹn</div>
+                      <canvas ref={pieChartRef} />
+                    </div>
+                  </a>
+                </div>
+              </div>
+
             </div>
+
           </div>
         </div>
       </Box>

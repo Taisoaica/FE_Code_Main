@@ -1,3 +1,9 @@
+@font-face {
+    font-family: 'Inter';
+    font-weight: 100 900;
+    src: url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+}
+
 .mainContentRightContainer {
     display: flex;
     flex-basis: 1;
@@ -6,3 +12,136 @@
     width: 70%;
     padding-top: 3em;
 }
+
+.mainContentMiddleTitleHeading {
+    font-size: 2em;
+    text-align: left;
+    margin-bottom: 1em;
+    font-weight: 600;
+    color: #333;
+}
+
+.mainContentContainerBox {
+    width: 90%;
+    padding: 1.5em;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.paymentCard {
+    margin-bottom: 1em;
+    padding: 1em;
+    border: 1px solid #ccc;
+    text-align: left;
+    border-radius: 8px;
+    background-color: #fafafa;
+    font-size: 0.9em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.paymentCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.paymentHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #eee;
+}
+
+.paymentHeader h3 {
+    font-size: 1.2em;
+    margin: 0;
+    color: #333;
+}
+
+.paymentDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.paymentDetails p {
+    margin: 0;
+}
+
+.paymentDetails p strong {
+    color: #333;
+}
+
+.noPayments {
+    font-size: 1.2em;
+    color: #696969;
+    text-align: center;
+    padding: 2em 0;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 2em;
+}
+
+.pagination li {
+    margin: 0 0.5em;
+}
+
+.pagination a {
+    color: #333;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination li.active a {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination a:hover:not(.active) {
+    background-color: #ddd;
+}
+
+.paymentDetails Button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875em;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.paymentDetails Button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.paymentDetails Button:focus {
+    outline: none;
+}
+
+/* Accessibility Improvements */
+button:focus {
+    outline: 2px solid #0056b3;
+    outline-offset: 2px;
+}
+
+a:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+

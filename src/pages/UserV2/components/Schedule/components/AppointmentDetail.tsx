@@ -7,12 +7,12 @@ interface AppointmentDetailProps {
     appointmentId: string;
     appointments: AppointmentViewModelFetch[];
     setActiveIndex: (index: number) => void;
+    source: number
 }
 
-const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, appointments, setActiveIndex }) => {
+const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, appointments, setActiveIndex, source  }) => {
     const appointment = appointments.find(app => app.bookId === appointmentId);
-
-
+    
     const getStatusText = (status: string) => {
         switch (status) {
             case 'booked':
@@ -21,9 +21,23 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
                 return 'Đang chờ xác nhận';
             case 'completed':
                 return 'Đã hoàn thành';
+            case 'canceled':
+                return 'Đã hủy';
             default:
                 return status;
         }
+    }
+
+    const handleBackButtonClick = () => {
+        if (source === 1) {
+            setActiveIndex(2);
+        } else if(source === 0){
+            setActiveIndex(1);
+        }
+    }
+
+    const handleCancel = () => {
+
     }
 
     const getAppointmentTypeText = (type: string) => {
@@ -42,13 +56,13 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
     const handlePayment = async () => {
         const paymentPayload: PaymentModel = {
             appointmentId: appointment.bookId,
-            amount: appointment.finalFee.toString(),
             orderInfo: `Thanh toán lịch hẹn ${appointment.bookId}`,
             returnUrl: 'http://localhost:5173/success'
         }
         try {
             const response = await createPayment(paymentPayload);
-            if (response.status == 200) {
+            if (response) {
+                window.location.href = response.content
                 console.log('Payment success');
             } else {
                 console.error('Payment failed:', response);
@@ -76,11 +90,15 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
                     <p><strong>Phòng khám:</strong> {appointment.clinicName}</p>
                     <p><strong>Địa chỉ:</strong> {appointment.clinicAddress}</p>
                     <p><strong>Trạng thái:</strong> {getStatusText(appointment.bookingStatus)}</p>
+                    <p><strong>Ghi chú:</strong> {appointment.dentistNote}</p>
                     <p><strong>Phí:</strong> {appointment.finalFee.toLocaleString()} VND</p>
                 </div>
             </div>
             <div className={styles.buttonContainer}>
-                <button className={styles.goBackButton} onClick={() => setActiveIndex(2)}>Trở về</button>
+                <button className={styles.goBackButton} onClick={() => handleBackButtonClick()}>Trở về</button>
+                {appointment.bookingStatus !== 'finished' && ( 
+                    <button className={styles.cancelButton} onClick={handleCancel}>Hủy lịch</button>
+                )}
                 {appointment.bookingStatus === 'pending' && (
                     <button className={styles.paymentButton} onClick={handlePayment}>Thanh toán</button>
                 )}

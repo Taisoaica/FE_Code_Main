@@ -1,0 +1,133 @@
+.mainContainer {
+    background: linear-gradient(to left, #e3f2fd, #f8fbff);
+    padding-top: 20px;
+    color: #0d47a1;
+    overflow: auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.greeting {
+    width: 95%;
+    margin: 0 auto;
+    font-size: 24px;
+    font-weight: 700;
+    color: #0d47a1;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+.tableHeader {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.tableContainer {
+    width: 95%;
+    height: fit-content;
+    gap: 10px;
+    margin: 20px auto 20px auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.tableContainer table {
+    width: 100%;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.tableContainer table tbody tr {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.tableContainer table tbody tr:hover {
+    background-color: #e3f2fd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tableContainer table tbodt tr:active {
+    background-color: #bbdefb;
+}
+
+.tableHeader {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+
+.statusPending {
+    background-color: #f0ad4e;
+    color: #fff;
+}
+
+.statusBooked {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.statusFinished {
+    background-color: #5cb85c;
+    color: #fff;
+}
+
+.statusCanceled {
+    background-color: #d9534f;
+    color: #fff;
+}
+
+.statusNoShow {
+    background-color: #777;
+    color: #fff;
+}
+
+.buttonContainer {
+    width: 95%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 2em;
+}
+
+.pagination li {
+    margin: 0 0.5em;
+}
+
+.pagination a {
+    color: #333;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination li.active a {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination a:hover:not(.active) {
+    background-color: #ddd;
+}

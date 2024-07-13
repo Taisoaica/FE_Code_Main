@@ -1,42 +1,39 @@
 import { IUserAccount } from "../interfaces/User/UserDefinition"
 import { connection_path } from "../../constants/developments"
 import { checkAuth } from "./AuthenticateUtils";
-import axios from "axios";
+import axios, { Axios, AxiosRequestConfig } from "axios";
 import { AppointmentViewModelFetch } from "./ClinicOwnerUtils";
 import { UserInfoModel } from "./SystemAdminUtils";
 import { apiCallWithTokenRefresh } from "./apiCallWithRefreshToken";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import { PaymentModel } from "./BookingRegister";
 
 export const getUserData = async (): Promise<IUserAccount> => {
-    const apiCall = async () => {
+    const api_url: string = connection_path.base_url + connection_path.user.customer;
 
-        const api_url: string = connection_path.base_url + connection_path.user.customer;
+    const config = {
+        method: 'GET',
+        url: api_url,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+        },
+    };
 
-        const config = {
-            method: 'GET',
-            url: api_url,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
-            },
-        };
-
-        try {
-            const response = await axios(config);
-            console.log('response:', response)
-            if (response.status === 200) {
-                const user: IUserAccount = response.data.content;
-                console.log('Fetch user data successfully');
-                return user;
-            } else {
-                console.log('Failed to fetch user');
-                return {} as IUserAccount;
-            }
-        } catch (error) {
-            console.error('Error fetching user:', error);
+    try {
+        const response = await axios(config);
+        if (response.status === 200) {
+            const user: IUserAccount = response.data.content;
+            console.log('Fetch user data successfully');
+            return user;
+        } else {
+            console.log('Failed to fetch user');
             return {} as IUserAccount;
         }
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        return {} as IUserAccount;
     }
-    return await apiCallWithTokenRefresh(apiCall);
 }
 
 
@@ -82,8 +79,8 @@ export const getCustomerAppointments = async (customerId: string, from_date?: Da
                 'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
             },
             params: {
-                from_date: from_date ? from_date.toISOString() : undefined,
-                to_date: to_date ? to_date.toISOString() : undefined,
+                from_date: from_date,
+                to_date: to_date,
                 from_time,
                 to_time,
                 requestOldItems,
@@ -114,4 +111,38 @@ export const getCustomerAppointments = async (customerId: string, from_date?: Da
         }
     }
     return await apiCallWithTokenRefresh(apiCall);
+}
+
+export interface PaymentDetail {
+    id: number;
+    transactId: string;
+    amount: number;
+    info: string;
+    expiration: string;
+    createdTime: string;
+    status: string;
+    provider: string;
+    appointmentId: string;
+}
+
+export const getCustomerPayments = async (customerId: string): Promise<PaymentDetail[]> => {
+    const api_url = connection_path.base_url + connection_path.booking.get_customer_payment + `${customerId}`;
+    const config: AxiosRequestConfig = {
+        method: 'GET',
+        url: api_url,
+        headers: { 'Content-Type': 'application/json' }
+    }
+
+    try {
+        const response = await axios(config);
+        if (response) {
+            return response.data.content;
+        } else {
+            console.log(response)
+            return []
+        }
+    } catch (error) {
+        console.log(error)
+        return []
+    }
 }

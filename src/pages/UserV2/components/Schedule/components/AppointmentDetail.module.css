@@ -45,7 +45,8 @@
 }
 
 .paymentButton,
-.goBackButton {
+.goBackButton,
+.cancelButton {
     padding: 0.5em 1em;
     background-color: #007bff;
     color: #fff;
@@ -72,4 +73,14 @@
 
 .paymentButton:hover {
     background-color: #218838;
+}
+
+.cancelButton {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+.cancelButton:hover {
+    background-color: #c82333;
 }

@@ -1,0 +1,203 @@
+.mainContainer {
+    background: linear-gradient(to left, #e3f2fd, #f8fbff);
+    padding-top: 20px;
+    color: #0d47a1;
+    overflow: auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.greeting {
+    width: 90%;
+    margin: 0 auto;
+    font-size: 24px;
+    font-weight: 700;
+    color: #0d47a1;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tableContainer {
+    width: 95%;
+    height: fit-content;
+    gap: 10px;
+    margin: 20px auto 20px auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.tableContainer table {
+    width: 100%;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.tableContainer table tbody tr {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.tableContainer table tbody tr:hover {
+    background-color: #e3f2fd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tableContainer table tbodt tr:active {
+    background-color: #bbdefb;
+}
+
+.tableHeader {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.filterSortContainer {
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 40px;
+}
+
+.filterContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sortContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.statusPending {
+    background-color: #f0ad4e;
+    color: #fff;
+}
+
+.statusBooked {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.statusFinished {
+    background-color: #5cb85c;
+    color: #fff;
+}
+
+.statusCanceled {
+    background-color: #d9534f;
+    color: #fff;
+}
+
+.statusNoShow {
+    background-color: #777;
+    color: #fff;
+}
+
+.sliderContainer {
+    margin: 0 auto;
+    padding: 30px;
+    width: 95%;
+}
+
+.sliderContainer {
+    background-color: white;
+}
+
+.sliderContainer h2 {
+    margin-bottom: 20px;
+}
+
+.slick-dots {
+    display: none !important;
+}
+
+
+.sliderTitle {
+    color: #0d47a1;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 30px;
+}
+
+
+.appointmentCard {
+    background-color: #E3F2FD;  
+    border: 1px solid #BBDEFB;  
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.appointmentCard:hover {
+    box-shadow: 0 6px 12px rgba(33, 150, 243, 0.2);  /* Blue-tinted shadow on hover */
+    transform: translateY(-5px);
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cardTitle {
+    color: black;  
+    font-weight: bold;
+}
+
+.cardInfo {
+    color: black;  
+}
+
+.viewButton {
+    margin-top: 10px !important;
+    background-color: #0d47a1 !important;
+    color: white !important;
+    transition: all 0.3s ease !important;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 2em;
+}
+
+.pagination li {
+    margin: 0 0.5em;
+}
+
+.pagination a {
+    color: #333;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination li.active a {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination a:hover:not(.active) {
+    background-color: #ddd;
+}
+
+.viewButton:hover {
+    background-color: #1565c0 !important;
+}

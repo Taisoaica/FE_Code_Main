@@ -1,5 +1,6 @@
+import { IDentistModel, IServiceModel } from './../Interfaces/interfaces';
 import { connection_path } from "../../constants/developments";
-import axios, { Axios, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { Axios, AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { ClinicToDisplay } from "../interfaces/ClinicRegister/Clinic";
 import { ClinicSlotRegistrationModel, Weekdays } from "../interfaces/AdminClinicOwner/Slots";
 import { ClinicSlotInfoModel, ClinicSlotUpdateModel } from "../interfaces/ClinicRegister/Clinic";
@@ -8,6 +9,7 @@ import { DentistInfoViewModel } from "../interfaces/AdminClinicOwner/DentistAcco
 import HttpResponseModel from "../interfaces/HttpResponseModel/HttpResponseModel";
 import { ClinicServiceInfoModel } from "./BookingRegister";
 import { apiCallWithTokenRefresh } from "./apiCallWithRefreshToken";
+import { IAPIResponseModel, IServiceCategoryModel, IServiceModel } from "../Interfaces/interfaces";
 
 export const getClinicGeneralInfo = async (clinicId: string): Promise<ClinicToDisplay | null> => {
     const apiCall = async () => {
@@ -73,32 +75,6 @@ export const updateClinicGeneralInfo = async (clinicInfo: ClinicToDisplay): Prom
     }
     return await apiCallWithTokenRefresh(apiCall);
 }
-
-export const fetchDentistInfo = async (): Promise<HttpResponseModel<DentistInfoViewModel>> => {
-    // const apiCall = async () => {
-    const api_url = connection_path.base_url + connection_path.invoker.get_dentist_invoker;
-    const accessToken = localStorage.getItem('accessToken');
-    const config: AxiosRequestConfig = {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`
-        }
-    };
-
-    try {
-        const response = await axios.get<HttpResponseModel<DentistInfoViewModel>>(api_url, config);
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching dentist info:', error);
-        return {
-            statusCode: 500,
-            message: 'Failed to fetch dentist info',
-            detail: '',
-        };
-    }
-    // }
-    // return apiCallWithTokenRefresh(apiCall);
-};
 
 export const fetchClinicStaff = async (): Promise<DentistInfoViewModel[]> => {
     const apiCall = async () => {
@@ -462,62 +438,6 @@ export const enableClinicService = async (serviceId: string): Promise<void> => {
     // return await apiCallWithTokenRefresh(apiCall);
 }
 
-
-export const getClinicServices = async (clinicId: number): Promise<ClinicServiceInfoModel[]> => {
-    // const apiCall = async () => {
-    const api_url = `${connection_path.base_url}${connection_path.clinic.get_clinic_service}?clinicId=${clinicId}`;
-    const accessToken = localStorage.getItem('accessToken');
-
-    const configuration: AxiosRequestConfig = {
-        method: 'GET',
-        url: api_url,
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-        }
-    };
-
-    try {
-        const response: AxiosResponse = await axios(configuration);
-        if (response.status === 200) {
-            return response.data.content; // Assuming response.data contains the list of clinic services
-        } else {
-            throw new Error(`Failed to fetch clinic services: ${response.statusText}`);
-        }
-    } catch (error) {
-        console.error('Axios error:', error);
-        throw new Error('Failed to fetch clinic services');
-    }
-    // }
-    // return await apiCallWithTokenRefresh(apiCall);
-};
-
-export const getClinicServiceById = async (serviceId: string): Promise<ClinicServiceInfoModel> => {
-    const apiCall = async () => {
-        const api_url = `${connection_path.base_url}${connection_path.clinic.get_clinic_service}/${serviceId}`;
-
-        const configuration: AxiosRequestConfig = {
-            method: 'GET',
-            url: api_url,
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        };
-
-        try {
-            const response = await axios(configuration);
-            if (response.status === 200) {
-                return response.data.content as ClinicServiceInfoModel;
-            }
-            return {} as ClinicServiceInfoModel;
-        } catch (error) {
-            console.error('Axios error:', error);
-            return {} as ClinicServiceInfoModel;
-        }
-    }
-    return await apiCallWithTokenRefresh(apiCall);
-}
-
 export const updateClinicService = async (serviceInfo: ClinicServiceInfoModel): Promise<void> => {
     const apiCall = async () => {
         const api_url = `${connection_path.base_url}${connection_path.clinic.put_clinic_service}`;
@@ -547,7 +467,6 @@ export const updateClinicService = async (serviceInfo: ClinicServiceInfoModel): 
     }
     return await apiCallWithTokenRefresh(apiCall);
 }
-
 
 export interface AppointmentViewModel {
     appointmentDate: string;
@@ -624,7 +543,6 @@ export const getClinicAppointments = async (clinicId: string, from_date?: string
     // return await apiCallWithTokenRefresh(apiCall);
 };
 
-
 export const getClinicAppointmentsWithClinicSlotId = async (clinicId: string, from_date?: Date, to_date?: Date, from_time?: string, to_time?: string, requestOldItems = true, page_size?: number, page_index?: number): Promise<AppointmentViewModel[]> => {
     const api_url = connection_path.base_url + connection_path.booking.get_clinic_booking.replace(':id', clinicId);
     const configuration: AxiosRequestConfig = {
@@ -661,3 +579,134 @@ export const getClinicAppointmentsWithClinicSlotId = async (clinicId: string, fr
     }
 };
 
+export const getDentistInfo = async (): Promise<IDentistModel | null> => {
+    const apiCall = async () => {
+        const requestconfig: AxiosRequestConfig = {
+            baseURL: connection_path.base_url,
+            url: connection_path.invoker.get_dentist_invoker,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        };
+
+        const response_data: IDentistModel | null = await axios(requestconfig)
+        .then((res: AxiosResponse<IAPIResponseModel<IDentistModel>>) => {
+            const data: IDentistModel | null = res.data.content;
+            return data;
+        })
+        .catch((error: unknown) => {
+            if (error instanceof AxiosError)
+            {
+                if (error.status == 401)
+                {
+                    throw error;
+                }
+
+                console.error(error.response?.data);
+            }
+            
+            return null;
+        });
+
+        return response_data;
+    }
+    return apiCallWithTokenRefresh(apiCall);
+};
+
+export const getAllCategories = async (): Promise<IServiceCategoryModel[]> => {
+    const apiCall = async () => {
+        const configuration: AxiosRequestConfig = {
+            method: 'GET',
+            baseURL: connection_path.base_url,
+            url: connection_path.clinic.service_categories,
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                'Content-Type': 'application/json' // Set content type as JSON
+            }
+        };
+
+        const response_data: IServiceCategoryModel[] = await axios(configuration)
+        .then((res: AxiosResponse<HttpResponseModel<IServiceCategoryModel[]>>) => {
+            const data:  IServiceCategoryModel[] = res.data.content!;
+            return data;
+        })
+        .catch((error: unknown) => {
+            if (error instanceof AxiosError)
+            {
+                console.error(error.response?.data)
+            }
+            
+            const data: IServiceCategoryModel[] = [];
+            return data;
+        });
+
+        return response_data;
+    }
+
+    return await apiCallWithTokenRefresh(apiCall);
+};
+
+export const getClinicServices = async (clinicId: number): Promise<ClinicServiceInfoModel[]> => {
+    const apiCall = async () => {
+        const configuration: AxiosRequestConfig = {
+            method: 'GET',
+            baseURL: connection_path.base_url,
+            url: connection_path.clinic.get_clinic_service,
+            params: {
+                clinicId: clinicId,
+            },
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                'Content-Type': 'application/json'
+            }
+        };
+        
+        const response_data: IServiceModel[] = await axios(configuration)
+        .then((res: AxiosResponse<IAPIResponseModel<IServiceModel[]>>) => {
+            const data: IServiceModel[] = res.data.content!;
+            return data;
+        })
+        .catch((error: unknown) => {
+            if (error instanceof AxiosError)
+            console.error(error.response?.data);
+            return [];
+        });
+
+        return response_data;
+    }
+    
+    return await apiCallWithTokenRefresh(apiCall);
+};
+
+export const getClinicServiceById = async (serviceId: string): Promise<ClinicServiceInfoModel | null> => {
+    const apiCall = async () => {
+        const configuration: AxiosRequestConfig = {
+            method: 'GET',
+            baseURL: connection_path.base_url,
+            url: `{connection_path.clinic.get_clinic_service}/${serviceId}`,
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+        const response_data: IServiceModel | null = await axios(configuration)
+        .then((res: AxiosResponse<IAPIResponseModel<IServiceModel>>) => {
+            const data: IServiceModel | null = res.data.content;
+            return data;
+        })
+        .catch((error: unknown) => {
+            if(error instanceof AxiosError)
+            {
+                if (error.response!.status == 401)
+                {
+                    throw error;
+                }
+            }
+
+            return {} as IServiceModel;
+        });
+
+        return response_data;
+    }
+    return await apiCallWithTokenRefresh(apiCall);
+}

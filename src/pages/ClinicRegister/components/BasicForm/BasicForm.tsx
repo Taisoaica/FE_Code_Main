@@ -12,17 +12,13 @@ interface BasicFormProps {
 const BasicForm = ({ formData, setFormData, onStepComplete }: BasicFormProps) => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [localFormData, setLocalFormData] = useState<ClinicRegistrationModel>(formData);
-
-    const formatTime = (time: string) => {
-        const [hour, minute] = time.split(':');
-        return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:00`;
-    };
-
+    
     const handleSubmit = () => {
         if (validate()) {
             if (localFormData.OpenHour === undefined || localFormData.CloseHour === undefined) return;
-            const formattedOpenHour = formatTime(localFormData.OpenHour);
-            const formattedCloseHour = formatTime(localFormData.CloseHour);
+            console.log(localFormData.OpenHour)
+            const formattedOpenHour = localFormData.OpenHour //formatTime(localFormData.OpenHour);
+            const formattedCloseHour = localFormData.CloseHour //formatTime(localFormData.CloseHour);
 
             const updatedFormData: ClinicRegistrationModel = {
                 ...localFormData,
@@ -73,6 +69,16 @@ const BasicForm = ({ formData, setFormData, onStepComplete }: BasicFormProps) =>
             newErrors.closeHour = 'Giờ đóng cửa là bắt buộc.';
         } else if (!/^(\d|0\d|1\d|2[0-3]):([0-5]\d)$/.test(localFormData.CloseHour)) {
             newErrors.closeHour = 'Giờ đóng cửa không hợp lệ.';
+        }
+
+        if (localFormData.OpenHour > localFormData.CloseHour) {
+            newErrors.closeHour = 'Giờ đóng cửa không được phép trước giờ mở cửa';
+            newErrors.openHour = 'Giờ mở cửa không được phép sau giờ đóng cửa';
+        }
+
+        if (localFormData.OpenHour == localFormData.CloseHour) {
+            newErrors.closeHour = 'Giờ đóng cửa không hợp lệ';
+            newErrors.openHour = 'Giờ mở cửa không hợp lệ';
         }
 
         setErrors(newErrors);
@@ -156,7 +162,7 @@ const BasicForm = ({ formData, setFormData, onStepComplete }: BasicFormProps) =>
                     <Label for="open-hour" sm={3} className={styles.label}>Giờ mở cửa:</Label>
                     <Col sm={3}>
                         <Input
-                            type="text"
+                            type="time"
                             name="OpenHour"
                             id="open-hour"
                             className={styles.input}
@@ -169,7 +175,7 @@ const BasicForm = ({ formData, setFormData, onStepComplete }: BasicFormProps) =>
                     <Label for="close-hour" sm={3} className={styles.label}>Giờ đóng cửa:</Label>
                     <Col sm={3}>
                         <Input
-                            type="text"
+                            type="time"
                             name="CloseHour"
                             id="close-hour"
                             className={styles.input}

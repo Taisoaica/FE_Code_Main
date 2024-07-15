@@ -39,7 +39,7 @@ import { ClinicSlotRegistrationModel, Weekdays } from "../../../../utils/interfa
 import { ClinicSlotInfoModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
 import { ClinicSlotUpdateModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
 import { EventInput } from "@fullcalendar/core/index.js";
-import { fetchDentistInfo, registerSlots, getAllClinicSlots, updateClinicSlot, enableSlot } from "../../../../utils/api/ClinicOwnerUtils";
+import { getDentistInfo, registerSlots, getAllClinicSlots, updateClinicSlot, enableSlot } from "../../../../utils/api/ClinicOwnerUtils";
 import { DentistInfoViewModel } from "../../../../utils/interfaces/AdminClinicOwner/DentistAccounts";
 
 
@@ -254,7 +254,7 @@ const SlotRegister = () => {
     if (selectedSlot) {
       try {
         // Fetch dentist information first
-        const dentistInfoResponse = await fetchDentistInfo();
+        const dentistInfoResponse = await getDentistInfo();
         if (dentistInfoResponse.statusCode === 200) {
           // Copy slotInforModel
           let updatedSlotInfoModel = [...slotInforModel];
@@ -300,7 +300,7 @@ const SlotRegister = () => {
     if (selectedSlot) {
       try {
         // Fetch dentist information first
-        const dentistInfoResponse = await fetchDentistInfo();
+        const dentistInfoResponse = await getDentistInfo();
 
         if (dentistInfoResponse.statusCode === 200) {
           // Copy slotInforModel

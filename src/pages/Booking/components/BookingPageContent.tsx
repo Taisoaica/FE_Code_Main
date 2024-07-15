@@ -92,7 +92,7 @@ const BookingPageContent = () => {
 
             const response = await createNewCustomerAppointment(payload)
 
-            if (response.content) {
+            if (response.success) {
                 if (paymentMethod === 'VNPay') {
                     if (response.content.bookId) {
                         const paymentPayload: PaymentModel = {
@@ -116,7 +116,14 @@ const BookingPageContent = () => {
                         console.error('Unexpected content format:', response.content);
                     }
                 } else {
-                    console.log('Booking successfully');
+                    try {
+                        const paymentResponse = await createPayment(paymentPayload);
+
+                        console.log('Booking successfully');
+                    }
+                    catch (paymentError) {
+                        console.error("Payment creation failed", paymentError);
+                    }
                     navigate('/success?paymentMethod=Other&appointmentId=' + response.content.bookId);
                 }
             } else if (response && response.statusCode === 400) {
@@ -198,7 +205,7 @@ const BookingPageContent = () => {
                             <Box className={styles.body}>
                                 <Box><b>Phòng khám:</b> {clinicName || 'Chưa chọn'}</Box>
                                 <Box><b>Ngày khám:</b> {formData.date || 'Chưa chọn'}</Box>
-                                <Box><b>Bác sĩ:</b> {formData.dentistName || 'Chưa chọn'}</Box>
+                                <Box><b>Bác sĩ:</b> {formData.dentist || 'Chưa chọn'}</Box>
                                 <Box><b>Slot:</b> {formData.time.start && formData.time.end ? `${formatTime(formData.time.start)} - ${formatTime(formData.time.end)}` : 'Chưa chọn'}</Box>
                                 <Box><b>Dịch vụ:</b> {formData.serviceName || 'Chưa chọn'}</Box>
                             </Box>

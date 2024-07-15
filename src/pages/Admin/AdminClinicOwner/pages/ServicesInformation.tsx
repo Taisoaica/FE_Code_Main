@@ -3,13 +3,10 @@ import { styled } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-
-import { mainListItems } from "../components/listItems";
 import styles from "./ServicesInformation.module.css";
 
 import {
@@ -17,38 +14,18 @@ import {
     Typography,
 } from "@mui/material";
 
-import {
-    Modal,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    Button,
-    FormGroup,
-    Label,
-    Input,
-} from "reactstrap";
+import { Modal, ModalHeader, ModalBody, Button, FormGroup, Label, Input,} from "reactstrap";
 import { useEffect, useState } from "react";
-import { ClinicServiceRegistrationModel, getClinicServices, addClinicService, fetchDentistInfo } from "../../../../utils/api/ClinicOwnerUtils";
-import { ClinicServiceCategoryModel, getAllCategories } from "../../../../utils/api/SystemAdminUtils";
+import { ClinicServiceRegistrationModel, getClinicServices, addClinicService, getDentistInfo, getAllCategories } from "../../../../utils/api/ClinicOwnerUtils";
+import { ClinicServiceCategoryModel} from "../../../../utils/api/SystemAdminUtils";
 import { NestedListItems } from "../components/NestedListMenu";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { useNavigate } from "react-router-dom";
+import { IServiceModel } from "../../../../utils/Interfaces/interfaces";
 
 const drawerWidth: number = 270;
-
-interface ClinicServiceInfoModel {
-    clinicServiceId: string;
-    name: string;
-    description: string;
-    price: number;
-    clinicId: number;
-    categoryId: number;
-    available: boolean;
-    removed: boolean;
-}
-
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -97,10 +74,11 @@ const Drawer = styled(MuiDrawer, {
         }),
     },
 }));
+
 const ServicesInformation = () => {
     const [open, setOpen] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
-    const [serviceList, setServiceList] = useState<ClinicServiceInfoModel[]>([]);
+    const [serviceList, setServiceList] = useState<IServiceModel[]>([]);
     const [clinicId, setClinicId] = useState(0);
     const [formData, setFormData] = useState<ClinicServiceRegistrationModel>({
         serviceCategory: 0,
@@ -144,8 +122,8 @@ const ServicesInformation = () => {
     };
 
     const fetchClinicServices = async () => {
-        const clinic = await fetchDentistInfo();
-        const clinicId = clinic.content.clinicId;
+        const clinic = await getDentistInfo();
+        const clinicId = clinic.clinicId;
         setClinicId(clinicId);
         try {
             const services = await getClinicServices(clinicId);
@@ -328,7 +306,7 @@ const ServicesInformation = () => {
                                 <FormGroup>
                                     <Label for="servicePrice">Giá</Label>
                                     <Input
-                                        type="number"
+                                        type="text"
                                         name="servicePrice"
                                         id="servicePrice"
                                         value={formData.servicePrice}

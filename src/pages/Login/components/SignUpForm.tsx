@@ -3,7 +3,6 @@ import {
   Box,
   Grid,
   Link,
-  Typography,
   TextField,
   InputAdornment,
   IconButton,
@@ -50,7 +49,7 @@ const SignUpForm = () => {
 
   const validateUsername = (inputUsername: string): boolean => {
     const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z][A-Za-z0-9_]{7,29}$/
-  
+
     //const regex = /^(?=[A-Za-z])(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z0-9_]{8,30}$/
     return regex.test(inputUsername);
   };
@@ -78,9 +77,9 @@ const SignUpForm = () => {
       </Box>
 
       <Box className={styles.formContainer}>
-        <Typography component="h1" variant="h5" sx={{ textAlign: "center" }}>
+        <Box className={styles.centerText} >
           Tạo tài khoản
-        </Typography>
+        </Box>
         <TextField
           className={styles.input}
           required

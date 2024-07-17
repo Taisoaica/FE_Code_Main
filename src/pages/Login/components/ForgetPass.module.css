@@ -1,0 +1,67 @@
+.centerText {
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.form {
+    padding-top: 20%;
+    align-self: flex-start;
+}
+
+.buttonBox {
+    padding-left: 40px;
+}
+
+.backButton {
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    width: fit-content;
+    height: fit-content;
+    color:#1976d3
+}
+
+.backButton:hover,
+.backButton:focus-visible {
+    background-color: none;
+}
+
+.backButton .MuiSvgIcon-root {
+    color: #1976d3;
+    font-size: 24px;
+}
+
+.formContainer {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+}
+
+.centerText {
+    text-align: center;
+    font-size: 34px;
+    font-weight: 600;
+}
+
+
+.passwordBox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.loginLinkContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.input {
+    background-color: #ffffff;
+}

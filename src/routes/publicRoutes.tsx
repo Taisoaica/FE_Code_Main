@@ -13,10 +13,12 @@ import ClinicDetail from '../pages/ClinicDetail/ClinicDetail';
 import ClinicList from '../pages/ClinicList/ClinicList';
 import Chat from '../pages/ChatV1/Chat';
 import ErrorPage from '../pages/ErrorPage/ErrorPage';
-import SuccessPage from '../pages/SuccessPage/SuccessPage';
 import ForOwner from '../pages/ForOwner/ForOwner';
 import Guide from '../pages/Guide/Guide';
 import SuccessPageWrapper from '../pages/SuccessPage/SuccessPageWrapper';
+import ForgetPassword from '../pages/Login/ForgetPassMUI';
+import TokenFunc from '../pages/Login/TokenMUI';
+import NewPassword from '../pages/Login/NewPassMUI';
 
 
 export const publicRoutes = [
@@ -28,6 +30,10 @@ export const publicRoutes = [
     { path: '/clinics', element: <ClinicList /> },
     { path: "/login", element: < LoginMUI /> },
     { path: "/signup", element: <SignUpMUI /> },
+    { path: "/forget-pass", element: <ForgetPassword /> },
+    { path: "/token", element: <TokenFunc /> },
+    { path: "/newpassword", element: <NewPassword /> },
+
     { path: "/error404", element: <ErrorPage /> },
     { path: "/success", element: <SuccessPageWrapper /> },
     { path: "/chat", element: <Chat /> },

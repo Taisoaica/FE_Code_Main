@@ -1,0 +1,173 @@
+[33m27e3987c97447230f408fdd91b2367595aa0f82e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #63 from SpaceStalinn/quocbao_branch
+[33m7e42a54d6a69b333d7a04351270b2e21c5bfdee8[m Trang admin hệ thống
+[33m20cf98b7ee7432980f52c86f9d7c2690e807e9ea[m Merge branch 'SWP391-Nhom-4-NET1803:main' into quocbao_branch
+[33m01115810a264a47de2cb0164a63320d19809b5c7[m Sửa trang clinic detail, sửa nút bấm trang booking
+[33m2e994df026cfcfd7da6e392da159a053184757e5[m Merge pull request #62 from Taisoaica/main
+[33m7c21583914d102d2327f2a33205dcc180b709b9d[m Merge branch 'main' of https://github.com/Taisoaica/FE_Code_Main
+[33m35d67d4409c094aa635f8bd8b9344d86c430e1ac[m Create Guide Page
+[33m9cb4ccf99ebf5f12c6f1ee5eefed09776d617439[m Merge pull request #61 from SpaceStalinn/quocbao_branch
+[33meded06b153038af4f2205edb5f9e21a7ccadcc44[m solve merge conflicts to main
+[33mbf70fca39e146e97724d459018977a7494af9dd4[m Refactor Firebase configuration to remove sensitive information
+[33mff6fac416f4796bcd45742eaf9499c1dec2881f7[m Merge pull request #60 from Taisoaica/main
+[33m67af0c6574a2961f9ecd078ecbc07fb7a6e9a331[m Nối API
+[33mac7042c8371d4821e6c276b6851ed32cd8684e61[m Merge branch 'main' into main
+[33mc4c0506ed44c04ce01d84dc537893b386797860c[m Validate all form
+[33m923298286216ee1d01a47a9c44b2fabe2703b1a7[m Merge pull request #59 from SpaceStalinn/quocbao_branch
+[33m942a3d9e6125c00f8c529cfb9d439db27d91f043[m Merge branch 'quocbao_branch' of https://github.com/SpaceStalinn/FE_Code_Main into quocbao_branch
+[33m9070218269ed5204711d80ffaa57bd2f4e9fb6ad[m Trang đăng kí SlotRegister admin clinic owner
+[33m43b9f2698ae9d846dd7a69d37ba7265ac82ff301[m Merge branch 'main' of https://github.com/Taisoaica/FE_Code_Main
+[33mcae2da6d4b48e9714e88202ccc2d00c334f0e75b[m Modified ClinicManagement
+[33m1cc358cde80480fca18625c2f16d04331ce1bd41[m Merge pull request #58 from SpaceStalinn/quocbao_branch
+[33m5a52a9bc84971c0702550c9cb904ad9121808f1a[m Merge branch 'main' into quocbao_branch
+[33meb6b0f9d5e714fe236a9fbcc965fe543f424a404[m Nối api
+[33m1924cfb170c812472ce074f132aa333b9797171d[m Thêm thời khóa biểu cho chủ phòng khám
+[33m558b20f5dfb881e00c1ee79280af9aea4fcc4ff2[m Merge pull request #56 from Taisoaica/main
+[33ma8bb41c78e1736a262a916052efa048758e520a0[m Merge branch 'main' into main
+[33mb73743469caad6284a2058fea641c3d088be0fd3[m Merge pull request #57 from SpaceStalinn/quocbao_branch
+[33m9af8aa7f47875cb568af283ffa01b99aac53d7b9[m Merge branch 'SWP391-Nhom-4-NET1803:main' into quocbao_branch
+[33mde3feddd56eb2cacfc54e1fcf2ad4c95d08e1c56[m Merge branch 'quocbao_branch' of https://github.com/SpaceStalinn/FE_Code_Main into quocbao_branch
+[33ma1e618c252d0da45f753df04d5f4062a316c052b[m Layout trang admin phòng khám và đăng ảnh bằng firebase
+[33mb4cbc16e52c5759d698e25e17ab07924cb7474ff[m Modify Signup Page. Please don't use public/... for img
+[33mda495c5fdc68ae95d4e0a1ed9f130c528abcf6fa[m Merge pull request #55 from SpaceStalinn/quocbao_branch
+[33mbc1df1cd5a045f0b348674fe29e805e689a714d0[m Merge branch 'SWP391-Nhom-4-NET1803:main' into quocbao_branch
+[33ma5e9a29e25f400444bddea6e8288ffe7241a18c1[m Trang system-admin
+[33m661e867cc83431587cf9d7f59d51951a99a644b5[m Merge pull request #54 from SpaceStalinn/quocbao_branch
+[33m6fe871e424656ca9b3c27b79e61e9f50705efbc1[m Trang /system-admin
+[33m6dc86d66e794e93c15f7a785ef09ba154eaeb69e[m Sửa trang login
+[33me33b4199925950e1642c7fadca176b8954d59c3c[m Sửa trang đăng kí phòng khám
+[33m741af4845e9de282c64e5e7faf46be198350aef3[m Merge pull request #46 from SpaceStalinn/quocbao_branch
+[33mdf3453eacb9467e481fca2007bd99e14b14994cc[m Sửa trang chủ
+[33m44da20d4be46dc35c6ca081b2bac8f8a237e8c03[m Trang đăng kí phòng khám
+[33m8188a92141793c81b2a273f882b0edcd8c35ef08[m Merge branch 'quocbao_branch' of https://github.com/SpaceStalinn/FE_Code_Main into quocbao_branch
+[33m41a2ea0ebfd4a197c1bfab16c9cf817ed35a4a42[m Sửa trang booking
+[33m3f0eea8fa2356f6604c69250d6a6470750a12806[m Merge branch 'quocbao_branch' of https://github.com/SpaceStalinn/FE_Code_Main into quocbao_branch
+[33me9ec5414e16f7984f9f6de428667c995594703f2[m Sửa lại trang đặt lịch
+[33mfd0755bd2ad18aee2cd23691523e0b554f12ea5d[m Trang đăng kkis lịch khám đăng ảnh
+[33mf762d0ac2e83ae0684f351fd0016382006c255b8[m Merge pull request #45 from ThinhJun0963/main
+[33m3eb048ef21180460e468f9af493f0c03adb13604[m SystemAdminPage V3: Update DashboardPage
+[33me08b9bac9341641a439311ea882d181e24c45be5[m SystemAdminPage V2: thêm routes
+[33m3511089ae292bf68f1d9e4538975b8ec6dbf3230[m Merge pull request #43 from SpaceStalinn/quocbao_branch
+[33md427910a28770827b61b67ebb91e86dd147f902d[m Merge branch 'main' into quocbao_branch
+[33m87514329d9b16f68b27887ac0e384b01edfb47c3[m Merge pull request #44 from SWP391-Nhom-4-NET1803/dependabot/npm_and_yarn/ws-7.5.10
+[33md3c24cc364524a4bf6a9b8d1253ce08c58d71d23[m Bump ws from 7.5.9 to 7.5.10
+[33m753641ebc30964e4b833ebcd9943b21a244e167f[m Merge pull request #42 from ThinhJun0963/main
+[33m6a66c9064a350972c8870431cdef3d1d94d94085[m Trang đặt lịch khám
+[33ma59f1057e4b9482efa913dca4fe1851318e42131[m Merge branch 'main' into main
+[33mac5f539aa801927e527a52a9f51dd43eaedea31e[m Merge pull request #40 from Taisoaica/main
+[33med05722e89ef1e10ef13374c151def0565194f4e[m Merge branch 'main' into main
+[33m9544a1ba927f4b6eaa314cf8cacb6a196fde51c6[m Firebase config
+[33m76a066843264325c00c4549b20d0c4bee204c6a1[m SystemAdminPage Create V1
+[33m2543cd13e96c5e65a028457ec521b24dc79223e7[m Merge pull request #41 from SpaceStalinn/quocbao_branch
+[33me9949ea430ba416884ed7400b2853c099814f04f[m Merge branch 'SWP391-Nhom-4-NET1803:main' into quocbao_branch
+[33m455424ef3511609476eaf34a1d14387d4bc44c3f[m Sửa hoạt động trang login
+[33md4b85d9d4055205ea9427fd11597d9a6ebc486d7[m Merge branch 'main' of https://github.com/Taisoaica/FE_Code_Main
+[33m287b8c8446edb1c867eaa0d28a4343e3bb10703d[m Add visibility func in password field
+[33mad8532d4bf8946be17575948a6e17cfd82458f58[m Merge branch 'SWP391-Nhom-4-NET1803:main' into main
+[33m9dc5b5754b948728cf9b1592891f19522dd7a76d[m Upload images to firebase and modified constants folder
+[33mfafff1d4d31b9967032d8c2099acfa91be4582fd[m Update data.ts
+[33m9825fbf4c7f16caeb6236adbbf59f4eec9c07dc0[m Merge branch 'SWP391-Nhom-4-NET1803:main' into main
+[33m438f7ef2ac236c631bac6ce9c279e20094a80bad[m Big Update Structure
+[33m41ce3f6bb21a32591a065921fd9d81e1347a2f87[m Merge pull request #39 from SpaceStalinn/quocbao_branch
+[33m12d9c2539e6863872fe0fd7511b92bf427debc76[m Merge branch 'quocbao_branch' of https://github.com/SpaceStalinn/FE_Code_Main into quocbao_branch
+[33mde81d684b1fd722190b781bd6ac0d9e528971194[m Thêm định nghĩa interface của trang ClinicDetail, trang homepage phần carousel, interface của form booking
+[33m23f8b78fd18b317279bb77d8def6917f9b5a6374[m Merge pull request #38 from SpaceStalinn/quocbao_branch
+[33mb97e88273a894fce5bba7487d17c7963ed9ca156[m Merge branch 'SWP391-Nhom-4-NET1803:main' into quocbao_branch
+[33m56e0f847220c724e4fcc76bb859937fd1e24f1b5[m Sửa carousel cho hiển thị thông tin của các phòng khám khác nhau, gửi kèm clinicId qua trang booking
+[33ma5c4c69e63e2081e432f52fd97d7be7d71fbbc58[m Sửa code cứng trang clinic detail
+[33m4ffe6f5b38804c2017fc6a28c44affcf37e44397[m Merge pull request #37 from SpaceStalinn/quocbao_branch
+[33m266aca9de6eff4cbdd5ad4766c237b65794ffd15[m Sửa trang booking
+[33m34abf5a8839cbcde9175c8fb6c696c3f15523008[m Merge branch 'quocbao_branch' of https://github.com/SpaceStalinn/FE_Code_Main into quocbao_branch
+[33mc92882973b407c78790a62d8adf75e7965ea779f[m Sửa giao diện trang chủ (đổi màu nền, banner), sửa giao diện trang booking.
+[33mbe9526e384648a99691b0368906e706ed553a287[m Merge pull request #36 from ThinhJun0963/main
+[33mcdf0ad1bddf3d7916564096b6e84feb604337e8f[m Update: Thay đổi mật khẩu/user/acccount + Chuẩn bị cho kéo dữ liệu
+[33ma4c128a9e1001206c737d80626b996daa2ae681c[m Sửa màu background, sửa banner
+[33m3db10df41289496fa89128beba9d593cf26f6ffb[m Merge pull request #35 from SpaceStalinn/quocbao_branch
+[33m159b772519d0450237e7a2c88999397d43fe7ec4[m Merge branch 'main' into quocbao_branch
+[33m005898d4b563162341096b2108dff69af8a8b257[m Merge pull request #34 from ThinhJun0963/main
+[33m71e6408042b188d9837e69c990c619fa892bcb66[m Merge pull request #33 from CollinPhan/main
+[33mda701a8b0e558f9fe4be1754981dd3df62933e63[m ChatPage-In-DentistPage
+[33m5d63c74877bbefa563389004bde64208caae7107[m Sửa BasicForm, ServiceForm, ClinicRegisterContent, thêm file apiService để lấy service từ database
+[33md42d86ef95454fa0201c1ee5ec2990251b0d82fd[m Merge branch 'main' of https://github.com/ThinhJun0963/FE_Code_Main
+[33me6252d4fd70a69601ec05a1ff3ed3de5743cfb44[m UpdateDentistPage: Add PopUP - Gửi kết quả
+[33m88fe23e9e91dd34f9b6901f1c8f633244d84ddd7[m Merge branch 'SWP391-Nhom-4-NET1803:main' into main
+[33m8d4557165bf478dfdf93996bc17663b51e8364a7[m Chỉnh sửa Booking page
+[33m9d42647779f38414254c40b6cf373c0bb072faec[m Changed UserAccount page
+[33m2c34bb341682fd006c93026c4f82578369bc1a1c[m Thêm api để render các dịch vụ
+[33m89dc91e48cef618b08a0d7db9fb2feb1449849ff[m Sửa phần đăng kí services
+[33m90b5198bf30f5997558a9258a2e2fb37e11be3ef[m Merge pull request #32 from CollinPhan/main
+[33m4f1b7548d0f30a9388572a5b7e88c19bee9df5bd[m Add proposal to change header
+[33m0587fb471316f70b197cd6593911cdedb95ad3be[m Change user profile page
+[33mf3d28a1f78bebfc568dad4d4fb0b0f6db31401ce[m Merge pull request #31 from SpaceStalinn/quocbao_branch
+[33m4ca6eb08c63046bf623048e535b46fe443c39280[m Sửa thanh header khi login logout
+[33m7a7c718561f9abde70a690c53a9fca08b8d90993[m Merge pull request #30 from ThinhJun0963/main
+[33mcbe40d7905779b000d4cef67aced02b19607dd60[m DentistPageV4: Sửa lại "Trang lịch khám" + thêm link các nút và tạo "Trang hồ sơ khám
+[33m77da9e95c9e201b0575038ef9d772492f78d4d92[m Sửa ClinicRegisterContent của phần ClinicRegisterContext
+[33mb9f0c151d8310ebd8fd6c80a8d65c7086b9a2d0e[m Thêm Stepper của phần ClinicRegister
+[33mc0eeac935c74813dc6fd523d38f7927f75e368b9[m Thêm AddServiceForm của phần ClinicRegister
+[33mb4d3930b8d91dd1f49a2646c6ee411f1fe9c5f48[m Sửa BasicForm của phần ClinicRegister
+[33m4c746e330a1611061fd9db99677318b1aabf697a[m Merge pull request #29 from SpaceStalinn/quocbao_branch
+[33m073a1df32dd8b98cd005cd7c4c26bda82623fec0[m Sửa BookingPageContent
+[33m536491b9570ca61de8b31e2ef9ea3b7117384f4b[m Thêm TypeOfBookingForm
+[33m0bf703bd77d52f031e9f4163ca19a435ecf19855[m Sửa TimeSlots
+[33m2078f3fb28057afc7bb3ccfed64a6a1d0a00f7b6[m Thêm service form
+[33m0acb775003ab84fda60287a002828147fecdfd80[m Sửa confirmation form
+[33md007e7daf87155df5f9415df4ed4b1665a1aec5b[m Sửa checkout form
+[33m912c577e480bcdea0d1a3144554cfac8c0d4a607[m Thêm fullCalendar
+[33ma7aac19b9c77dc3844b3fec7568ae842a1969bf3[m Merge pull request #28 from Taisoaica/main
+[33mf433ac77963ff6064ad166a24a376251c9344c72[m Merge branch 'main' into main
+[33mf8a2718d1b85fa16bba4c1fabc0764112de982da[m Merge pull request #27 from ThinhJun0963/main
+[33m17d0a667d9a6a616811286fe4ca0ef5fd3bdd0dc[m DentistPageV2: Tạo PatientPageList + thêm routes mới
+[33m4fb960b44d24bb0774237ade53d72a50c0b4f919[m Create new chat version 1
+[33m43e3354f4594a78fecf62761377453e4bdeaa194[m DentistSchedule v1: install @syncfusion + Tạo schedule cho dentist
+[33m055e469c123d832e9ed3f3521f6488e8d0fa7e90[m Các thay đổi nhỏ về đặt tên các components
+[33m665df7bcd260473894b1fabf4397210149373da8[m DentistPagev3: Tách components + sửa lại đường dẫn các pages
+[33m8e59095ed6c0725dd3555b76b262f3138f5c4c3b[m Merge pull request #26 from SpaceStalinn/peer-branch
+[33mf6123a81d1d32d53c55336a5e85712a99a1a82ea[m Merge branch 'main' into peer-branch
+[33mb6eef289067a05b25c372f3ab12298a81b1d74df[m Revert a mistake merge request.
+[33m0c049123ed7ff639e5e94483c78c12e822b66a03[m Sửa trang booking
+[33meb1b0cd7163b1dacd027c308b8586c72009e1dd7[m Merge pull request #25 from SpaceStalinn/peer-branch
+[33mf41828d190ae1dc7cfb0a86bb061b4ead30d8b0e[m Sửa trang đặt lịch
+[33m715065504243fce264a5ac9ff00213553e2d0fd1[m Merge pull request #24 from ThinhJun0963/main
+[33me96ec9c27433c54b398150b1bfc25792c8ed630b[m DentistPage v2
+[33mc94c9122763649e32c89399232eaf2c98db9e0ed[m DentistPage v1 + new routes:/dentist
+[33m13765230840a31ddacf84273a7eb9c78b50a9398[m Tạo components + data
+[33m941a2ad5bab601a8f1825f490401c004da35f1ff[m Tạo DentistPage + npm install sau khi pull code mới về
+[33maa34af5cdc0971cc8d74354da007e8750b0fac44[m Merge pull request #23 from CollinPhan/main
+[33mdac10da66897fde3d2138893f13d7648f2db29e0[m Merge pull request #1 from CollinPhan/firebase-dev-test
+[33m6d25fddd5f9677a0b13381b3d819a6c2a0070f78[m Merge branch 'main' into firebase-dev-test
+[33mfdf406d616c4ae5779dd7c842c89d6aa97d1de77[m Testing with Firebase implementation
+[33m1efa17d1ae0e494abe62c6cd7a5a082d8272da69[m Added firebase configuration
+[33m0cdf94ad501ed814769dffcfc7219793e0f69c46[m Merge pull request #21 from Taisoaica/main
+[33m1679231d28f5b334af86be5c48b3662c9bbc1bd5[m Merge pull request #20 from CollinPhan/main
+[33m29636b0c4558d05d0e65542a0807bd2e08a4e289[m Modify HomePage
+[33m87116b771110c7e4b8e3a3eba30debb5019980ee[m Modify Footer Component
+[33m8758793db2774225ddbbcddafd37009224f35923[m Cập nhật tính năng login cho frontend
+[33m9c65633fe42a499a7f3283c77d854e9ec4367298[m Merge pull request #19 from SpaceStalinn/main
+[33mcc59b3c37236c938f17160a8cbcb745a9e2fb7a3[m Thêm tính năng search, xem tất cả phòng khám, phân trang
+[33mfdd61468ac9568edc9e34d601d9fbb3675262eae[m Merge branch 'main' of https://github.com/SpaceStalinn/FE_Code_Main
+[33ma87c492ccdfcff99983576200442371630e2d60e[m Merge branch 'main' of https://github.com/SWP391-Nhom-4-NET1803/FE_Code_Main
+[33m04d5c97ed677edaee15656fbc3079d8892dd8a74[m Merge pull request #17 from CollinPhan/main
+[33m584b4814272530f443174b1a02206e18c7707d3b[m Merge branch 'SWP391-Nhom-4-NET1803:main' into main
+[33m830a03e6981dd157a966825700f3fa947a52b8fd[m Reformat User Items
+[33m23204cc18c540b8f4fc4dc7f96d637df41c2fbd3[m Create LICENSE
+[33m43abfde86bd3ba3be290bf40d20a048792e1eed4[m Merge pull request #16 from CollinPhan/main
+[33m6c60f01ed0e2617d7f07701c130625d095c2341c[m Tạo chức năng login thử nghiệm
+[33m765778bb4c339f70792aa02a8d198eb42f3fb0ec[m GIải quyết conflict dependency package
+[33m65fa097d2a4a8a63753f8f547d44f7577d6920ed[m Test
+[33maa44659a50ad5283db327313bbfdf2506a2a10c6[m Merge pull request #15 from ThinhJun0963/main
+[33mfa531efe064b5b08b3e931cc12b28a33588d72df[m ChatPop redirect page
+[33m877e2772c90b2da3f74d134853057e65c6184bf0[m ChatPopUp
+[33ma87378f941824601c7ab92512446a379a0399b11[m Merge pull request #14 from SpaceStalinn/dev
+[33m2314cdd4a47c51af6e99060843888507f09d57b5[m Merge branch 'main' into dev
+[33m5376caefd593dec6f7f736c2c01ba41c8d68899f[m Sửa trang booking, sửa trang admin phòng khám, sửa các nút bấm routing
+[33m32c8e85d2bf0cbf15f64fe35b29b72cfc61957a4[m Merge pull request #13 from ThinhJun0963/main
+[33mbbcd9e9e3d00c92955786d0f7fd406c8075b865b[m PopUp window version1
+[33m9b9fdc38433736a38d13744fa6c6d456a7a779c0[m Sửa trang chủ, trang thông tin phòng khám
+[33me6faa7ff501ad84415704aaf1aaf6470f2d2d0ec[m Trang login và signup
+[33m05da9b9fd4ff7e06cc610cac4e076e7c8b2db7b6[m Trang admim của clinic owner v1
+[33mf85d0a7fc9cafd9c392b47d603c129fe67decbf6[m Merge pull request #10 from CollinPhan/main
+[33m6257eb76f2a0b200447c29ba7bd8442c40db93a3[m Merge branch 'SWP391-Nhom-4-NET1803:main' into main
+[33m6f98398f0f06437948674802f0395f78f2423941[m Created new Footer for usage
+[33m6bf56ccb789db93bac7ab61533522f148ea4cd33[m Merge pull request #9 from CollinPhan/main
+[33ma8247410abcee7ff646dc40912c513448cd8c9b9[m Merge branch 'SWP391-Nhom-4-NET1803:main' into main
+[33m1cc35a60d763f2a8dbf4f719b0ff99253b313987[m Updare styling fot the account pagr

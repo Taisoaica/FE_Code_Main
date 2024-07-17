@@ -302,3 +302,55 @@ export const refreshAccessToken = async (): Promise<boolean> => {
         return false;
     }
 }
+
+export const handleForgetPass = async (event: React.FormEvent<HTMLFormElement>, email: string, navigate: (path: string) => void) => {
+    event.preventDefault();
+    try {
+        const api_url: string = connection_path.base_url + connection_path.forgetpass.request;
+        const response = await axios.post(api_url, null, { params: { email } });
+        if (response.data.success) {
+            navigate('/token');
+        } else {
+            console.error(response.data.message);
+        }
+    } catch (error) {
+        console.error("Request error:", error);
+    }
+};
+
+export const tokenForPass = async (event: React.FormEvent<HTMLFormElement>, token: string, navigate: (path: string) => void) => {
+    event.preventDefault();
+    try {
+        const api_url: string = connection_path.base_url + connection_path.forgetpass.token;
+        const response = await axios.post(api_url, { tokenValue: token });
+        if (response.data.success) {
+            localStorage.setItem('resetToken', token);
+            navigate('/newpassword');
+        } else {
+            console.error(response.data.message);
+        }
+    } catch (error) {
+        console.error("Token error:", error);
+    }
+};
+
+export const handleResetPass = async (event: React.FormEvent<HTMLFormElement>, password: string, navigate: (path: string) => void) => {
+    event.preventDefault();
+    const token = localStorage.getItem('resetToken'); // Retrieve token from local storage
+    if (!token) {
+        console.error("No token found");
+        return;
+    }
+    try {
+        const api_url: string = connection_path.base_url + connection_path.forgetpass.reset;
+        const response = await axios.post(api_url, { tokenValue: token, newPassword: password });
+        if (response.data.success) {
+            localStorage.removeItem('resetToken'); // Clear token from local storage
+            navigate('/login');
+        } else {
+            console.error(response.data.message);
+        }
+    } catch (error) {
+        console.error("Password change error:", error);
+    }
+};

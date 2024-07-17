@@ -16,7 +16,7 @@ import {
 import './CalendarThree.css';
 import { useEffect, useState } from "react";
 
-import { fetchDentistInfo } from "../../../../utils/api/ClinicOwnerUtils";
+import { getDentistInfo } from "../../../../utils/api/ClinicOwnerUtils";
 import { NestedListItems } from "../components/NestedListMenu";
 import { DentistInfoViewModel } from "../../../../utils/api/BookingRegister";
 
@@ -76,7 +76,7 @@ const AccountPage = () => {
   
 
     const fetchData = async () => {
-        const dentist = await fetchDentistInfo();
+        const dentist = await getDentistInfo();
         setDentist(dentist.content);
     }
 

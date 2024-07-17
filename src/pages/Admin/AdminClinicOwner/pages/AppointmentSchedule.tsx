@@ -19,7 +19,7 @@ import styles from "./AppointmentSchedule.module.css";
 import BookingDialog from "./BookingDialog";
 import { NestedListItems } from "../components/NestedListMenu";
 import { getAllCustomer, getAllDentist, getAllUsers, UserInfoModel } from "../../../../utils/api/SystemAdminUtils";
-import { AppointmentViewModelFetch, fetchClinicStaff, fetchDentistInfo } from "../../../../utils/api/ClinicOwnerUtils";
+import { AppointmentViewModelFetch, fetchClinicStaff, getDentistInfo } from "../../../../utils/api/ClinicOwnerUtils";
 import { getClinicAppointments, AppointmentViewModel, getAllClinicSlots } from "../../../../utils/api/ClinicOwnerUtils";
 import { ClinicSlotInfoModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
 import { Button } from "reactstrap";
@@ -167,7 +167,7 @@ export default function AppointmentSchedule() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const dentistInfo = await fetchDentistInfo();
+        const dentistInfo = await getDentistInfo();
         const clinicId = dentistInfo.content.clinicId;
 
         const fetchedSlots = await getAllClinicSlots(clinicId);

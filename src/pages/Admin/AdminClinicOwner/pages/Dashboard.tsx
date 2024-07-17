@@ -6,7 +6,6 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { Bar, Pie, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, Chart } from 'chart.js';
 ChartJS.register(
   CategoryScale,
@@ -28,7 +27,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { NestedListItems } from "../components/NestedListMenu";
 import { DentistInfoViewModel } from "../../../../utils/api/BookingRegister";
-import { AppointmentViewModelFetch, fetchDentistInfo, getClinicAppointments } from "../../../../utils/api/ClinicOwnerUtils";
+import { AppointmentViewModelFetch, getDentistInfo, getClinicAppointments } from "../../../../utils/api/ClinicOwnerUtils";
 
 const drawerWidth: number = 270;
 
@@ -282,16 +281,14 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const dentistInfo = await fetchDentistInfo();
-        console.log(dentistInfo)
-        setFullname(dentistInfo.content.fullname);
+        const dentistInfo = await getDentistInfo()!;
+    const appointments = await getClinicAppointments(dentistInfo!.clinicId.toString());
 
-        const clinicId = dentistInfo.content.clinicId.toString();
-        const appointments = await getClinicAppointments(clinicId);
-
+        setFullname(dentistInfo!.fullname);
         setAppointments(appointments);
         setLoading(false);
       } catch (error) {
+
         console.error('Error fetching clinics or user details:', error);
         setLoading(false);
       }

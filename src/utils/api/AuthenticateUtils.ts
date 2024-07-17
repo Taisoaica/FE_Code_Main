@@ -1,16 +1,9 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { connection_path } from '../../constants/developments'; // Adjust the import according to your project structure
 import { GoogleCredentialResponse } from '@react-oauth/google';
-import { getAllUsers, UserInfoModel } from './SystemAdminUtils';
-
 import decodeToken from "../../utils/decoder/accessTokenDecoder";
 import { apiCallWithTokenRefresh } from './apiCallWithRefreshToken';
-import { fetchDentistInfo } from './ClinicOwnerUtils';
-
-interface JwtPayload {
-    role: string;
-    id: string;
-}
+import { getDentistInfo } from './ClinicOwnerUtils';
 
 export const login = async (payload: { username: string; password: string }, navigate: (path: string) => void) => {
     const api_url: string = connection_path.base_url + connection_path.auth.login;
@@ -37,7 +30,7 @@ export const login = async (payload: { username: string; password: string }, nav
 
 
                 if (decodedToken.role === 'Dentist') {
-                    localStorage.set('remember', 'true');
+                    localStorage.setItem('remember', 'true');
                     navigate('/admin/clinic-owner');
                 } else {
                     navigate('/');
@@ -103,10 +96,10 @@ export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navig
                     await getCustomerInvoker();
                     navigate('/');
                 } else if (role === 'Dentist' && isOwner == '1') {
-                    await fetchDentistInfo()
+                    await getDentistInfo()
                     navigate('/admin/clinic-owner')
                 } else {
-                    await fetchDentistInfo()
+                    await getDentistInfo()
                     navigate('/dentist')
                 }
             } else {
@@ -130,21 +123,9 @@ export const handleLogin = async (event: React.FormEvent<HTMLFormElement>, navig
 };
 
 export const handleLogout = async (navigate: (path: string) => void) => {
-    const accessToken = localStorage.getItem('accessToken');
-
-    var refreshToken = localStorage.getItem('refreshToken');
-
-
-    if (!accessToken) {
-        console.error('Access token not found in localStorage');
-        return;
-    }
     localStorage.clear();
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
     navigate('/');
 };
-
 
 export const handleRegister = async (event: React.FormEvent<HTMLFormElement>, onSuccess: () => void) => {
     const apiCall = async () => {
@@ -219,7 +200,6 @@ export const activateUserAccount = async (userId: number, token: string) => {
     return await apiCallWithTokenRefresh(apiCall);
 };
 
-
 export const handleGoogleOnSuccess = async (response: GoogleCredentialResponse, navigate: (path: string) => void) => {
     const api_url: string =
         connection_path.base_url + connection_path.auth.googleAuth;
@@ -229,25 +209,25 @@ export const handleGoogleOnSuccess = async (response: GoogleCredentialResponse, 
         data: { googleToken: response.credential },
         headers: { "Content-Type": "application/json" },
     };
+
     const axiosResponse: AxiosResponse<{
-        accessToken: string;
-        refreshToken: string;
-        error: string;
+        content: { accessToken: string, refreshToken: string} | null;
+        statusCode: string;
         message: string;
     }> = await axios(configuration);
 
     console.log(axiosResponse);
 
-    if (axiosResponse.data.accessToken !== undefined) {
-        localStorage.setItem("accessToken", axiosResponse.data.accessToken);
-        localStorage.setItem("refreshToken", axiosResponse.data.refreshToken);
+    if (axiosResponse.data.content != undefined) {
+        localStorage.setItem("accessToken", axiosResponse.data.content.accessToken);
+        localStorage.setItem("refreshToken", axiosResponse.data.content.refreshToken);
         navigate("/");
     }
 };
+
 export const handleGoogleOnFailure = (navigate: (path: string) => void) => {
     navigate("/error404")
 };
-
 
 export const checkAuth = async (): Promise<boolean> => {
     const remember = localStorage.getItem('remember');

@@ -5,11 +5,10 @@ import UseMultipleStepForm from '../../../components/UseMultipleStepForm/UseMult
 import CertificationForm from './CertificationForm/CertificationForm';
 import BasicForm from './BasicForm/BasicForm';
 import styles from './ClinicRegisterContent.module.css';
-import { Service, Clinic, Slot } from '../../../utils/interfaces/ClinicRegister/Clinic';
 // import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { ClinicRegistrationModel } from '../../../utils/interfaces/ClinicRegister/Clinic';
-import { handleClinicRegister } from '../../../utils/api/ClinicRegister';
+import { handleClinicRegister, handleClinicRegistration } from '../../../utils/api/ClinicRegister';
 import OwnerRegisterForm from './OwnerRegisterForm/OwnerRegisterForm';
 import { ArrowBack } from '@mui/icons-material';
 
@@ -17,7 +16,6 @@ const ClinicRegisterContent = () => {
     const navigator = useNavigate();
 
     const [formData, setFormData] = useState<ClinicRegistrationModel>({
-        OwnerId: 0,
         OwnerUserName: '',
         OwnerPassword: '',
         OwnerEmail: '',
@@ -29,10 +27,7 @@ const ClinicRegisterContent = () => {
         Email: '',
         OpenHour: '',
         CloseHour: '',
-        ClinicServices: [],
     });
-
-
 
     const payload: ClinicRegistrationModel = {
         OwnerUserName: formData.OwnerUserName,
@@ -46,12 +41,13 @@ const ClinicRegisterContent = () => {
         Email: formData.Email,
         OpenHour: formData.OpenHour,
         CloseHour: formData.CloseHour,
-        ClinicServices: [],
     };
 
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    /*const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+
         e.preventDefault();
+
         try {
             await handleClinicRegister(payload, navigator);
             alert('Đăng ký thành công');
@@ -59,20 +55,28 @@ const ClinicRegisterContent = () => {
         catch (error) {
             alert('Đăng ký thất bại');
         }
+    }*/
+
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+        e.preventDefault();
+
+        console.log(formData);
+
+        const result = (await handleClinicRegistration(formData))!;
+
+        if (result.success) {
+            alert("Tạo phòng khám thành công!");
+            navigator('/login');
+        }
+        else {
+            alert("Đăng kí phòng khám thất bại");
+            navigator('/for-owner/clinic-register');
+        }
     }
+    
 
     const handleBack = () => {
-        if (currentStep === 1) {
-            setFormData(prev => ({ ...prev, name: '', description: '', address: '', phone: '', email: '', openHour: '', closeHour: '', clinicServices: [], clinicSlots: [], clinicMedia: [] }));
-        } else if (currentStep === 2) {
-            setFormData(prev => ({ ...prev, clinicServices: [] }));
-        }
-        else if (currentStep === 3) {
-            setFormData(prev => ({ ...prev, clinicSlots: [] }));
-        }
-        else if (currentStep === 4) {
-            setFormData(prev => ({ ...prev, clinicMedia: [] }));
-        }
         back();
     };
 

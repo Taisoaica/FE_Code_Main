@@ -19,7 +19,7 @@ import Box from "@mui/material/Box";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import { AppointmentViewModel, fetchDentistInfo, getAllClinicSlots } from "../../../../utils/api/ClinicOwnerUtils";
+import { AppointmentViewModel, getDentistInfo, getAllClinicSlots } from "../../../../utils/api/ClinicOwnerUtils";
 import { getAllDentistAppointments, finishAppointment, noteAppointment, createRecurringAppointment } from "../../../../utils/api/DentistUtils";
 import { cancelAppointment } from "../../../../utils/api/MiscUtils";
 import { ClinicSlotInfoModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
@@ -97,7 +97,7 @@ const AppointmentDetail = () => {
         try {
             setLoading(true);
 
-            const dentistInfo = await fetchDentistInfo();
+            const dentistInfo = await getDentistInfo();
 
             const dentistId = dentistInfo.content.dentistId;
 
@@ -115,7 +115,7 @@ const AppointmentDetail = () => {
 
     const fetchAvailableSlots = async (date: string) => {
         try {
-            const dentistInfo = await fetchDentistInfo();
+            const dentistInfo = await getDentistInfo();
 
             const clinicId = dentistInfo.content.clinicId;
 
@@ -149,7 +149,7 @@ const AppointmentDetail = () => {
     };
 
     const handleCreateRecurringAppointment = async () => {
-        const dentistInfo = await fetchDentistInfo();
+        const dentistInfo = await getDentistInfo();
 
         const dentistId = dentistInfo.content.dentistId;
 

@@ -8,7 +8,7 @@ export const connection_path = {
         login: "/auth/login",
         logout: "/auth/logout",
         checkAuth: "/auth/validate",
-        googleAuth: "/auth/google",
+        googleAuth: "/auth/login-google",
         refresh: "/auth/refresh"
     },
 
@@ -29,6 +29,7 @@ export const connection_path = {
     },
 
     clinic: {
+        register_clinic: "/clinic/register",
         register_clinic_owner: "/clinic/register/clinic-owner",
         register_staff: "/dentist/staff/register",
         active_staff: "/dentist/staff/activate",
@@ -45,8 +46,9 @@ export const connection_path = {
         post_clinic_schedule_status: "/schedule/slot/:id/",
         get_clinic_schedule: "/schedule/:id/slots",
         put_clinic_schedule: "/schedule/slot/update",
-        // get_clinic_staff: "/booking/available/:id/dentist",
         post_clinic_service: "/service",
+        service_categories: "/service/categories",
+        service_category: "/service/category"
     },
 
     booking: {
@@ -57,6 +59,7 @@ export const connection_path = {
         available_slot: '/booking/availabe-slot',
         check_available_dentist: '/booking/available/:id/dentist',
         place_book: '/booking/customer/book',
+        create_schedule: '/booking/staff/create-schedule',
         get_booking: '/booking/schedule/staff',
         get_cus_booking: '/booking/schedule/customer',
         create_payment: '/payment/vnpay',
@@ -68,11 +71,14 @@ export const connection_path = {
 
     admin: {
         register_service: '/admin/service/categories',
-        get_clinics: '/clinic/search',
+        get_clinics: '/admin/clinics',
         get_users: '/admin/users',
         get_dentists: '/admin/dentist',
         get_customer: '/admin/customer',
-        verify_clinic: '/admin/clinic/verify/:id',
+        get_verified_clinic: '/admin/verified-clinic',
+        get_unverified_clinic: '/admin/unverified-clinic',
+        verify_clinic: '/admin/clinic/verify',
+        uverify_clinic: '/admin/clinic/unverify',
     },
 
 

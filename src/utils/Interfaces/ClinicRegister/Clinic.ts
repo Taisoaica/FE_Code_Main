@@ -37,19 +37,17 @@ export interface setClinic {
 
 
 export interface ClinicRegistrationModel {
-    OwnerId?: number;
-    OwnerUserName?: string;
-    OwnerPassword?: string;
-    OwnerEmail?: string;
-    OwnerFullName?: string;
-    Name?: string;
-    Description?: string;
-    Address?: string;
-    Phone?: string;
-    Email?: string;
-    OpenHour?: string;
-    CloseHour?: string;
-    ClinicServices?: number[];
+    OwnerFullName: string;
+    OwnerUserName: string;
+    OwnerPassword: string;
+    OwnerEmail: string;
+    Name: string;
+    Description: string;
+    Address: string;
+    Phone: string;
+    Email: string;
+    OpenHour: string;
+    CloseHour: string;
 }
 
 export interface setClinicRegistrationModel {

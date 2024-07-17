@@ -4,23 +4,18 @@ import MuiDrawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { mainListItems } from "../components/listItems";
-
 import styles from "./ClinicManagement.module.css";
-import { clinicData } from "../../../../utils/mockData";
-import { getAllClinics } from "../../../../utils/api/SystemAdminUtils";
-import { ClinicInfoModel } from "../../../../utils/api/SystemAdminUtils";
+import { getAllClinicInfo, getAllClinics } from "../../../../utils/api/SystemAdminUtils";
 import { useEffect, useState } from "react";
 import { Button } from "reactstrap";
-import { MouseDownEvent } from "emoji-picker-react/dist/config/config";
 import { useNavigate } from "react-router-dom";
 import { NestedListItems } from "../components/NestedListMenu";
+import { IClinicModel } from "../../../../utils/Interfaces/interfaces";
 
 const drawerWidth: number = 270;
 
@@ -81,19 +76,18 @@ const Drawer = styled(MuiDrawer, {
 
 const defaultTheme = createTheme();
 
-
 const ClinicManagement = () => {
-    const [open, setOpen] = React.useState(true);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string>('');
+    const [open, setOpen] = useState(true);
+    //const [loading, setLoading] = useState(false);
+    //const [error, setError] = useState<string>('');
     const [searchNameVerified, setSearchNameVerified] = useState('');
     const [searchNameUnverified, setSearchNameUnverified] = useState('');
     const [currentPageVerified, setCurrentPageVerified] = useState(1);
     const [totalPagesVerified, setTotalPagesVerified] = useState(1);
     const [currentPageUnverified, setCurrentPageUnverified] = useState(1);
     const [totalPagesUnverified, setTotalPagesUnverified] = useState(1);
-    const [verifiedClinics, setVerifiedClinics] = useState<ClinicInfoModel[]>([]);
-    const [unverifiedClinics, setUnverifiedClinics] = useState<ClinicInfoModel[]>([]);
+    const [verifiedClinics, setVerifiedClinics] = useState<IClinicModel[]>([]);
+    const [unverifiedClinics, setUnverifiedClinics] = useState<IClinicModel[]>([]);
 
     const navigate = useNavigate();
 
@@ -101,8 +95,7 @@ const ClinicManagement = () => {
         setOpen(!open);
     };
 
-
-    const fetchTotalClinics = async (
+    /*const fetchTotalClinics = async (
         status: 'verified' | 'unverified' | '',
         name: string = '',
         page: number = 1,
@@ -171,26 +164,53 @@ const ClinicManagement = () => {
         } finally {
             setLoading(false);
         }
-    };
+    };*/
 
-    useEffect(() => {
+    /*useEffect(() => {
         fetchTotalClinics('verified', searchNameVerified, currentPageVerified, 5);
     }, [searchNameVerified, currentPageVerified]);
 
     useEffect(() => {
         fetchTotalClinics('unverified', searchNameUnverified, currentPageUnverified, 5);
-    }, [searchNameUnverified, currentPageUnverified]);
+    }, [searchNameUnverified, currentPageUnverified]);*/
+
+    const fetchVerifiedClinics = async (name: string | null, page_size: number | null, page: number | null = 1): Promise<void> => {
+        const result = await getAllClinicInfo(name, page, page_size, "verified");
+        const total = await getAllClinicInfo('', 1,  2147483647, 'verified');
+
+        console.log(Math.ceil(total.length/5))
+
+        setVerifiedClinics(result);
+        setCurrentPageVerified(page!);
+        setTotalPagesVerified(Math.ceil(total.length/5));
+    };
+
+    const fetchUnverifiedClinics = async (name: string = '', page_size: number = Number.MAX_SAFE_INTEGER, page: number = 1): Promise<void> => {
+        const result = await getAllClinicInfo(name, page, page_size, "unverified");
+        const total = await getAllClinicInfo('', 1,  2147483647, 'unverified');
+
+        setUnverifiedClinics(result);
+        setCurrentPageUnverified(page!);
+        setTotalPagesUnverified(Math.ceil(total.length/5));
+    };
 
     const handlePageChange = (pageNumber: number, type: 'verified' | 'unverified') => {
         if (type === 'verified') {
             setCurrentPageVerified(pageNumber);
-            fetchTotalClinics(type, searchNameVerified, pageNumber, 5);
+            fetchVerifiedClinics(searchNameVerified, 5, pageNumber);
         } else {
             setCurrentPageUnverified(pageNumber);
-            fetchTotalClinics(type, searchNameUnverified, pageNumber, 5);
+            fetchUnverifiedClinics(searchNameUnverified, 5, pageNumber);
         }
     };
 
+    useEffect(() => {
+        fetchVerifiedClinics(searchNameVerified, 5, currentPageVerified);
+    }, [searchNameVerified, currentPageVerified]);
+
+    useEffect(() => {
+        fetchUnverifiedClinics(searchNameUnverified, 5, currentPageUnverified);
+    }, [searchNameUnverified, currentPageUnverified]);
 
     const handleSearchChangeVerified = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchNameVerified(e.target.value);
@@ -201,25 +221,19 @@ const ClinicManagement = () => {
     };
 
     const handleSearchClickVerified = () => {
-        fetchTotalClinics('verified', searchNameVerified);
+        fetchVerifiedClinics(searchNameVerified, 5, currentPageVerified);
     };
 
     const handleSearchClickUnverified = () => {
-        fetchTotalClinics('unverified', searchNameUnverified);
+        fetchUnverifiedClinics(searchNameUnverified, 5, currentPageUnverified);
     };
 
-    const handleRowClick = (clinic: ClinicInfoModel) => {
+    const handleRowClick = (clinic: IClinicModel) => {
         console.log(clinic);
         navigate(`./${clinic.id}`);
     }
 
-
-    const Pagination = ({
-        currentPage,
-        totalPages,
-        onPageChange,
-        maxPagesToShow = Math.min(5, totalPages),
-    }: PaginationProps) => {
+    const Pagination = ( { currentPage, totalPages, onPageChange, maxPagesToShow = Math.min(5, totalPages)}: PaginationProps) => {
         const pages: number[] = [];
         const validCurrentPage = currentPage ?? 1;
 
@@ -228,7 +242,7 @@ const ClinicManagement = () => {
         const page = Math.min(Math.max(validCurrentPage, 1), totalPages);
 
         let startPage = Math.max(page - Math.floor(maxPagesToShow / 2), 1);
-        let endPage = Math.min(startPage + maxPagesToShow - 1, totalPages);
+        const endPage = Math.min(startPage + maxPagesToShow - 1, totalPages);
 
         if (endPage - startPage + 1 < maxPagesToShow) {
             startPage = Math.max(endPage - maxPagesToShow + 1, 1);
@@ -262,7 +276,6 @@ const ClinicManagement = () => {
             </div>
         );
     };
-
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -377,16 +390,16 @@ const ClinicManagement = () => {
                                         <tr key={clinic.id} onClick={() => handleRowClick(clinic)}>
                                             <td style={{ width: '5%' }}>{clinic.id}</td>
                                             <td style={{ width: '25%' }}>{clinic.name}</td>
-                                            <td style={{ width: '20%' }}>{clinic.ownerId}</td>
+                                            <td style={{ width: '20%' }}>{clinic.ownerName}</td>
                                             <td style={{ width: '27%' }}>
-                                                {clinic.working ? (
-                                                    <Button variant="contained" color="error">
+                                            {!clinic.working ? (
+                                                    <p>
                                                         Không làm việc
-                                                    </Button>
+                                                    </p>
                                                 ) : (
-                                                    <Button variant="contained" color="success">
+                                                    <p>
                                                         Đang làm việc
-                                                    </Button>
+                                                    </p>
                                                 )}
                                             </td>
                                             <td style={{ width: '28%' }}>
@@ -395,7 +408,7 @@ const ClinicManagement = () => {
                                                         Đã xác nhận
                                                     </Button>
                                                 ) : (
-                                                    <Button variant="contained" className={styles.unconfirmedButton}>
+                                                    <Button variant="outlined" className={styles.unconfirmedButton}>
                                                         Chưa xác nhận
                                                     </Button>
                                                 )}
@@ -459,16 +472,16 @@ const ClinicManagement = () => {
                                         <tr key={clinic.id} onClick={() => handleRowClick(clinic)}>
                                             <td style={{ width: '5%' }}>{clinic.id}</td>
                                             <td style={{ width: '25%' }}>{clinic.name}</td>
-                                            <td style={{ width: '20%' }}>{clinic.ownerId}</td>
+                                            <td style={{ width: '20%' }}>{clinic.ownerName}</td>
                                             <td style={{ width: '27%' }}>
-                                                {clinic.working ? (
-                                                    <Button variant="contained" color="error">
+                                                {!clinic.working ? (
+                                                    <p>
                                                         Không làm việc
-                                                    </Button>
+                                                    </p>
                                                 ) : (
-                                                    <Button variant="contained" color="success">
+                                                    <p>
                                                         Đang làm việc
-                                                    </Button>
+                                                    </p>
                                                 )}
                                             </td>
                                             <td style={{ width: '28%' }}>
@@ -477,7 +490,7 @@ const ClinicManagement = () => {
                                                         Đã xác nhận
                                                     </Button>
                                                 ) : (
-                                                    <Button variant="contained" className={styles.unconfirmedButton}>
+                                                    <Button variant="outlined" className={styles.unconfirmedButton}>
                                                         Chưa xác nhận
                                                     </Button>
                                                 )}

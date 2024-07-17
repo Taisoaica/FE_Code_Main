@@ -43,7 +43,7 @@ import viLocale from '@fullcalendar/core/locales/vi';
 import { ClinicSlotRegistrationModel, Weekdays } from "../../../../utils/interfaces/AdminClinicOwner/Slots";
 import { ClinicSlotInfoModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
 import { ClinicSlotUpdateModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
-import { fetchDentistInfo, registerSlots, getAllClinicSlots, updateClinicSlot, enableSlot, getClinicGeneralInfo } from "../../../../utils/api/ClinicOwnerUtils";
+import { getDentistInfo, registerSlots, getAllClinicSlots, updateClinicSlot, enableSlot, getClinicGeneralInfo } from "../../../../utils/api/ClinicOwnerUtils";
 import { NestedListItems } from "../components/NestedListMenu";
 import { EventContentArg } from "@fullcalendar/core/index.js";
 import { DentistInfoViewModel } from "../../../../utils/api/BookingRegister";
@@ -106,7 +106,7 @@ const AccountPageDentist = () => {
     const [editMode, setEditMode] = useState(false); // New state for managing button text
 
     const fetchData = async () => {
-        const dentist = await fetchDentistInfo();
+        const dentist = await getDentistInfo();
         setDentist(dentist.content);
     }
 

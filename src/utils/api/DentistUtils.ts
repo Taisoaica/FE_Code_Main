@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { connection_path } from "../../constants/developments";
-import { AppointmentViewModel, fetchDentistInfo } from "./ClinicOwnerUtils";
+import { AppointmentViewModel, getDentistInfo } from "./ClinicOwnerUtils";
 
 export const getDentistAppointmentsWithFilter = async (
     filter: 'this_week' | 'next_week' | 'next_month' | 'custom',
@@ -12,7 +12,7 @@ export const getDentistAppointmentsWithFilter = async (
     page_size = 10,
     page_index = 0
 ): Promise<AppointmentViewModel[]> => {
-    const response = await fetchDentistInfo();
+    const response = await getDentistInfo();
     let id;
     if (response) {
         id = response.content?.dentistId;
@@ -123,7 +123,7 @@ function addMonths(date: Date, months: number): Date {
 }
 
 export const getAllDentistAppointments = async (): Promise<AppointmentViewModel[]> => {
-    const response = await fetchDentistInfo();
+    const response = await getDentistInfo();
     let id;
     if (response) {
         id = response.content?.dentistId;

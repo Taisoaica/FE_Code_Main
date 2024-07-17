@@ -39,7 +39,7 @@ import viLocale from '@fullcalendar/core/locales/vi';
 import { ClinicSlotRegistrationModel, Weekdays } from "../../../../utils/interfaces/AdminClinicOwner/Slots";
 import { ClinicSlotInfoModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
 import { ClinicSlotUpdateModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
-import { fetchDentistInfo, registerSlots, getAllClinicSlots, updateClinicSlot, enableSlot, getClinicGeneralInfo } from "../../../../utils/api/ClinicOwnerUtils";
+import { getDentistInfo, registerSlots, getAllClinicSlots, updateClinicSlot, enableSlot, getClinicGeneralInfo } from "../../../../utils/api/ClinicOwnerUtils";
 import { NestedListItems } from "../components/NestedListMenu";
 import { EventContentArg } from "@fullcalendar/core/index.js";
 import { getAllClinics } from "../../../../utils/api/SystemAdminUtils";
@@ -123,9 +123,9 @@ const SlotRegister = () => {
 
   const fetchData = async () => {
     try {
-      const dentistInfo = await fetchDentistInfo();
+      const dentistInfo = await getDentistInfo();
 
-      const clinicId = dentistInfo.content.clinicId;
+      const clinicId = dentistInfo.clinicId;
       setClinicId(clinicId);
       const slotsFromAPI = await getAllClinicSlots(clinicId);
       setClinicSlotInfoData(slotsFromAPI);
@@ -137,7 +137,6 @@ const SlotRegister = () => {
 
         setClinicOpenHour(openHour);
         setClinicCloseHour(closeHour);
-        console.log(clinicOpenHour);
       }
 
     } catch (error) {
@@ -211,7 +210,7 @@ const SlotRegister = () => {
   const handleSave = async () => {
     if (selectedSlot) {
       try {
-        const dentistInfoResponse = await fetchDentistInfo();
+        const dentistInfoResponse = await getDentistInfo();
         if (dentistInfoResponse.statusCode === 200) {
 
           let updatedSlotInfoModel = [...slotInforModel];
@@ -250,7 +249,7 @@ const SlotRegister = () => {
   const handleEdit = async () => {
     if (selectedSlot) {
       try {
-        const dentistInfoResponse = await fetchDentistInfo();
+        const dentistInfoResponse = await getDentistInfo();
 
         if (dentistInfoResponse.statusCode === 200) {
 

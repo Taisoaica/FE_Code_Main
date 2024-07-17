@@ -30,7 +30,7 @@ import { getStorage, ref } from "firebase/storage";
 import { deleteFile } from "../../../../utils/UploadFireBase";
 import { Carousel } from "reactstrap";
 import ConfirmationDialog from "../../../../components/ConfirmationDialog/ConfirmationDialog";
-import { fetchDentistInfo } from "../../../../utils/api/ClinicOwnerUtils";
+import { getDentistInfo } from "../../../../utils/api/ClinicOwnerUtils";
 
 
 const drawerWidth: number = 270;
@@ -102,9 +102,9 @@ export default function ClinicInformation() {
   const [clinicId, setClinicId] = useState<string>();
 
   const fetchImages = async (folderName: string) => {
-    const id = await fetchDentistInfo();
-    const clinicId = id.content.clinicId;
-    setClinicId(id.content.clinicId);
+    const id = await getDentistInfo();
+    const clinicId = id.clinicId;
+    setClinicId(id.clinicId);
     const folderPath = `clinics/${clinicId}/${folderName}/`;
     try {
       const imageUrls = await fetchClinicImages(folderPath);

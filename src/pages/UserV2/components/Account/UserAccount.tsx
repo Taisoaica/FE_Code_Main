@@ -1,5 +1,5 @@
 import styles from './UserAccount.module.css';
-import { default_data, IUserAccount, UserInfoModel } from '../../../../utils/interfaces/User/UserDefinition';
+import { IUserAccount, UserInfoModel } from '../../../../utils/interfaces/User/UserDefinition';
 import { Dispatch, SetStateAction, useLayoutEffect, useState } from 'react';
 import SimpleButton from '../../../../components/User/Components/Buttons/SimpleButton';
 import StatusBadge from '../../../../components/User/StatusBadge/StatusBadge';

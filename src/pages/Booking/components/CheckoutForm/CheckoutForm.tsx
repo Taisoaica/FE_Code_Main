@@ -99,7 +99,7 @@ const CheckoutForm = ({ paymentData, setPaymentData, setPaymentMethodCallback }:
                                 checked={paymentMethod === 'Other'}
                                 onChange={handlePaymentMethodChange}
                                 value="Other" />}
-                            label="Hình thức khác"
+                            label="Thanh toán tại quầy"
                         />
                         {!paymentMethod && <FormHelperText error>Vui lòng chọn phương thức thanh toán</FormHelperText>}
                     </FormControl>

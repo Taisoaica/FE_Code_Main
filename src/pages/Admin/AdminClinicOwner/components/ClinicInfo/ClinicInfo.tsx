@@ -14,14 +14,11 @@ import {
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import ImageUpload from "../ImageUpload";
-import ServiceList from "../ServiceList";
 import { useEffect } from 'react';
 import { ClinicToDisplay } from '../../../../../utils/interfaces/ClinicRegister/Clinic';
-import { fetchDentistInfo, getClinicGeneralInfo, updateClinicGeneralInfo } from '../../../../../utils/api/ClinicOwnerUtils';
+import { getDentistInfo, getClinicGeneralInfo, updateClinicGeneralInfo } from '../../../../../utils/api/ClinicOwnerUtils';
 import styles from './ClinicInfo.module.css';
 import { fetchClinicImages } from '../../../../../utils/UploadFireBase';
-import { getAllClinics } from '../../../../../utils/api/MiscUtils';
 
 interface ClinicInfoProps {
   logoUpdated: boolean;
@@ -52,18 +49,21 @@ const ClinicInfo = ({ logoUpdated }: ClinicInfoProps) => {
   const [clinicId, setClinicId] = useState<number>(0);
 
   const fetchId = async () => {
-    const id = await fetchDentistInfo();
+    const id = await getDentistInfo();
 
-    setClinicId(id.content.clinicId);
+    if (id)
+    {
+      setClinicId(id.clinicId);
+    } 
   }
 
   useEffect(() => {
     const fetchClinicInfo = async () => {
       try {
-        const id = await fetchDentistInfo();
-        setClinicId(id.content.clinicId);
+        const id = await getDentistInfo();
+        setClinicId(id.clinicId);
         
-        const data = await getClinicGeneralInfo(id.content?.clinicId);
+        const data = await getClinicGeneralInfo(id.clinicId);
         if (data) {
           setClinicInfo(data);
           setTextAreaContent(data.description);

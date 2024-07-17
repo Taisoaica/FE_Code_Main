@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import styles from './Profile.module.css'
 import SimpleButton from '../../../../components/User/Components/Buttons/SimpleButton';
-import { default_data, IUserAccount, UserInfo } from '../../../../utils/interfaces/User/UserDefinition';
+import { IUserAccount, UserInfo } from '../../../../utils/interfaces/User/UserDefinition';
 import { getUserData } from '../../../../utils/api/UserAccountUtils';
 import { useNavigate } from 'react-router-dom';
 

@@ -1,9 +1,11 @@
-import { BookingInformation, BookingRegistrationModel } from "../interfaces/interfaces";
+import { PaymentModel } from './BookingRegister';
+import { APIResponseModel, BookingInformation, BookingRegistrationModel, IAPIResponseModel, IPaymentModel } from "../interfaces/interfaces";
 import { connection_path } from "../../constants/developments";
 import axios, { AxiosRequestConfig } from "axios";
 import { useNavigate } from "react-router-dom";
 import { apiCallWithTokenRefresh } from "./apiCallWithRefreshToken";
 import { refreshAccessToken } from "./AuthenticateUtils";
+import { AppointmentViewModel } from './ClinicOwnerUtils';
 
 export interface ClinicServiceInfoModel {
     clinicServiceId: string;
@@ -88,7 +90,7 @@ export interface AppointmentRegistrationModel {
 
 export const createNewCustomerAppointment = async (
     appointmentData: AppointmentRegistrationModel
-): Promise<any> => {
+): Promise<APIResponseModel<AppointmentViewModel>> => {
     const api_url = connection_path.base_url + connection_path.booking.place_book;
 
     try {
@@ -114,7 +116,6 @@ export const createNewCustomerAppointment = async (
 
 export interface PaymentModel {
     appointmentId: string;
-    // amount: string;
     orderInfo: string;
     returnUrl: string;
 }
@@ -164,4 +165,8 @@ export const confirmPayment = async (paymentData: string): Promise<any> => {
     } catch (error) {
         console.error('Error confirming payment:', error);
     }
+}
+
+export const CreateCashPayment = async(paymentData: PaymentModel): Promise<IAPIResponseModel<IPaymentModel>> => {
+    
 }

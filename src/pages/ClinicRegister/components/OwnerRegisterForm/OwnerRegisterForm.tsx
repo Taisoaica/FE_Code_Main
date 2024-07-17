@@ -17,6 +17,7 @@ const OwnerRegisterForm = ({ formData, setFormData, onStepComplete }: BasicFormP
 
     const [errors, setErrors] = useState({
         OwnerUserName: '',
+        OwnerFullName: '',
         OwnerPassword: '',
         OwnerEmail: ''
     });
@@ -24,6 +25,7 @@ const OwnerRegisterForm = ({ formData, setFormData, onStepComplete }: BasicFormP
     const validate = () => {
         const newErrors = {
             OwnerUserName: '',
+            OwnerFullName: '',
             OwnerPassword: '',
             OwnerEmail: ''
         };
@@ -60,10 +62,10 @@ const OwnerRegisterForm = ({ formData, setFormData, onStepComplete }: BasicFormP
     };
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        setLocalFormData((prevData) => ({
-            ...prevData,
-            [name]: value
-        }));
+
+        setLocalFormData((prevData: ClinicRegistrationModel | undefined) => {
+            return {...prevData, [name]: value};
+        });
     };
 
     const handleSubmit = async (event: React.FormEvent) => {
@@ -72,6 +74,7 @@ const OwnerRegisterForm = ({ formData, setFormData, onStepComplete }: BasicFormP
         setFormData({
             ...formData,
             OwnerUserName: localFormData?.OwnerUserName,
+            OwnerFullName: localFormData?.OwnerFullName,
             OwnerPassword: localFormData?.OwnerPassword,
             OwnerEmail: localFormData?.OwnerEmail
         });
@@ -100,6 +103,22 @@ const OwnerRegisterForm = ({ formData, setFormData, onStepComplete }: BasicFormP
                             invalid={!!errors.OwnerUserName}
                         />
                         <FormFeedback>{errors.OwnerUserName}</FormFeedback>
+                    </Col>
+                </FormGroup>
+
+                <FormGroup>
+                    <Label for="fullname" sm={3} className={styles.label}>Tên chủ phòng khám:</Label>
+                    <Col sm={9}>
+                        <Input
+                            type="text"
+                            name="OwnerFullName"
+                            id="fullname"
+                            className={styles.input}
+                            value={localFormData?.OwnerFullName}
+                            onChange={handleChange}
+                            invalid={!!errors.OwnerFullName}
+                        />
+                        <FormFeedback>{errors.OwnerFullName}</FormFeedback>
                     </Col>
                 </FormGroup>
 

@@ -108,6 +108,7 @@ const ClinicServices = () => {
             if (Array.isArray(data)) {
                 setCategories(data); // Update categories state with updated list
                 setNewCategoryName(''); // Clear input field after successful addition
+                alert('Category added successfully');
             } else {
                 console.error('Invalid data format received:', data);
                 // Handle error scenario

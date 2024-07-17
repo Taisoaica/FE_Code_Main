@@ -9,15 +9,32 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchClinicImages } from "../../utils/UploadFireBase";
 
+
 const settings = {
     dots: true,
     infinite: true,
+    speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
     centerMode: true,
     centerPadding: "60px",
+    responsive: [
+        {
+            breakpoint: 1024,
+            settings: {
+                slidesToShow: 2,
+                centerMode: false,
+            }
+        },
+        {
+            breakpoint: 600,
+            settings: {
+                slidesToShow: 1,
+                centerMode: false,
+            }
+        }
+    ]
 };
-
 
 const Carousel = () => {
     const navigate = useNavigate();
@@ -32,7 +49,7 @@ const Carousel = () => {
             const verifiedClinics = clinics.filter(clinic => clinic.status === 'verified');
 
             setItems(verifiedClinics);
-            
+
 
             const imagesPromises = clinics.map(async (clinic) => {
                 const imageUrls = await fetchClinicImages(`clinics/${clinic.id}/logo/`);

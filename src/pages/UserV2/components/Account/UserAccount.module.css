@@ -10,7 +10,7 @@
 }
 
 .SectionHeader {
-    font-size: 1em;
+    font-size: .25em;
     padding: 0.5em;
 }
 
@@ -26,7 +26,7 @@
         width: 100%;
         padding: 0 0 0.35em 0;
         margin: 0;
-        font-size: 3em;
+        font-size: 2em;
         text-align: left;
     }
 

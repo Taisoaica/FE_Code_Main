@@ -30,6 +30,8 @@ export const connection_path = {
 
     invoker: {
         get_dentist_invoker: "/dentist",
+        get_customer_invoker: "/customer",
+        put_dentist: "/dentist",
     },
 
     clinic: {
@@ -56,7 +58,7 @@ export const connection_path = {
     booking: {
         get_clinic_booking: '/booking/clinic/:id',
         get_customer_booking: '/booking/customer/:id',
-        get_dentist_booking: '/booking/dentist/:id',
+        get_dentist_booking: '/booking/staff/:id',
         available_date: '/booking/availabe-date',
         available_slot: '/booking/availabe-slot',
         check_available_dentist: '/booking/available/:id/dentist',
@@ -65,6 +67,9 @@ export const connection_path = {
         get_cus_booking: '/booking/schedule/customer',
         create_payment: '/payment/vnpay',
         confirm_payment: '/payment/vnpay/success',
+        get_customer_payment: '/payment/customer/',
+        finish: '/finish',
+        cancel: '/cancel',
     },
 
     admin: {

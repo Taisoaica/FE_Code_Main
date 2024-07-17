@@ -1,9 +1,9 @@
 .mainContainer {
     background: linear-gradient(to left, #e3f2fd, #f8fbff);
     padding-top: 20px;
-    color: #37474f;
-    overflow: auto;
+    padding-bottom: 20px;
     display: flex;
+    height: 100%;
     flex-direction: column;
     gap: 10px;
 }
@@ -19,125 +19,131 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    /* Accent color for border */
 }
 
 .contentWrapper {
     width: 90%;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, .5fr);
-    gap: 20px;
 }
 
-.content1 {
-    grid-column: span 3;
+.container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 24px;
+    grid-template-columns: repeat(12, 1fr);
+
 }
 
-.content1>div {
-    background-color: #ffffff;
-    border: 1px solid #ddd;
+.fullWidth {
+    grid-column: span 12;
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 24px;
+}
+
+.fullWidth>div {
+    display: flex;
+    flex-direction: column;
     height: 100%;
+    gap: 24px;
+}
+
+.halfWidth {
+    grid-column: span 6;
+}
+
+.halfWidth>div {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 20px;
+}
+
+.oneThirdWidth {
+    grid-column: span 4;
+}
+
+.oneFourthWidth {
+    grid-column: span 3;
+    height: 100%;
+}
+
+.oneFourthWidth>div {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.oneFourthWidth .metricBox {
+    display: flex;
+    flex-direction: column;
+}
+
+.thirdFourthWidth {
+    grid-column: span 9;
+}
+
+.metricBox {
+    padding: 16px;
+    background-color: white;
     border-radius: 8px;
-    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.content1>div>div {
-    text-align: left;
+.title {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.content {
+    font-size: 20px;
+}
+
+.smallContent {
+    font-size: 16px;
+}
+
+.chartContainer {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: 4fr 2fr;
     width: 100%;
+    margin: 20px auto;
 }
 
-.topServices {
-    grid-column: span 1;
-    background-color: #ffffff;
-    padding: 20px;
+.chart {
+    background-color: white;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.servicesList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.servicesList li {
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #ddd;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 }
 
-.servicesList li:last-child {
-    border-bottom: none;
-}
-
-.serviceName {
-    font-size: 18px;
-    font-weight: 500;
-    color: #1e88e5;
-    /* Accent color for service name */
-}
-
-.serviceCount {
-    font-size: 18px;
-    color: #37474f;
-    /* Dark Gray for service counts */
-}
-
-.annualAppointments {
-    background-color: #ffffff;
+.lineChart {
     grid-column: span 2;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
 }
 
-.annualAppointmentsList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.chartLink {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: opacity 0.3s, transform 0.3s;
+    /* Smooth transition */
 }
 
-.annualAppointmentsList li {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #ddd;
+.chartLink:hover {
+    opacity: 0.9;
+    transform: scale(1.01);
+    /* Slightly enlarges the element */
 }
 
-.annualAppointmentsList li:last-child {
-    border-bottom: none;
-}
-
-.appointmentService {
-    font-size: 18px;
-    font-weight: 500;
-    color: #1e88e5;
-}
-
-.appointmentDetails {
-    font-size: 18px;
-    color: #37474f;
-}
-
-.servicesList li:hover,
-.annualAppointmentsList li:hover {
-    background-color: #bbdefb;
-    cursor: pointer;
-}
-
-.servicesList li:hover .serviceName,
-.annualAppointmentsList li:hover .appointmentService {
-    color: #0d47a1;
-}
-
-.calendarContainer {
-    grid-column: span 3;
+.chartLink:active {
+    opacity: 0.8;
 }

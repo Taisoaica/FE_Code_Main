@@ -19,12 +19,13 @@ import styles from "./AppointmentSchedule.module.css";
 import BookingDialog from "./BookingDialog";
 import { NestedListItems } from "../components/NestedListMenu";
 import { getAllCustomer, getAllDentist, getAllUsers, UserInfoModel } from "../../../../utils/api/SystemAdminUtils";
-import { fetchClinicStaff } from "../../../../utils/api/ClinicOwnerUtils";
+import { AppointmentViewModelFetch, fetchClinicStaff, fetchDentistInfo } from "../../../../utils/api/ClinicOwnerUtils";
 import { getClinicAppointments, AppointmentViewModel, getAllClinicSlots } from "../../../../utils/api/ClinicOwnerUtils";
 import { ClinicSlotInfoModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
 import { Button } from "reactstrap";
 import { DentistInfoViewModel } from "../../../../utils/api/BookingRegister";
 import { slots } from "../../data";
+import { MenuItem, Select } from "@mui/material";
 
 const drawerWidth: number = 270;
 
@@ -84,21 +85,40 @@ export default function AppointmentSchedule() {
 
   const clinic = localStorage.getItem('clinic');
   const clinicId = clinic ? JSON.parse(clinic).id : null;
-  
-  // const [fromDate, setFromDate] = useState<Date>();
-  // const [toDate, setToDate] = useState<Date>();
-  // const [fromTime, setFromTime] = useState<string>('');
-  // const [toTime, setToTime] = useState<string>('');
-  const [pageSize, setPageSize] = useState<number>(10);
-  const [pageIndex, setPageIndex] = useState<number>(1);
-  const [isFiltering, setIsFiltering] = useState<boolean>(false);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [appointmentsPerPage] = useState(5);
+  const [sortBy, setSortBy] = useState<string>('all');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [customers, setCustomers] = useState<string[]>([]);
+  const [dentists, setDentists] = useState<string[]>([]);
+  const [customerFilter, setCustomerFilter] = useState('Tất cả');
+  const [dentistFilter, setDentistFilter] = useState('Tất cả');
+  const [dateFilter, setDateFilter] = useState<'all' | 'thisWeek' | 'nextWeek' | 'nextMonth'>('all');
   const [appointmentsWithTimes, setAppointmentsWithTimes] = useState<AppointmentViewModel[]>([]);
-  const [users, setUsers] = useState<{ [key: number]: UserInfoModel }>({});
-  const [dentists, setDentists] = useState<{ [key: number]: UserInfoModel }>({});
+  const [originalAppointments, setOriginalAppointments] = useState<AppointmentViewModel[]>([]);
   const [clinicSlots, setClinicSlots] = useState<ClinicSlotInfoModel[][]>([]);
+  const [noAppointmentsMessage, setNoAppointmentsMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const handleSortChange = (event) => {
+    const newSortBy = event.target.value as string;
+    setSortBy(newSortBy);
+
+    if (newSortBy === 'all') {
+      setAppointmentsWithTimes([...appointmentsWithTimes]);
+    } else {
+      const sortedAppointments = [...appointmentsWithTimes].sort((a, b) => {
+        if (newSortBy === 'date') {
+          return new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime();
+        } else if (newSortBy === 'status') {
+          return a.bookingStatus.localeCompare(b.bookingStatus);
+        }
+        return 0;
+      });
+      setAppointmentsWithTimes(sortedAppointments);
+    }
+  };
 
   const formatTime = (time: string) => {
     const [hours, minutes] = time.split(':');
@@ -113,9 +133,6 @@ export default function AppointmentSchedule() {
     return `${day}/${month}/${year}`;
   };
 
-  const formatDateToSend = (date: Date) => {
-    return date.toLocaleDateString("en-US");
-  }
 
   const getStatusText = (status: string) => {
     switch (status) {
@@ -123,46 +140,42 @@ export default function AppointmentSchedule() {
         return 'Đã đặt lịch';
       case 'pending':
         return 'Đang chờ xác nhận';
-      case 'completed':
+      case 'finished':
         return 'Đã hoàn thành';
       default:
         return status;
     }
   }
 
-  const statusClass = (appointment: AppointmentViewModel) => {
-    switch (appointment.status) {
-      case 'booked':
-        return styles.booked;
+  const getStatusClassName = (status: string) => {
+    switch (status) {
       case 'pending':
-        return styles.pending;
-      case 'completed':
-        return styles.completed;
+        return styles.statusPending;
+      case 'booked':
+        return styles.statusBooked;
+      case 'finished':
+        return styles.statusFinished;
+      case 'canceled':
+        return styles.statusCanceled;
+      case 'no show':
+        return styles.statusNoShow;
       default:
         return '';
     }
   }
 
-  const onFilter = () => { 
-    setIsFiltering(!isFiltering);
-  }
-
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const dentistInfo = await fetchDentistInfo();
+        const clinicId = dentistInfo.content.clinicId;
+
         const fetchedSlots = await getAllClinicSlots(clinicId);
         setClinicSlots(fetchedSlots);
 
-        // const defaultFromDate = fromDate || new Date();
-        // const defaultToDate = toDate || new Date();
-        // defaultToDate.setFullYear(defaultToDate.getFullYear() + 1);
-
         const fetchedAppointments = await getClinicAppointments(
           clinicId,
-          // formatDateToSend(defaultFromDate), 
-          // formatDateToSend(defaultToDate),
         );
-
 
         const appointmentsWithSlotTimes = fetchedAppointments.map(appointment => {
           const matchingSlot = fetchedSlots.flat().find(slot => slot.clinicSlotId === appointment.clinicSlotId);
@@ -173,22 +186,14 @@ export default function AppointmentSchedule() {
           };
         });
 
+        const uniqueCustomers = Array.from(new Set(appointmentsWithSlotTimes.map(a => a.customerFullName)));
+        const uniqueDentists = Array.from(new Set(appointmentsWithSlotTimes.map(a => a.dentistFullname)));
+
+        setCustomers(['Tất cả', ...uniqueCustomers]);
+        setDentists(['Tất cả', ...uniqueDentists]);
+
+        setOriginalAppointments(appointmentsWithSlotTimes);
         setAppointmentsWithTimes(appointmentsWithSlotTimes);
-        const allUsers = await getAllUsers();
-        const allDentists = await getAllDentist();
-
-        const userLookup = allUsers.reduce((acc, user) => {
-          acc[user.id] = user;
-          return acc;
-        }, {} as { [key: number]: UserInfoModel });
-
-        const dentistLookup = allDentists.reduce((acc, dentist) => {
-          acc[dentist.dentistId] = dentist;
-          return acc;
-        }, {} as { [key: number]: UserInfoModel });
-
-        setUsers(userLookup);
-        setDentists(dentistLookup);
 
       } catch (error) {
         setError('Failed to fetch data.');
@@ -197,10 +202,58 @@ export default function AppointmentSchedule() {
         setLoading(false);
       }
     };
-    console.log("Is request")
     fetchData();
-  }, [isFiltering]);
+  }, []);
 
+  useEffect(() => {
+    let filteredAppointments = originalAppointments.filter(appointment => {
+      const appointmentDate = new Date(appointment.appointmentDate);
+      const now = new Date();
+
+      switch (dateFilter) {
+        case 'thisWeek':
+          const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 6);
+          return appointmentDate >= startOfWeek && appointmentDate <= endOfWeek;
+        case 'nextWeek':
+          const startOfNextWeek = new Date(now.setDate(now.getDate() - now.getDay() + 7));
+          const endOfNextWeek = new Date(startOfNextWeek);
+          endOfNextWeek.setDate(startOfNextWeek.getDate() + 6);
+          return appointmentDate >= startOfNextWeek && appointmentDate <= endOfNextWeek;
+        case 'nextMonth':
+          const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+          const endOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0);
+          return appointmentDate >= startOfNextMonth && appointmentDate <= endOfNextMonth;
+        case 'all':
+        default:
+          return true;
+      }
+    });
+
+    filteredAppointments = filteredAppointments.filter(appointment => {
+      const matchesCustomer = customerFilter === 'Tất cả' || appointment.customerFullName === customerFilter;
+      const matchesDentist = dentistFilter === 'Tất cả' || appointment.dentistFullname === dentistFilter;
+      return matchesCustomer && matchesDentist;
+    });
+
+    filteredAppointments = filteredAppointments.sort((a, b) => {
+      if (sortBy === 'date') {
+        return new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime();
+      } else if (sortBy === 'status') {
+        return a.bookingStatus.localeCompare(b.bookingStatus);
+      }
+      return 0;
+    });
+
+    if (filteredAppointments.length === 0) {
+      setNoAppointmentsMessage('Không có lịch hẹn cho thời gian đã chọn.');
+    } else {
+      setNoAppointmentsMessage(null);
+    }
+
+    setAppointmentsWithTimes(filteredAppointments);
+  }, [dateFilter, customerFilter, dentistFilter, sortBy, originalAppointments]);
 
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -208,6 +261,17 @@ export default function AppointmentSchedule() {
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
+
+  const filteredAppointments = appointmentsWithTimes.filter(appointment => {
+    const matchesCustomer = customerFilter === 'Tất cả' || appointment.customerFullName === customerFilter;
+    const matchesDentist = dentistFilter === 'Tất cả' || appointment.dentistFullname === dentistFilter;
+    return matchesCustomer && matchesDentist;
+  });
+
+
+  const indexOfLastAppointment = currentPage * appointmentsPerPage;
+  const indexOfFirstAppointment = indexOfLastAppointment - appointmentsPerPage;
+  const currentAppointments = filteredAppointments.slice(indexOfFirstAppointment, indexOfLastAppointment);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -261,43 +325,67 @@ export default function AppointmentSchedule() {
               ? theme.palette.grey[100]
               : theme.palette.grey[900],
           flexGrow: 1,
-          height: "100vh",
           marginTop: 5.5,
-          overflow: "auto",
+          minHeight: "100vh",
+          overflow: 'auto',
         }}
       >
         <Box className={styles.mainContainer}>
           <div className={styles.tableContainer}>
-            <h2 className={styles.title}>Danh sách lịch hẹn</h2>
-            {/* <Box className={styles.toolbar}>
-              <input
-                type="date"
-                value={fromDate?.toISOString().split('T')[0] || ''}
-                onChange={(e) => setFromDate(new Date(e.target.value))}
-              />
-              <input
-                type="date"
-                value={toDate?.toISOString().split('T')[0] || ''}
-                onChange={(e) => setToDate(new Date(e.target.value))}
-              />
-              <input
-                type="time"
-                value={fromTime}
-                onChange={(e) => setFromTime(e.target.value)}
-              />
-              <input
-                type="time"
-                value={toTime}
-                onChange={(e) => setToTime(e.target.value)}
-              />
-             
-              <button onClick={() => onFilter()}>Áp dụng bộ lọc</button>
-            </Box> */}
+            <h1 className={styles.tableHeader}>Danh sách lịch hẹn</h1>
             {loading && <div>Loading...</div>}
             {error && <div>{error}</div>}
+            <div className={styles.filterSortContainer}>
+              <div className={styles.sortContainer}>
+                <Typography component="h2" variant="h6">
+                  Sắp xếp theo:
+                </Typography>
+                <Select value={sortBy} onChange={handleSortChange}>
+                  <MenuItem value="all">Tất cả</MenuItem>
+                  <MenuItem value="date">Ngày</MenuItem>
+                  <MenuItem value="status">Trạng thái</MenuItem>
+                </Select>
+              </div>
+              <div className={styles.filterContainerDentist}>
+                <Typography component="h2" variant="h6">
+                  Lọc theo nha sĩ:
+                </Typography>
+                <Select value={dentistFilter} onChange={(e) => setDentistFilter(e.target.value)}>
+                  {dentists.map(dentist => (
+                    <MenuItem key={dentist} value={dentist === 'Tất cả' ? 'Tất cả' : dentist}>
+                      {dentist}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+              <div className={styles.filterContainerCustomer}>
+                <Typography component="h2" variant="h6">
+                  Lọc theo bệnh nhân:
+                </Typography>
+                <Select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)}>
+                  {customers.map(customer => (
+                    <MenuItem key={customer} value={customer === 'Tất cả' ? 'Tất cả' : customer}>
+                      {customer}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+              <div className={styles.filterContainerDate}>
+                <Typography component="h2" variant="h6">
+                  Lọc theo ngày:
+                </Typography>
+                <Select value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
+                  <MenuItem value="all">Tất cả</MenuItem>
+                  <MenuItem value="thisWeek">Tuần này</MenuItem>
+                  <MenuItem value="nextWeek">Tuần sau</MenuItem>
+                  <MenuItem value="nextMonth">Tháng sau</MenuItem>
+                </Select>
+              </div>
+            </div>
             <table className={styles.table}>
               <thead>
                 <tr>
+                  <th>STT</th>
                   <th>Khách hàng</th>
                   <th>Bác sĩ</th>
                   <th>Ngày hẹn</th>
@@ -306,31 +394,64 @@ export default function AppointmentSchedule() {
                 </tr>
               </thead>
               <tbody>
-                {appointmentsWithTimes.map((appointment: AppointmentViewModel) => (
-                  <tr key={appointment.id} className={styles.tableRow}>
-                    <td>{users[appointment.customerId]?.fullname}</td>
-                    <td>{dentists[appointment.dentistId]?.fullname}</td>
-                    <td>{formatDate(appointment.appointmentDate)}</td>
-                    {/* <td>{formatTime(appointment.slotStartTime)} - {formatTime(appointment.slotEndTime)}</td> */}
-                    <td>{formatTime(appointment.slotStartTime)} - {formatTime(appointment.slotEndTime)}</td>
-                    <td>
-                      <Button className={`${styles.status} ${statusClass(appointment)}`}>
-                        {getStatusText(appointment.status)}
-                      </Button>
+                {currentAppointments && currentAppointments.length > 0 ? (
+                  currentAppointments.map((appointment: AppointmentViewModel, index) => (
+                    <tr key={appointment.id} className={styles.tableRow}>
+                      <td>{(currentPage - 1) * appointmentsPerPage + index + 1}</td>
+                      <td>{appointment.customerFullName}</td>
+                      <td>{appointment.dentistFullname}</td>
+                      <td>{formatDate(appointment.appointmentDate)}</td>
+                      <td>{formatTime(appointment.appointmentTime)} - {formatTime(appointment.expectedEndTime)}</td>
+                      <td>
+                        <Button className={getStatusClassName(appointment.bookingStatus)}>
+                          {getStatusText(appointment.bookingStatus)}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className={styles.noAppointmentsMessage}>
+                      {noAppointmentsMessage}
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
-            {/* <Box className={styles.pagination}>
-              <button onClick={() => { setPageIndex(prev => Math.max(1, prev - 1)); }}>Trang trước</button>
-              <span>Trang {pageIndex}</span>
-              <button onClick={() => { setPageIndex(prev => prev + 1); }}>Trang sau</button>
-            </Box> */}
+            <Pagination
+              appointmentsPerPage={appointmentsPerPage}
+              totalAppointments={filteredAppointments.length}
+              paginate={setCurrentPage}
+              currentPage={currentPage}
+            />
           </div>
+          {/* {loading ? <p>Loading....</p> : <Scheduler openHour={clinicOpenHour} closeHour={clinicCloseHour} availableStaff={staff} />} */}
         </Box>
+
       </Box>
       <BookingDialog isOpen={isDialogOpen} onClose={handleCloseDialog} booking={selectedBooking} />
     </Box>
   );
+}
+
+const Pagination = ({ appointmentsPerPage, totalAppointments, paginate, currentPage }) => {
+  const pageNumbers = [];
+
+  for (let i = 1; i <= Math.ceil(totalAppointments / appointmentsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  return (
+    <nav>
+      <ul className={styles.pagination}>
+        {pageNumbers.map(number => (
+          <li key={number} className={currentPage === number ? styles.active : ''}>
+            <a onClick={() => paginate(number)} href="#!">
+              {number}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
 }

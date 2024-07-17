@@ -1,0 +1,45 @@
+.mainContentRightContainer {
+    width: 70%;
+    padding-top: 0.5em;
+    font-family: 'Inter';
+}
+
+
+.mainContentMiddleTitleHeading {
+    font-size: 2em;
+    text-align: left;
+    margin-bottom: 0.5em;
+}
+
+.mainContentContainerBox {
+    width: 90%;
+    padding: 1.5em 2em;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.paymentDetails {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5em 10em;
+    text-align: left;
+}
+
+.paymentDetails p {
+    margin: 0;
+    line-height: 1.5em;
+}
+
+.paymentDetails strong {
+    font-weight: bold;
+    color: #444;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 10px;
+    width: 90%;
+}

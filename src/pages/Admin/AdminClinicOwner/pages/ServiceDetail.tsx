@@ -298,10 +298,10 @@ const ServiceDetail = () => {
                                     </FormGroup>
                                 </Col>
                                 <Col md={6}>
-                                    <FormGroup>
+                                    {/* <FormGroup>
                                         <Label htmlFor="categoryId">ID Danh mục</Label>
                                         <Input type="text" id="categoryId" name="categoryId" value={serviceInfo?.categoryId} disabled />
-                                    </FormGroup>
+                                    </FormGroup> */}
                                     {/* <FormGroup>
                                         <Label htmlFor="serviceAvailable">Trạng thái</Label>
                                         <Input

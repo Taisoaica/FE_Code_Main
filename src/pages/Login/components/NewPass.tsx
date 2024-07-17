@@ -40,7 +40,6 @@ const NewPass = () => {
 
     return (
         <Box component="form"
-            onSubmit={(event) => handleResetPass(event, password, navigate)}
             noValidate
             className={styles.form}
         >

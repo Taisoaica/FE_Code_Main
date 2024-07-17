@@ -8,6 +8,8 @@ import UserPayment from './Payment/UserPayment';
 import UserSchedule from './Schedule/UserSchedule';
 import UserAccount from './Account/UserAccount';
 import AppointmentDetailWrapper from './Schedule/components/AppointmentDetailWrapper';
+import PaymentDetail from './Payment/components/PaymentDetailInfo';
+import PaymentDetailWrapper from './Payment/components/PaymentDetailWrapper';
 
 
 const default_config: MenuListProperty = {
@@ -46,7 +48,7 @@ const UserProfileContent = () => {
     });
 
     const [activeIndex, setActiveIndex] = useState<number | null>(default_config.active);
-
+    const [source, setSource] = useState<number>(0);
 
     const handleNavigation = (index: number) => {
         setActiveIndex(index);
@@ -57,13 +59,15 @@ const UserProfileContent = () => {
             case 0:
                 return <Profile setActiveIndex={setActiveIndex} />;
             case 1:
-                return <UserPayment />;
+                return <UserPayment setActiveIndex={setActiveIndex} setSource={setSource} />;
             case 2:
-                return <UserSchedule setActiveIndex={setActiveIndex} />;
+                return <UserSchedule setActiveIndex={setActiveIndex} setSource={setSource} />;
             case 3:
                 return <UserAccount />;
             case 4:
-                return <AppointmentDetailWrapper setActiveIndex={setActiveIndex} />
+                return <AppointmentDetailWrapper setActiveIndex={setActiveIndex} source={source} />
+            // case 5: 
+            //     return <PaymentDetailWrapper setActiveIndex={setActiveIndex} />
             default:
                 return <Profile setActiveIndex={setActiveIndex} />;
         }

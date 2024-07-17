@@ -16,11 +16,11 @@ const rootElement = document.getElementById("root");
 if (rootElement) {
   root.render(
     <BrowserRouter>
-      <React.StrictMode>
+      {/* <React.StrictMode> */}
         <GoogleOAuthProvider clientId={google_auth.client_id}>
           <App />
         </GoogleOAuthProvider>
-      </React.StrictMode>
+      {/* </React.StrictMode> */}
     </BrowserRouter>
   )
 }

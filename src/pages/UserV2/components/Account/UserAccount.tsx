@@ -27,7 +27,7 @@ const UserAccount = () => {
     const [userDataToSend, setUserDataToSend]: [IUserAccount, Dispatch<SetStateAction<IUserAccount>>] = useState(default_data);
 
     const saveUserData = async () => {
-        const userId = localStorage.getItem('id');
+        const userId = localStorage.getItem('customerId');
         console.log('user data', userData);
         const dataToSend = {
             ...default_data,

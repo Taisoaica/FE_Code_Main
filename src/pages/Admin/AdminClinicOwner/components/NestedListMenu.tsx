@@ -10,6 +10,7 @@ import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import AccountCircleOutlined from "@mui/icons-material/AccountCircleOutlined";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 
@@ -20,7 +21,7 @@ export const NestedListItems = () => {
         setOpen(open === title ? null : title)
     }
 
-    const handleLogout = () => { 
+    const handleLogout = () => {
         navigate('/login');
         localStorage.clear();
     }
@@ -34,18 +35,7 @@ export const NestedListItems = () => {
                     </ListItemIcon>
                     <ListItemText primary="Trang chủ" />
                 </ListItemButton>
-                {/* <Collapse in={open == "Người dùng"} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                        <ListItemButton component={Link} to="/system-admin/patient">
-                            <ListItemText primary="Bệnh nhân" />
-                        </ListItemButton>
-                    </List>
-                    <List component="div" disablePadding>
-                        <ListItemButton component={Link} to="/system-admin/dentist">
-                            <ListItemText primary="Nha sĩ" />
-                        </ListItemButton>
-                    </List>
-                </Collapse> */}
+
                 <ListItemButton onClick={() => handleClick("Quản lí phòng khám")} component={Link} to="/admin/clinic-owner/clinic">
                     <ListItemIcon >
                         <LocalHospitalIcon />
@@ -57,6 +47,11 @@ export const NestedListItems = () => {
                     <List component="div" disablePadding>
                         <ListItemButton component={Link} to="./dentist">
                             <ListItemText primary="Danh sách nha sĩ" />
+                        </ListItemButton>
+                    </List>
+                    <List component="div" disablePadding>
+                        <ListItemButton component={Link} to="/admin/clinic-owner/services">
+                            <ListItemText primary="Dịch vụ phòng khám" />
                         </ListItemButton>
                     </List>
                 </Collapse>
@@ -85,14 +80,20 @@ export const NestedListItems = () => {
                     </ListItemIcon>
                     <ListItemText primary="Thiết lập slot khám" />
                 </ListItemButton>
-                <ListItemButton component={Link} to="/admin/clinic-owner/services">
+                {/* <ListItemButton component={Link} to="/admin/clinic-owner/services">
                     <ListItemIcon >
                         <MedicalServicesIcon />
                     </ListItemIcon>
                     <ListItemText primary="Dịch vụ phòng khám" />
-                </ListItemButton>
+                </ListItemButton> */}
             </List>
             <Divider sx={{ width: '90%', margin: '16px auto', borderBottomWidth: '2px', backgroundColor: '#000' }} />
+            {/* <ListItemButton component={Link} to='/admin/clinic-owner/account'>
+                <ListItemIcon>
+                    <AccountCircleOutlined />
+                </ListItemIcon>
+                <ListItemText primary="Tài khoản" />
+            </ListItemButton> */}
             <ListItemButton onClick={handleLogout}>
                 <ListItemIcon>
                     <ExitToAppIcon />

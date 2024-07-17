@@ -39,9 +39,10 @@ import viLocale from '@fullcalendar/core/locales/vi';
 import { ClinicSlotRegistrationModel, Weekdays } from "../../../../utils/interfaces/AdminClinicOwner/Slots";
 import { ClinicSlotInfoModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
 import { ClinicSlotUpdateModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
-import { fetchDentistInfo, registerSlots, getAllClinicSlots, updateClinicSlot, enableSlot } from "../../../../utils/api/ClinicOwnerUtils";
+import { fetchDentistInfo, registerSlots, getAllClinicSlots, updateClinicSlot, enableSlot, getClinicGeneralInfo } from "../../../../utils/api/ClinicOwnerUtils";
 import { NestedListItems } from "../components/NestedListMenu";
 import { EventContentArg } from "@fullcalendar/core/index.js";
+import { getAllClinics } from "../../../../utils/api/SystemAdminUtils";
 
 
 
@@ -99,10 +100,8 @@ const SlotRegister = () => {
   const calendarRef = useRef<FullCalendar>(null);
   const [open, setOpen] = useState(true);
 
-  const clinic = localStorage.getItem('clinic')
-  const clinicId = clinic ? JSON.parse(clinic).id : '';
-  const clinicOpenHour = clinic ? JSON.parse(clinic).openHour : '';
-  const clinicCloseHour = clinic ? JSON.parse(clinic).closeHour : '';
+  // const clinicOpenHour = clinic ? JSON.parse(clinic).openHour : '';
+  // const clinicCloseHour = clinic ? JSON.parse(clinic).closeHour : '';
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -112,7 +111,9 @@ const SlotRegister = () => {
   const [status, setStatus] = useState<boolean>(false);
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-
+  const [clinicOpenHour, setClinicOpenHour] = useState<string>('');
+  const [clinicCloseHour, setClinicCloseHour] = useState<string>('');
+  const [clinicId, setClinicId] = useState<number>(0);
   const [defaultMaxCheckup, setDefaultMaxCheckup] = useState(1);
   const [defaultMaxTreatment, setDefaultMaxTreatment] = useState(1);
 
@@ -122,8 +123,23 @@ const SlotRegister = () => {
 
   const fetchData = async () => {
     try {
+      const dentistInfo = await fetchDentistInfo();
+
+      const clinicId = dentistInfo.content.clinicId;
+      setClinicId(clinicId);
       const slotsFromAPI = await getAllClinicSlots(clinicId);
       setClinicSlotInfoData(slotsFromAPI);
+
+      const clinic = await getClinicGeneralInfo(clinicId);
+      if (clinic) {
+        const openHour = clinic.openHour || '08:00';
+        const closeHour = clinic.closeHour || '17:00';
+
+        setClinicOpenHour(openHour);
+        setClinicCloseHour(closeHour);
+        console.log(clinicOpenHour);
+      }
+
     } catch (error) {
       console.error('Error fetching clinic slots:', error);
     }
@@ -174,7 +190,7 @@ const SlotRegister = () => {
     let weekday = start.getDay();
 
     const newSlotInfo: ClinicSlotRegistrationModel = {
-      clinicId: clinicId,
+      clinicId: clinicId.toString(),
       clinicSlotId: slotId,
       weekday: weekday,
       maxCheckup: defaultMaxCheckup,
@@ -249,10 +265,10 @@ const SlotRegister = () => {
 
           const response = await updateClinicSlot(updatedSlotInfo);
           if (response) {
-            alert('Update successing');
+            console.log('Update successing');
           } else {
-            alert('Fail to update');
-          } 
+            console.log('Fail to update');
+          }
 
           setStatus(false);
           setEditModalOpen(false);
@@ -260,16 +276,16 @@ const SlotRegister = () => {
 
           await fetchData();
         } else {
-          alert("Failed to fetch dentist information");
+          console.log("Failed to fetch dentist information");
         }
       } catch (error) {
-        alert("Error saving slot changes:");
+        console.log("Error saving slot changes:");
       }
     }
   };
 
-  
-  
+
+
   const slotLabelContent = (info: any) => {
     const start = info.date;
     const end = new Date(start);
@@ -358,9 +374,10 @@ const SlotRegister = () => {
             Chọn các khung giờ trên lịch bên dưới để cấu hình giờ làm việc của phòng khám.
             Mỗi khung giờ được chọn sẽ được mở hàng tuần vào cùng ngày và giờ.
           </p>
+          <p>Xanh là những slot đang được mở, đỏ là những slot đã đóng. Những ngày không có slot là những ngày phòng khám không hoạt động.</p>
         </div>
         <div className="calendar-three">
-          <FullCalendar
+          {/* <FullCalendar
             contentHeight="auto"
             stickyHeaderDates={false}
             windowResize={() => calendarRef.current?.getApi().updateSize()}
@@ -386,7 +403,37 @@ const SlotRegister = () => {
             slotMaxTime={clinicCloseHour}
             slotLabelContent={slotLabelContent}
             firstDay={0}
-          />
+          /> */}
+          {clinicCloseHour && (
+            <FullCalendar
+              contentHeight="auto"
+              stickyHeaderDates={false}
+              windowResize={() => calendarRef.current?.getApi().updateSize()}
+              locale={viLocale}
+              ref={calendarRef}
+              headerToolbar={false}
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+              dayHeaderFormat={{ weekday: 'long' }}
+              initialView="timeGridWeek"
+              editable={true}
+              events={filteredSlots}
+              eventContent={renderEventContent}
+              eventClick={handleEventClick}
+              dateClick={handleDateClick}
+              selectable={false}
+              nowIndicator={true}
+              selectMirror={true}
+              dayMaxEvents={true}
+              duration={{ days: 7 }}
+              slotDuration={'00:30:00'}
+              slotLabelInterval={'00:30:00'}
+              slotMinTime={clinicOpenHour}
+              slotMaxTime={clinicCloseHour}
+              slotLabelContent={slotLabelContent}
+              firstDay={0}
+            />
+          )}
+
         </div>
       </Box>
       <Modal isOpen={editModalOpen || confirmationModalOpen} toggle={() => {
@@ -420,7 +467,7 @@ const SlotRegister = () => {
                   value={selectedSlot.maxCheckup}
                   onChange={(e) => {
                     const value = parseInt(e.target.value) || 0;
-                    if (value >= 0) {
+                    if (value >= 1) {
                       setSelectedSlot({
                         ...selectedSlot,
                         maxCheckup: value,
@@ -437,7 +484,7 @@ const SlotRegister = () => {
                   value={selectedSlot.maxTreatment}
                   onChange={(e) => {
                     const value = parseInt(e.target.value) || 0;
-                    if (value >= 0) {
+                    if (value >= 1) {
                       setSelectedSlot({
                         ...selectedSlot,
                         maxTreatment: value,

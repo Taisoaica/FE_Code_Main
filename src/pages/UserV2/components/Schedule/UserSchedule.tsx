@@ -8,12 +8,13 @@ import { Button } from 'reactstrap';
 interface AppointmentCardProps {
     appointment: AppointmentViewModelFetch;
     setActiveIndex: (index: number) => void;
+    setSource: (index: number) => void;
 }
 
-const AppointmentCard = ({ appointment, setActiveIndex }: AppointmentCardProps) => {
+const AppointmentCard = ({ appointment, setActiveIndex, setSource }: AppointmentCardProps) => {
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric', })
+        return date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
     const formatTime = (timeString: string) => {
@@ -23,6 +24,7 @@ const AppointmentCard = ({ appointment, setActiveIndex }: AppointmentCardProps) 
     const handleButtonClick = (appointment: AppointmentViewModelFetch) => {
         localStorage.setItem('bookId', appointment.bookId);
         setActiveIndex(4);
+        setSource(1);
     }
 
     const statusClass = () => {
@@ -33,6 +35,10 @@ const AppointmentCard = ({ appointment, setActiveIndex }: AppointmentCardProps) 
                 return styles.pending;
             case 'completed':
                 return styles.completed;
+            case 'canceled':
+                return styles.canceled;
+            case 'finished':
+                return styles.finished;
             default:
                 return '';
         }
@@ -44,7 +50,9 @@ const AppointmentCard = ({ appointment, setActiveIndex }: AppointmentCardProps) 
                 return 'Đã đặt lịch';
             case 'pending':
                 return 'Đang chờ xác nhận';
-            case 'completed':
+            case 'canceled':
+                return 'Đã hủy';
+            case 'finished':
                 return 'Đã hoàn thành';
             default:
                 return status;
@@ -56,7 +64,9 @@ const AppointmentCard = ({ appointment, setActiveIndex }: AppointmentCardProps) 
             case 'treatment':
                 return 'Khám chữa trị';
             case 'checkup':
-                return 'Khám'
+                return 'Khám';
+            default:
+                return '';
         }
     }
 
@@ -78,20 +88,29 @@ const AppointmentCard = ({ appointment, setActiveIndex }: AppointmentCardProps) 
 
 interface UserScheduleProps {
     setActiveIndex: (index: number) => void;
+    setSource: (index: number) => void;
 }
 
-const UserSchedule = ({ setActiveIndex }: UserScheduleProps) => {
+const UserSchedule = ({ setActiveIndex, setSource }: UserScheduleProps) => {
     const [appointments, setAppointments] = useState<AppointmentViewModelFetch[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [appointmentsPerPage] = useState(5);
+    const [appointmentsPerPage] = useState(3);
+    const [filter, setFilter] = useState('all');
+    const [clinicFilter, setClinicFilter] = useState('all');
+    const [dateFilter, setDateFilter] = useState('closest');
+    const [clinics, setClinics] = useState<string[]>([]);
 
-    const id = JSON.parse(localStorage.getItem('id') || '{}');
+    const id = localStorage.getItem('customerId');
 
     const fetchAppointments = async () => {
         try {
-            const appointments = await getCustomerAppointments(id);
-            if (appointments) {
-                setAppointments(appointments);
+            const allAppointments = await getCustomerAppointments(id);
+            if (allAppointments) {
+                setAppointments(allAppointments);
+
+                // Extract unique clinic names for filtering
+                const uniqueClinics = [...new Set(allAppointments.map(appointment => appointment.clinicName))];
+                setClinics(uniqueClinics);
             } else {
                 console.log('fail to fetch appointments');
             }
@@ -102,28 +121,79 @@ const UserSchedule = ({ setActiveIndex }: UserScheduleProps) => {
 
     useEffect(() => {
         fetchAppointments();
-    }, [])
+    }, []);
+
+    const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilter(event.target.value);
+        setCurrentPage(1);
+    }
+
+    const handleClinicChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setClinicFilter(event.target.value);
+        setCurrentPage(1);
+    }
+
+    const handleDateChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setDateFilter(event.target.value);
+    }
+
+    // const filteredAppointments = filter === 'all'
+    //     ? appointments
+    //     : appointments.filter(appointment => appointment.bookingStatus === filter);
+
+    const filteredAppointments = appointments
+        .filter(appointment => (filter === 'all' || appointment.bookingStatus === filter) &&
+            (clinicFilter === 'all' || appointment.clinicName === clinicFilter))
+        .sort((a, b) => {
+            if (dateFilter === 'closest') {
+                return new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime();
+            } else if (dateFilter === 'latest') {
+                return new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime();
+            }
+            return 0;
+        });
 
     const indexOfLastAppointment = currentPage * appointmentsPerPage;
     const indexOfFirstAppointment = indexOfLastAppointment - appointmentsPerPage;
-    const currentAppointments = appointments.slice(indexOfFirstAppointment, indexOfLastAppointment);
+    const currentAppointments = filteredAppointments.slice(indexOfFirstAppointment, indexOfLastAppointment);
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     return (
         <div className={styles.mainContentRightContainer}>
             <h2 className={styles.mainContentMiddleTitleHeading}>Lịch khám</h2>
+            <div className={styles.filterContainer}>
+                <select value={filter} onChange={handleFilterChange}>
+                    <option value="all">Tất cả</option>
+                    <option value="pending">Đang chờ xác nhận</option>
+                    <option value="booked">Đã đặt lịch</option>
+                    <option value="finished">Đã hoàn thành</option>
+                    <option value="canceled">Đã hủy</option>
+                </select>
+
+                <select value={clinicFilter} onChange={handleClinicChange}>
+                    <option value="all">Tất cả phòng khám</option>
+                    {clinics.map(clinic => (
+                        <option key={clinic} value={clinic}>{clinic}</option>
+                    ))}
+                </select>
+                <select value={dateFilter} onChange={handleDateChange}>
+                    <option value="closest">Gần nhất</option>
+                    <option value="latest">Mới nhất</option>
+                </select>
+
+            </div>
             <div className={styles.mainContentContainerBox}>
                 {currentAppointments.length > 0 ? (
                     currentAppointments.map((appointment) => (
-                        <AppointmentCard key={appointment.bookId} appointment={appointment} setActiveIndex={setActiveIndex} />
+                        <AppointmentCard key={appointment.bookId} appointment={appointment} setActiveIndex={setActiveIndex} setSource={setSource} />
                     ))
                 ) : (
-                    <p className={styles.noAppointments}>No appointments scheduled.</p>
+                    <p className={styles.noAppointments}>Không có lịch hẹn</p>
                 )}
                 <Pagination
                     appointmentsPerPage={appointmentsPerPage}
-                    totalAppointments={appointments.length}
+                    totalAppointments={filteredAppointments.length}
                     paginate={paginate}
                     currentPage={currentPage}
                 />
@@ -154,4 +224,4 @@ const Pagination = ({ appointmentsPerPage, totalAppointments, paginate, currentP
     )
 }
 
-export default UserSchedule
+export default UserSchedule;

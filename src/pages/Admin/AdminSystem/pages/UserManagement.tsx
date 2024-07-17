@@ -72,7 +72,6 @@ const Drawer = styled(MuiDrawer, {
 
 const defaultTheme = createTheme();
 
-
 const UserManagement = () => {
     const [users, setUsers] = useState<UserInfoModel[]>([]);
     const [loading, setLoading] = useState(false);
@@ -125,7 +124,7 @@ const UserManagement = () => {
                 <AppBar position="absolute" open={open}>
                     <Toolbar
                         sx={{
-                            pr: "24px", // keep right padding when drawer closed
+                            pr: "24px",
                         }}
                     >
                         <IconButton
@@ -165,9 +164,6 @@ const UserManagement = () => {
                     </Toolbar>
                     <Divider />
                     <NestedListItems />
-                    {/* <List component="nav">
-                        {mainListItems}
-                    </List> */}
                 </Drawer>
                 <Box
                     component="main"
@@ -186,12 +182,12 @@ const UserManagement = () => {
                     <Box className={styles.mainContainer}>
                         <div className={styles.tableContainer}>
                             <div className={styles.tableHeader}>Người dùng của hệ thống</div>
-                            <Box className={styles.toolbar}>
+                            {/* <Box className={styles.toolbar}>
                                 <Box className={styles.searchbar}>
                                     <input type="text" placeholder="Tìm kiếm người dùng" className={styles.searchInput} />
                                     <button className={styles.searchButton}>Tìm kiếm</button>
                                 </Box>
-                            </Box>
+                            </Box> */}
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
@@ -200,28 +196,17 @@ const UserManagement = () => {
                                         <th style={{ width: '15%' }}>Ngày tạo</th>
                                         <th style={{ width: '10%' }}>Vai trò</th>
                                         <th style={{ width: '15%' }}>Họ tên</th>
-                                        <th style={{width: '10%'}}>Là nha sĩ</th>
-                                        {/* <th>Clinic ID</th> */}
-                                        <th style={{width: '11%'}}>Là chủ phòng khám</th>
-                                        <th style={{width: '19%'}}>
+                                        <th style={{ width: '10%' }}>Là nha sĩ</th>
+                                        <th style={{ width: '11%' }}>Là chủ phòng khám</th>
+                                        <th style={{ width: '19%' }}>
                                             <Box className={styles.tooltip}>
                                                 Trạng thái
-                                                {/* <span className={styles.tooltiptext}>Nhấn để cập nhật trạng thái</span>
-                                                <span className={styles.tooltipicon}>!</span> */}
                                             </Box>
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {loading ? (
-                                        <tr>
-                                            <td colSpan={16}>Loading...</td>
-                                        </tr>
-                                    ) : error ? (
-                                        <tr>
-                                            <td colSpan={16}>Error: {error}</td>
-                                        </tr>
-                                    ) : (
+                                    {
                                         users.map((user) => (
                                             <tr key={user.id} className={styles.tableRow}>
                                                 <td>{user.id}</td>
@@ -232,9 +217,6 @@ const UserManagement = () => {
                                                 <td>
                                                     {user.role === 'Customer' ? <CloseIcon /> : (user.role === 'Dentist' && !user.isOwner ? <CheckIcon /> : <CheckIcon />)}
                                                 </td>
-                                                {/* <td>
-                                                    {user.role === 'Customer' ? <CloseIcon /> : (user.role === 'Dentist' && user.isOwner ? <CheckIcon /> : '')}
-                                                </td> */}
                                                 <td>{user.isOwner ? <CheckIcon /> : <CloseIcon />}</td>
                                                 <td>
                                                     <Button
@@ -245,7 +227,7 @@ const UserManagement = () => {
                                                 </td>
                                             </tr>
                                         ))
-                                    )}
+                                    }
                                 </tbody>
                             </table>
                         </div>

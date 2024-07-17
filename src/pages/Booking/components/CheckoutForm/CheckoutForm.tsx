@@ -7,10 +7,11 @@ import { PaymentModel } from '../../../../utils/api/BookingRegister';
 interface CheckoutFormProps {
     paymentData: PaymentModel;
     setPaymentData: (value: SetStateAction<PaymentModel>) => void;
+    setPaymentMethodCallback: (method: string) => void;
 }
 
-const CheckoutForm = ({ paymentData, setPaymentData }: CheckoutFormProps) => {
-    const [paymentMethod, setPaymentMethod] = useState<string>(paymentData.paymentMethod);
+const CheckoutForm = ({ paymentData, setPaymentData, setPaymentMethodCallback }: CheckoutFormProps) => {
+    const [paymentMethod, setPaymentMethod] = useState<string>('Other');
     const [orderID, setOrderID] = useState<string>(paymentData.appointmentId);
     const [orderDetail, setOrderDetail] = useState<string>(paymentData.orderInfo);
     const [totalAmount, setTotalAmount] = useState(paymentData.amount);
@@ -21,27 +22,30 @@ const CheckoutForm = ({ paymentData, setPaymentData }: CheckoutFormProps) => {
 
     const handlePaymentMethodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
-        setPaymentMethod(value);
+        
         // setShowVNPayFields(value === 'VNPay');
 
         if (value === 'VNPay') {
             const newOrderID = Math.floor(Math.random() * 1000000).toString();
             setOrderID(newOrderID);
+            setPaymentMethod(value);
             setPaymentData(prev => ({
                 ...prev,
-                paymentMethod: value,
                 appointmentId: newOrderID,
                 orderInfo: 'Thanh toan dich vu kham benh',
                 returnUrl: 'https://localhost:7163/api/payment/vnpay/success'
             }));
+            setPaymentMethodCallback('VNPay')
         } else {
             setOrderID('');
+            setPaymentMethod(value);
+            setPaymentMethodCallback('Other')
             setPaymentData(prev => ({
                 ...prev,
-                paymentMethod: value,
                 appointmentId: '',
                 returnUrl: ''
             }));
+
         }
     };
 
@@ -100,7 +104,7 @@ const CheckoutForm = ({ paymentData, setPaymentData }: CheckoutFormProps) => {
                         {!paymentMethod && <FormHelperText error>Vui lòng chọn phương thức thanh toán</FormHelperText>}
                     </FormControl>
 
-                    <Box className={styles.paymentInfoBox}>
+                    {/* <Box className={styles.paymentInfoBox}>
                         <Box className={styles.paymentInfoItem}>
                             <span className={styles.paymentInfoLabel}>Tổng tiền dịch vụ:</span>
                             <span>{formatCurrency(totalAmount)}</span>
@@ -113,7 +117,7 @@ const CheckoutForm = ({ paymentData, setPaymentData }: CheckoutFormProps) => {
                             <span className={styles.paymentInfoLabel}>TỔNG CỘNG:</span>
                             <span>{formatCurrency(totalAmount)}</span>
                         </Box>
-                    </Box>
+                    </Box> */}
                 </Box>
             </Box>
         </Box>

@@ -28,7 +28,7 @@ import {
     Input,
 } from "reactstrap";
 import { useEffect, useState } from "react";
-import { ClinicServiceRegistrationModel, getClinicServices, addClinicService } from "../../../../utils/api/ClinicOwnerUtils";
+import { ClinicServiceRegistrationModel, getClinicServices, addClinicService, fetchDentistInfo } from "../../../../utils/api/ClinicOwnerUtils";
 import { ClinicServiceCategoryModel, getAllCategories } from "../../../../utils/api/SystemAdminUtils";
 import { NestedListItems } from "../components/NestedListMenu";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
@@ -101,9 +101,7 @@ const ServicesInformation = () => {
     const [open, setOpen] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [serviceList, setServiceList] = useState<ClinicServiceInfoModel[]>([]);
-    const clinic = localStorage.getItem('clinic');
-    const clinicId = clinic ? JSON.parse(clinic).id : 0;
-
+    const [clinicId, setClinicId] = useState(0);
     const [formData, setFormData] = useState<ClinicServiceRegistrationModel>({
         serviceCategory: 0,
         serviceName: '',
@@ -141,7 +139,14 @@ const ServicesInformation = () => {
         navigate(`./${service.clinicServiceId}}`);
     }
 
+    const formatPriceToVND = (price: number) => {
+        return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    };
+
     const fetchClinicServices = async () => {
+        const clinic = await fetchDentistInfo();
+        const clinicId = clinic.content.clinicId;
+        setClinicId(clinicId);
         try {
             const services = await getClinicServices(clinicId);
             setServiceList(services);
@@ -181,7 +186,7 @@ const ServicesInformation = () => {
     const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const updatedFormData = { ...formData, serviceDescription: textAreaContent, clinicId: clinicId};
+            const updatedFormData = { ...formData, serviceDescription: textAreaContent, clinicId: clinicId };
             await addClinicService(updatedFormData);
             const updatedServices = await getClinicServices(clinicId);
             setServiceList(updatedServices);
@@ -198,7 +203,7 @@ const ServicesInformation = () => {
             console.error('Failed to add service:', error);
         }
     };
-    
+
 
     const toggleDrawer = () => {
         setOpen(!open);
@@ -259,28 +264,35 @@ const ServicesInformation = () => {
             >
                 <div className={styles.mainContainer}>
                     <div className={styles.tableContainer}>
-                        <div className={styles.tableHeader}>Dịch vụ của phòng khám</div>
+                        <div className={styles.tableHeader}>Danh sách dịch vụ</div>
+                        <div className={styles.toolbar}>
+                            <Button
+                                onClick={toggleModal}
+                                color="primary"
+                                className={styles.openModalButton}
+                            >
+                                Thêm dịch vụ
+                            </Button>
+                        </div>
+
                         <table className={styles.table}>
                             <thead>
                                 <tr>
-                                    <th style={{ width: '25%' }}>Tên dịch vụ</th>
-                                    <th style={{ width: '20%' }}>Giá</th>
-                                    <th style={{ width: '55%' }}>Mô tả</th>
+                                    <th style={{ width: '55%' }}>Tên dịch vụ</th>
+                                    <th style={{ width: 'auto' }}>Giá</th>
+                                    {/* <th style={{ width: '55%' }}>Mô tả</th> */}
                                 </tr>
                             </thead>
                             <tbody>
                                 {serviceList.map((service) => (
                                     <tr key={service.clinicServiceId} className={styles.tableRow} onClick={() => handleRowClick(service)}>
                                         <td>{service.name}</td>
-                                        <td>{service.price}</td>
-                                        <td>{service.description}</td>
+                                        <td>{formatPriceToVND(service.price)}</td>
+                                        {/* <td>{service.description}</td> */}
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                        <Button color="primary" onClick={toggleModal}>
-                            Thêm dịch vụ
-                        </Button>
                     </div>
                     <Modal isOpen={modalOpen} toggle={toggleModal} centered>
                         <ModalHeader toggle={toggleModal}>Thêm dịch vụ</ModalHeader>
@@ -323,7 +335,7 @@ const ServicesInformation = () => {
                                         onChange={handleInputChange}
                                     />
                                 </FormGroup>
-                                <FormGroup>
+                                {/* <FormGroup>
                                     <Label for="serviceDescription">Mô tả</Label>
                                     <Input
                                         type="textarea"
@@ -333,7 +345,7 @@ const ServicesInformation = () => {
                                         onChange={handleTextAreaChange}
                                         onDoubleClick={handleInputDoubleClick}
                                     />
-                                </FormGroup>
+                                </FormGroup> */}
                                 <div className={styles.buttonContainer}>
                                     <Button type="submit" color="primary" className="submit-button">
                                         Lưu

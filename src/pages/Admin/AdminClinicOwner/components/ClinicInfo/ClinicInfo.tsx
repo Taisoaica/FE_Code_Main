@@ -18,7 +18,7 @@ import ImageUpload from "../ImageUpload";
 import ServiceList from "../ServiceList";
 import { useEffect } from 'react';
 import { ClinicToDisplay } from '../../../../../utils/interfaces/ClinicRegister/Clinic';
-import { getClinicGeneralInfo, updateClinicGeneralInfo } from '../../../../../utils/api/ClinicOwnerUtils';
+import { fetchDentistInfo, getClinicGeneralInfo, updateClinicGeneralInfo } from '../../../../../utils/api/ClinicOwnerUtils';
 import styles from './ClinicInfo.module.css';
 import { fetchClinicImages } from '../../../../../utils/UploadFireBase';
 import { getAllClinics } from '../../../../../utils/api/MiscUtils';
@@ -49,17 +49,21 @@ const ClinicInfo = ({ logoUpdated }: ClinicInfoProps) => {
   const [logo, setLogo] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [carouselImages, setCarouselImages] = useState([]);
+  const [clinicId, setClinicId] = useState<number>(0);
 
+  const fetchId = async () => {
+    const id = await fetchDentistInfo();
 
-  const clinic = localStorage.getItem('clinic');
-  const clinicId = clinic ? JSON.parse(clinic).id : null;
+    setClinicId(id.content.clinicId);
+  }
 
   useEffect(() => {
-
     const fetchClinicInfo = async () => {
       try {
-        if (!clinicId) return;
-        const data = await getClinicGeneralInfo(clinicId);
+        const id = await fetchDentistInfo();
+        setClinicId(id.content.clinicId);
+        
+        const data = await getClinicGeneralInfo(id.content?.clinicId);
         if (data) {
           setClinicInfo(data);
           setTextAreaContent(data.description);
@@ -69,7 +73,7 @@ const ClinicInfo = ({ logoUpdated }: ClinicInfoProps) => {
         console.error(error);
       }
     };
-
+    fetchId();
     fetchClinicInfo();
   }, []);
 

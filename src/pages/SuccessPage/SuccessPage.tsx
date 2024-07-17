@@ -12,7 +12,10 @@ const SuccessPage = () => {
     const location = useLocation();
     const [appointment, setAppointment] = useState<AppointmentViewModelFetch | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [paymentSource, setPaymentSource] = useState<'normal' | 'detail' | null>(null);
+    const [queryId, setQueryId] = useState<string>('');
+    const [paymentSource, setPaymentSource] = useState<'vnpay' | 'other'>('other');
+    const [message, setMessage] = useState('');
+
 
     const getAppointmentTypeText = (type: string) => {
         switch (type) {
@@ -39,39 +42,73 @@ const SuccessPage = () => {
         return `${hours}:${minutes}`;
     }
 
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const paymentMethod = queryParams.get('paymentMethod');
+        const isVnPayPayment = queryParams.has('vnp_TransactionStatus');
+
+        if (isVnPayPayment) {
+            setMessage('Thanh toán và đặt lịch thành công!');
+            setPaymentSource('vnpay');
+        } else if (paymentMethod === 'Other') {
+            setMessage('Đặt lịch thành công!');
+            setPaymentSource('other');
+        }
+    }, [location.search]);
+
     useEffect(() => {
         const confirmPaymentProcess = async () => {
             const queryParams = new URLSearchParams(location.search);
-            const orderInfo = queryParams.get('vnp_OrderInfo') || '';
-            const appointmentId = orderInfo.split(' ').pop();
-
-            if (!appointmentId) {
-                console.error('No appointmentId found in the orderInfo');
-                setIsLoading(false);
-                return;
+            if (paymentSource == 'vnpay') {
+                const orderInfo = queryParams.get('vnp_OrderInfo');
+                const appointmentIdFromOrderInfo = orderInfo.split(' ').pop();
+                setQueryId(appointmentIdFromOrderInfo);
+            } else {
+                const appointmentId = queryParams.get('appointmentId');
+            
+                setQueryId(appointmentId);
             }
 
             try {
-                const result = await confirmPayment(location.search);
-                if (result.success) {
-                    console.log('Payment confirmed:', result);
+                if (queryParams.has('vnp_TransactionStatus')) {
+                    // Handle VNPay specific logic here
+                    const result = await confirmPayment(location.search);
+                    if (result.success) {
+                        console.log('Payment confirmed:', result);
 
-                    const customerId = localStorage.getItem('id');
+                        const customerId = localStorage.getItem('customerId');
+                        if (customerId) {
+                            const appointments = await getCustomerAppointments(customerId);
+                            const bookedAppointment = appointments.find(app => app.bookId === queryId);
+
+                            if (bookedAppointment) {
+                                setAppointment(bookedAppointment);
+                            } else {
+                                console.error('Appointment not found');
+                            }
+                        } else {
+                            console.error('No customer ID found in localStorage');
+                        }
+                    } else {
+                        console.error('Payment confirmation failed:', result.message);
+                    }
+                } else {
+                    console.log('Other payment method detected, skipping payment confirmation.');
+                    const customerId = localStorage.getItem('customerId');
                     if (customerId) {
                         const appointments = await getCustomerAppointments(customerId);
-                        const bookedAppointment = appointments.find(app => app.bookId === appointmentId);
+                        const bookedAppointment = appointments.find(app => app.bookId === queryId);
 
                         if (bookedAppointment) {
                             setAppointment(bookedAppointment);
-                            setPaymentSource(bookedAppointment.bookingStatus === 'booked' ? 'normal' : 'detail');
+                            setPaymentSource('other');
                         } else {
                             console.error('Appointment not found');
                         }
                     } else {
                         console.error('No customer ID found in localStorage');
                     }
-                } else {
-                    console.error('Payment confirmation failed:', result.message);
                 }
             } catch (error) {
                 console.error('Error during payment confirmation:', error);
@@ -80,7 +117,7 @@ const SuccessPage = () => {
         };
 
         confirmPaymentProcess();
-    }, [location.search]);
+    }, [location.search, queryId]);
 
     if (isLoading) {
         return (
@@ -91,6 +128,7 @@ const SuccessPage = () => {
             </UserLayout>
         );
     }
+
 
     return (
         <UserLayout>
@@ -107,12 +145,13 @@ const SuccessPage = () => {
             >
                 <CheckCircleIcon color="success" sx={{ fontSize: 80, mb: 2 }} />
                 <Typography variant="h4" component="h1" gutterBottom>
-                    {paymentSource === 'normal' ? 'Đặt khám thành công!' : 'Thanh toán thành công!'}
+                    {/* {paymentSource === 'normal' ? 'Đặt khám thành công!' : 'Thanh toán thành công!'} */}
+                    {message}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                    {paymentSource === 'normal'
+                    {paymentSource === 'vnpay'
                         ? 'Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Lịch hẹn của bạn đã được xác nhận.'
-                        : 'Cảm ơn bạn đã hoàn tất thanh toán. Lịch hẹn của bạn đã được cập nhật.'}
+                        : 'Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Hãy xác nhận thanh toán ở phòng khám.'}
                 </Typography>
 
                 {appointment ? (

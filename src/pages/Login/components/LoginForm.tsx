@@ -1,9 +1,7 @@
 import { Button, Box, Checkbox, Link, Divider, TextField, } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios, { AxiosRequestConfig } from "axios";
-import { useEffect, useState } from "react";
-import { connection_path } from "../../../constants/developments";
+import { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import * as React from "react";
 import { InputAdornment, IconButton } from "@mui/material";
@@ -18,10 +16,10 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const redirectPath = queryParams.get('redirect') || '/'; 
+  const redirectPath = queryParams.get('redirect') || '/';
   const [remember, setRemember] = useState(false);
 
-  const handleRemeberChange = (event) => {
+  const handleRemeberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRemember(event.target.checked);
   }
 
@@ -93,12 +91,17 @@ const LoginForm = () => {
 
         <Box className={styles.passwordBox}>
           <FormControlLabel
-            control={<Checkbox />}
+            control={
+              <Checkbox
+                checked={remember}
+                onChange={handleRemeberChange}
+                name="rememberMe"
+                color="primary"
+              />
+            }
             label="Ghi nhớ đăng nhập"
-            checked={remember}
-            onChange={handleRemeberChange}
           />
-          <Link href="#" variant="body2" sx={{ fontSize: "17px" }}>
+          <Link href="/forget-pass" variant="body2" sx={{ fontSize: "17px" }}>
             Quên mật khẩu?
           </Link>
         </Box>

@@ -11,7 +11,12 @@ export const connection_path = {
         googleAuth: "/auth/login-google",
         refresh: "/auth/refresh"
     },
-
+    
+    forgetpass: {
+        request: "/user/password/request",
+        token: "/user/password/check-token",
+        reset: "/user/password/reset"
+    },
 
     user: {
         customer: "/customer",
@@ -20,6 +25,7 @@ export const connection_path = {
         activate_user: "/customer/activate",
         inactivate_user: "/user/inactivate",
         clinic_register: "/clinic/register",
+
     },
 
     invoker: {

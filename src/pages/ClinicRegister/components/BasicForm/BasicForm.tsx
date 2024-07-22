@@ -71,14 +71,16 @@ const BasicForm = ({ formData, setFormData, onStepComplete }: BasicFormProps) =>
             newErrors.closeHour = 'Giờ đóng cửa không hợp lệ.';
         }
 
-        if (localFormData.OpenHour > localFormData.CloseHour) {
-            newErrors.closeHour = 'Giờ đóng cửa không được phép trước giờ mở cửa';
-            newErrors.openHour = 'Giờ mở cửa không được phép sau giờ đóng cửa';
-        }
+       
+        const openHour = new Date(`1970-01-01T${localFormData.OpenHour}:00`);
+        const closeHour = new Date(`1970-01-01T${localFormData.CloseHour}:00`);
+        const sixHoursLater = new Date(openHour.getTime() + 6 * 60 * 60 * 1000);
 
-        if (localFormData.OpenHour == localFormData.CloseHour) {
-            newErrors.closeHour = 'Giờ đóng cửa không hợp lệ';
-            newErrors.openHour = 'Giờ mở cửa không hợp lệ';
+        if (closeHour <= openHour) {
+            newErrors.closeHour = 'Giờ đóng cửa phải sau giờ mở cửa.';
+            newErrors.openHour = 'Giờ mở cửa phải trước giờ đóng cửa.';
+        } else if (closeHour < sixHoursLater) {
+            newErrors.closeHour = 'Giờ đóng cửa phải ít nhất 6 giờ sau giờ mở cửa.';
         }
 
         setErrors(newErrors);

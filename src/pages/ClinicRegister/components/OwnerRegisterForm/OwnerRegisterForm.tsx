@@ -35,7 +35,7 @@ const OwnerRegisterForm = ({ formData, setFormData, onStepComplete }: BasicFormP
             newErrors.OwnerUserName = 'Tên đăng nhập là bắt buộc.';
             isValid = false;
         } else if (
-            !/^(?=[A-Za-z])(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z0-9_]{8,30}/.test(localFormData.OwnerUserName)
+            !/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z0-9_]{8,30}$/.test(localFormData.OwnerUserName)
         ) {
             newErrors.OwnerUserName =
                 'Tên đăng nhập phải bắt đầu bằng một ký tự chữ cái, có từ 8 đến 30 ký tự, và bao gồm ít nhất một chữ hoa, một chữ thường hoặc một số.';
@@ -53,7 +53,7 @@ const OwnerRegisterForm = ({ formData, setFormData, onStepComplete }: BasicFormP
         if (!localFormData?.OwnerPassword) {
             newErrors.OwnerPassword = 'Mật khẩu là bắt buộc.';
             isValid = false;
-        } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,30}$/.test(localFormData.OwnerPassword)) {
+        } else if (!/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z0-9_]{8,30}$/.test(localFormData.OwnerPassword)) {
             newErrors.OwnerPassword = 'Mật khẩu phải dài từ 8-30 ký tự, bao gồm ít nhất một chữ hoa, một chữ thường và một số.';
             isValid = false;
         }
@@ -64,21 +64,21 @@ const OwnerRegisterForm = ({ formData, setFormData, onStepComplete }: BasicFormP
         const { name, value } = event.target;
 
         setLocalFormData((prevData: ClinicRegistrationModel | undefined) => {
-            return {...prevData, [name]: value};
+            return { ...prevData, [name]: value };
         });
     };
 
     const handleSubmit = async (event: React.FormEvent) => {
-        // if (validate()) {
-        onStepComplete();
-        setFormData({
-            ...formData,
-            OwnerUserName: localFormData?.OwnerUserName,
-            OwnerFullName: localFormData?.OwnerFullName,
-            OwnerPassword: localFormData?.OwnerPassword,
-            OwnerEmail: localFormData?.OwnerEmail
-        });
-        //        }
+        if (validate()) {
+            onStepComplete();
+            setFormData({
+                ...formData,
+                OwnerUserName: localFormData?.OwnerUserName,
+                OwnerFullName: localFormData?.OwnerFullName,
+                OwnerPassword: localFormData?.OwnerPassword,
+                OwnerEmail: localFormData?.OwnerEmail
+            });
+        }
     }
 
     return (

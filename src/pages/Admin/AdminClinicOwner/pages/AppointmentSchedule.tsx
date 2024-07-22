@@ -83,8 +83,8 @@ export default function AppointmentSchedule() {
     setOpen(!open);
   };
 
-  const clinic = localStorage.getItem('clinic');
-  const clinicId = clinic ? JSON.parse(clinic).id : null;
+  // const clinic = localStorage.getItem('clinic');
+  // const clinicId = clinic ? JSON.parse(clinic).id : null;
   const [currentPage, setCurrentPage] = useState(1);
   const [appointmentsPerPage] = useState(5);
   const [sortBy, setSortBy] = useState<string>('all');
@@ -142,6 +142,8 @@ export default function AppointmentSchedule() {
         return 'Đang chờ xác nhận';
       case 'finished':
         return 'Đã hoàn thành';
+      case 'canceled': 
+        return 'Đã hủy';
       default:
         return status;
     }
@@ -168,7 +170,7 @@ export default function AppointmentSchedule() {
     const fetchData = async () => {
       try {
         const dentistInfo = await getDentistInfo();
-        const clinicId = dentistInfo.content.clinicId;
+        const clinicId = dentistInfo.clinicId;
 
         const fetchedSlots = await getAllClinicSlots(clinicId);
         setClinicSlots(fetchedSlots);

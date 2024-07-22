@@ -148,7 +148,7 @@ const ClinicServices = () => {
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-                            Trang đăng kí danh mục dịch vụ
+                            Trang danh mục dịch vụ
                         </Typography>
                     </Toolbar>
                 </AppBar>

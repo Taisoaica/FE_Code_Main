@@ -45,8 +45,8 @@ import { ClinicSlotInfoModel } from "../../../../utils/interfaces/ClinicRegister
 import { ClinicSlotUpdateModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
 import { getDentistInfo, registerSlots, getAllClinicSlots, updateClinicSlot, enableSlot, getClinicGeneralInfo } from "../../../../utils/api/ClinicOwnerUtils";
 import { NestedListItems } from "../components/NestedListMenu";
-import { EventContentArg } from "@fullcalendar/core/index.js";
 import { DentistInfoViewModel } from "../../../../utils/api/BookingRegister";
+import { updateAccountInfo } from "../../../../utils/api/DentistUtils";
 
 const drawerWidth: number = 270;
 
@@ -101,30 +101,69 @@ const Drawer = styled(MuiDrawer, {
 const AccountPageDentist = () => {
     const [open, setOpen] = useState(true);
     const [dentist, setDentist] = useState<DentistInfoViewModel>();
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(null);
-    const [editMode, setEditMode] = useState(false); // New state for managing button text
+    const [error, setError] = useState<string>();
+    const [success, setSuccess] = useState<string>();
+    const [editMode, setEditMode] = useState(false);
+
+    const [formData, setFormData] = useState({
+        id: '',
+        fullname: '',
+        username: '',
+        email: '',
+        phone: ''
+    });
 
     const fetchData = async () => {
         const dentist = await getDentistInfo();
-        setDentist(dentist.content);
+        setDentist(dentist);
+        console.log(dentist);
     }
 
     useEffect(() => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        if (dentist) {
+            setFormData({
+                id: localStorage.getItem('id') || '',
+                fullname: dentist.fullname || '',
+                username: dentist.username || '',
+                email: dentist.email || '',
+                phone: dentist.phone || ''
+            });
+        }
+    }, [dentist]);
+
     const toggleDrawer = () => {
         setOpen(!open);
     };
 
-    const handleButtonClick = () => {
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         if (editMode) {
-            // Handle save logic here
-            console.log('Saving changes...');
-            setEditMode(false); // Switch back to view mode
+            try {
+                const response = await updateAccountInfo(formData);
+                if (response.success) {
+                    setSuccess('Account information updated successfully');
+                    setEditMode(false);
+                    fetchData();
+                } else {
+                    setError('Failed to update account information');
+                }
+            } catch (error) {
+                setError('An error occurred while updating account information');
+            }
         } else {
-            setEditMode(true); // Switch to edit mode
+            setEditMode(true);
         }
     };
 
@@ -155,7 +194,7 @@ const AccountPageDentist = () => {
                         noWrap
                         sx={{ flexGrow: 1 }}
                     >
-                        Trang thiết lập slot khám
+                        Trang thông tin tài khoản
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -193,44 +232,50 @@ const AccountPageDentist = () => {
                         <Card>
                             <CardBody>
                                 <CardTitle tag="h4">Thông tin tài khoản</CardTitle>
-                                <Form >
-                                    <FormGroup>
-                                        <Label for="fullname">Họ tên</Label>
-                                        <Input
-                                            type="text"
-                                            id="fullname"
-                                            name="fullname"
-                                            value={dentist?.fullname}
-                                            placeholder="Nhập họ và tên"
-                                        />
-                                    </FormGroup>
+                                {formData ?
+                                    <Form onSubmit={handleSubmit}>
+                                        <FormGroup>
+                                            <Label for="fullname">Họ tên</Label>
+                                            <Input
+                                                type="text"
+                                                id="fullname"
+                                                name="fullname"
+                                                value={formData.fullname}
+                                                onChange={handleInputChange}
+                                                disabled={!editMode}
+                                                placeholder="Nhập họ và tên"
+                                            />
+                                        </FormGroup>
 
-                                    <FormGroup>
-                                        <Label for="email">Email</Label>
-                                        <Input
-                                            type="email"
-                                            id="email"
-                                            name="email"
-                                            value={dentist?.email}
-                                            placeholder="Nhập email"
-                                        />
-                                    </FormGroup>
+                                        <FormGroup>
+                                            <Label for="email">Email</Label>
+                                            <Input
+                                                type="email"
+                                                id="email"
+                                                name="email"
+                                                value={formData.email}
+                                                onChange={handleInputChange}
+                                                disabled={!editMode}
+                                                placeholder="Nhập email"
+                                            />
+                                        </FormGroup>
 
-                                    <FormGroup>
-                                        <Label for="phone">Số điện thoại</Label>
-                                        <Input
-                                            type="text"
-                                            id="phone"
-                                            name="phone"
-                                            value={dentist?.phone}
-                                            placeholder="Nhập số điện thoại"
-                                        />
-                                    </FormGroup>
-                                    <Button type="submit" color="primary">
-                                        {editMode ? 'Lưu' : 'Thay đổi'}  
-                                    </Button>
-                                </Form>
-
+                                        <FormGroup>
+                                            <Label for="phone">Số điện thoại</Label>
+                                            <Input
+                                                type="text"
+                                                id="phone"
+                                                name="phone"
+                                                value={formData.phone}
+                                                onChange={handleInputChange}
+                                                disabled={!editMode}
+                                                placeholder="Nhập số điện thoại"
+                                            />
+                                        </FormGroup>
+                                        <Button type="submit" color="primary">
+                                            {editMode ? 'Lưu' : 'Thay đổi'}
+                                        </Button>
+                                    </Form> : <p>Loading...</p>}
                             </CardBody>
                         </Card>
                     </div>

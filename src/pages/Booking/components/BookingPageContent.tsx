@@ -31,12 +31,13 @@ const BookingPageContent = () => {
         dentist: '',
         time: { id: '', start: '', end: '', slotId: 0 },
         serviceId: '',
-        serviceName: ''
+        serviceName: '',
+        servicePrice: 0,
     });
 
     const [paymentData, setPaymentData]: [PaymentModel, Dispatch<SetStateAction<PaymentModel>>] = useState({
         appointmentId: '',
-        amount: 0,
+        amount: formData.servicePrice,
         orderInfo: '',
         returnUrl: ''
     });
@@ -53,7 +54,7 @@ const BookingPageContent = () => {
             setFormData={setFormData}
             onStepComplete={() => next()}
         />,
-        <CheckoutForm paymentData={paymentData} setPaymentData={setPaymentData} setPaymentMethodCallback={handlePaymentMethodChange} />,
+        <CheckoutForm paymentData={paymentData} setPaymentData={setPaymentData} setPaymentMethodCallback={handlePaymentMethodChange} price={formData.servicePrice}/>,
     ]);
 
     const handleBack = () => {
@@ -205,7 +206,7 @@ const BookingPageContent = () => {
                             <Box className={styles.body}>
                                 <Box><b>Phòng khám:</b> {clinicName || 'Chưa chọn'}</Box>
                                 <Box><b>Ngày khám:</b> {formData.date || 'Chưa chọn'}</Box>
-                                <Box><b>Bác sĩ:</b> {formData.dentist || 'Chưa chọn'}</Box>
+                                <Box><b>Bác sĩ:</b> {formData.dentistName || 'Chưa chọn'}</Box>
                                 <Box><b>Slot:</b> {formData.time.start && formData.time.end ? `${formatTime(formData.time.start)} - ${formatTime(formData.time.end)}` : 'Chưa chọn'}</Box>
                                 <Box><b>Dịch vụ:</b> {formData.serviceName || 'Chưa chọn'}</Box>
                             </Box>
@@ -217,10 +218,10 @@ const BookingPageContent = () => {
                                     Quay lại
                                 </Button>
                             )}
-                            {currentStep == 2 && <Button variant="outlined" className={styles.nextButton} onClick={() => next()}>
+                            {/* {(currentStep == 3) && <Button variant="outlined" className={styles.nextButton} onClick={() => next()}>
                                 <ArrowForward />
                                 Xác nhận
-                            </Button>}
+                            </Button>} */}
                             {isFinalStep && <Button variant="contained" color="primary" type="submit" onClick={() => handleSubmit()}
                             >Xác nhận</Button>}
                         </Box>

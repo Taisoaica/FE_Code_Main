@@ -40,7 +40,7 @@ const adminRoutes = [
     { path: '/dentist', element: <DentistDashboard />, allowedRoles: ['Dentist'] },
     { path: '/patient/:customerId', element: <PatientDetail />, allowedRoles: ['Dentist'] },
     { path: '/dentist/:bookId', element: <AppointmentDetail />, allowedRoles: ['Dentist'] },
-    {path: 'dentist/account', element: <AccountPageDentist/>, allowedRoles: ['Dentist']},
+    {path: '/dentist/account', element: <AccountPageDentist/>, allowedRoles: ['Dentist']},
 
     { path: '/system-admin', element: <UserManagement />, allowedRoles: ['Admin'] },
     { path: '/system-admin/patient', element: <CustomerManagement />, allowedRoles: ['Admin'] },

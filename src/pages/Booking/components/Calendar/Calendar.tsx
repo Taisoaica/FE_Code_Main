@@ -41,7 +41,7 @@ export default function BasicDateCalendar({ formData, setFormData, onStepComplet
           const slots = await getAllClinicSlots(clinicId);
           const appointments = await getCustomerAppointments(id);
           const updatedSlots = JSON.parse(JSON.stringify(slots));
-  
+
           // Update the slots based on appointments
           appointments.forEach(appointment => {
             const appointmentDate = new Date(appointment.appointmentDate);
@@ -58,38 +58,65 @@ export default function BasicDateCalendar({ formData, setFormData, onStepComplet
               }
             }
           });
-  
+
           setClinicSlots(updatedSlots);
           setClinicAppointment(appointments);
         } catch (error) {
           console.error('Error fetching clinic slots:', error);
         }
       };
-  
+
       fetchAvailableClinicSlots();
     } else {
       console.error('clinicId is undefined');
     }
   }, [clinicId]);
 
+  // const getDayClasses = (date: Date) => {
+  //   const weekdayIndex = date.getDay();
+  //   const dateString = date.toISOString().split('T')[0];
+
+  //   if (clinicSlots.length > 0) {
+  //     const daySlots = clinicSlots[weekdayIndex] || [];
+
+  //     if (daySlots.length === 0) {
+  //       return 'no-slots';
+  //     }
+
+  //     const availableSlots = daySlots.filter(slot => {
+  //       const isSlotAvailable = slot.maxCheckup > 0 || slot.maxTreatment > 0;
+  //       const isBookedByCustomer = clinicAppointment.some(appointment => 
+  //         appointment.appointmentDate === dateString && 
+  //         appointment.slotId === slot.clinicSlotId
+  //       );
+  //       return isSlotAvailable && !isBookedByCustomer;
+  //     });
+
+  //     if (availableSlots.length === 0) {
+  //       return 'no-slots';
+  //     }
+  //   }
+
+  //   return '';
+  // };
   const getDayClasses = (date: Date) => {
     const weekdayIndex = date.getDay();
     const dateString = date.toISOString().split('T')[0];
   
     if (clinicSlots.length > 0) {
       const daySlots = clinicSlots[weekdayIndex] || [];
-      
+  
       if (daySlots.length === 0) {
         return 'no-slots';
       }
   
       const availableSlots = daySlots.filter(slot => {
-        const isFullyBooked = slot.maxCheckup === 0 && slot.maxTreatment === 0;
+        const isSlotAvailable = slot.maxCheckup > 0 || slot.maxTreatment > 0;
         const isBookedByCustomer = clinicAppointment.some(appointment => 
           appointment.appointmentDate === dateString && 
           appointment.slotId === slot.clinicSlotId
         );
-        return !isFullyBooked && !isBookedByCustomer;
+        return isSlotAvailable && !isBookedByCustomer;
       });
   
       if (availableSlots.length === 0) {
@@ -111,18 +138,47 @@ export default function BasicDateCalendar({ formData, setFormData, onStepComplet
 
   const today = new Date();
 
+  // const handleDateClick = (event: DateClickArg) => {
+  //   const weekdayIndex = event.date.getDay();
+  //   const availableSlots = clinicSlots[weekdayIndex]?.filter(slot => slot.maxCheckup > 0 || slot.maxTreatment > 0);
+  //   if (!availableSlots || availableSlots.length === 0) {
+  //     return;
+  //   }
+
+  //   setFormData(prevState => ({ ...prevState, date: event.dateStr }));
+  //   setSelectedDate(event.dateStr);
+  //   setIsDialogOpen(true);
+  // };
+
   const handleDateClick = (event: DateClickArg) => {
     const weekdayIndex = event.date.getDay();
-    const availableSlots = clinicSlots[weekdayIndex]?.filter(slot => slot.maxCheckup > 0);
-    if (!availableSlots || availableSlots.length === 0) {
+    const dateString = event.dateStr;
+    const daySlots = clinicSlots[weekdayIndex] || [];
+    
+    if (daySlots.length === 0) {
+      console.log(`No slots available for ${dateString}`);
       return;
     }
-
-    setFormData(prevState => ({ ...prevState, date: event.dateStr }));
-    setSelectedDate(event.dateStr);
+  
+    const availableSlots = daySlots.filter(slot => {
+      const isSlotAvailable = slot.maxCheckup > 0 || slot.maxTreatment > 0;
+      const isBookedByCustomer = clinicAppointment.some(appointment => 
+        appointment.appointmentDate === dateString && 
+        appointment.slotId === slot.clinicSlotId
+      );
+      return isSlotAvailable && !isBookedByCustomer;
+    });
+    
+    if (availableSlots.length === 0) {
+      console.log(`All slots are booked for ${dateString}`);
+      return;
+    }
+  
+    setFormData(prevState => ({ ...prevState, date: dateString }));
+    setSelectedDate(dateString);
     setIsDialogOpen(true);
-  };
-
+  };  
+  
   //Custom title for the calendar
   //-----------------------------------------------------------------------------------
   const formatDateTitle = (dateInfo: { start: Date }) => {

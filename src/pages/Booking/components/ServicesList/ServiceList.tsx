@@ -34,7 +34,8 @@ const ServiceList = ({ setFormData, onStepComplete }: ServiceListProps) => {
         setFormData(prevState => ({
             ...prevState,
             serviceId: serviceId,
-            serviceName: clinicServices.find(service => service.clinicServiceId === serviceId)?.name || ''
+            serviceName: clinicServices.find(service => service.clinicServiceId === serviceId)?.name || '',
+            servicePrice: clinicServices.find(service => service.clinicServiceId === serviceId)?.price || 0
         }));
         onStepComplete();
     };

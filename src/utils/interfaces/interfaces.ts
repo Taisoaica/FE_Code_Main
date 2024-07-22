@@ -61,6 +61,7 @@ export interface BookingInformation {
     // service: '',
     serviceId: string,
     serviceName: string,
+    servicePrice: number
 }
 
 export interface BookingInformationToSend {

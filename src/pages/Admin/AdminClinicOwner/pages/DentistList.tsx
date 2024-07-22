@@ -85,6 +85,10 @@ const DentistList = () => {
         password: '',
         email: '',
     });
+    const [usernameError, setUsernameError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [fullnameError, setFullnameError] = useState('');
 
     const loadStaff = async () => {
         try {
@@ -105,6 +109,32 @@ const DentistList = () => {
         setOpen(!open);
     };
 
+    const validateUsername = (username: string): boolean => {
+        const regex = /^[A-Za-z0-9]{7,29}$/;
+        const isValid = regex.test(username);
+        setUsernameError(isValid ? '' : 'Tên đăng nhập phải từ 7-29 ký tự và chỉ chứa chữ cái và số.');
+        return isValid;
+    };
+
+    const validatePassword = (password: string): boolean => {
+        const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z0-9_]{8,30}$/;
+        const isValid = regex.test(password);
+        setPasswordError(isValid ? '' : 'Mật khẩu phải từ 8-30 ký tự, bao gồm ít nhất một chữ hoa, một chữ thường và một số.');
+        return isValid;
+    };
+
+    const validateEmail = (email: string): boolean => {
+        const regex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+        const isValid = regex.test(email);
+        setEmailError(isValid ? '' : 'Vui lòng nhập một địa chỉ email hợp lệ.');
+        return isValid;
+    };
+
+    const validateFullname = (fullname: string): boolean => {
+        const isValid = fullname.trim().length > 0;
+        setFullnameError(isValid ? '' : 'Họ tên không được để trống.');
+        return isValid;
+    };
 
     const formatDate = (dateString: string) => {
         if (!dateString) return '';
@@ -123,23 +153,47 @@ const DentistList = () => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setNewDentist((prev) => ({ ...prev, [name]: value }));
+
+        switch (name) {
+            case 'username':
+                validateUsername(value);
+                break;
+            case 'password':
+                validatePassword(value);
+                break;
+            case 'email':
+                validateEmail(value);
+                break;
+            case 'fullname':
+                validateFullname(value);
+                break;
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            await registerDentist(newDentist);
-            alert('Dentist registered successfully!');
-            setNewDentist({
-                fullname: '',
-                username: '',
-                password: '',
-                email: ''
-            });
-            toggleModal();
-            loadStaff();
-        } catch (error) {
-            console.error('Failed to register dentist:', error);
+        if (
+            validateUsername(newDentist.username) &&
+            validatePassword(newDentist.password) &&
+            validateEmail(newDentist.email) &&
+            validateFullname(newDentist.fullname)
+        ) {
+            try {
+                await registerDentist(newDentist);
+                alert('Dentist registered successfully!');
+                setNewDentist({
+                    fullname: '',
+                    username: '',
+                    password: '',
+                    email: ''
+                });
+                toggleModal();
+                loadStaff();
+            } catch (error) {
+                console.error('Failed to register dentist:', error);
+            }
+        } else {
+            alert('Please correct the errors in the form before submitting.');
         }
     };
 
@@ -165,8 +219,13 @@ const DentistList = () => {
             password: '',
             email: '',
         })
+        setUsernameError('');
+        setPasswordError('');
+        setEmailError('');
+        setFullnameError('');    
         setModalOpen(!modalOpen);
     }
+
     return (
         <ThemeProvider theme={defaultTheme}>
             <Box sx={{ display: "flex" }}>
@@ -195,7 +254,7 @@ const DentistList = () => {
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-                            Trang chi tiết phòng khám
+                            Trang danh sách nha sĩ
                         </Typography>
                     </Toolbar>
                 </AppBar>
@@ -306,7 +365,9 @@ const DentistList = () => {
                                     onChange={handleInputChange}
                                     placeholder="Nhập họ và tên"
                                     required
+                                    invalid={!!fullnameError}
                                 />
+                                {fullnameError && <div className="text-danger">{fullnameError}</div>}
                             </FormGroup>
                             <FormGroup>
                                 <Label for="username">Username</Label>
@@ -318,7 +379,9 @@ const DentistList = () => {
                                     onChange={handleInputChange}
                                     placeholder="Nhập username"
                                     required
+                                    invalid={!!usernameError}
                                 />
+                                {usernameError && <div className="text-danger">{usernameError}</div>}
                             </FormGroup>
                             <FormGroup>
                                 <Label for="password">Password</Label>
@@ -330,7 +393,9 @@ const DentistList = () => {
                                     onChange={handleInputChange}
                                     placeholder="Nhập password"
                                     required
+                                    invalid={!!passwordError}
                                 />
+                                {passwordError && <div className="text-danger">{passwordError}</div>}
                             </FormGroup>
                             <FormGroup>
                                 <Label for="email">Email</Label>
@@ -342,7 +407,9 @@ const DentistList = () => {
                                     onChange={handleInputChange}
                                     placeholder="Nhập email"
                                     required
+                                    invalid={!!emailError}
                                 />
+                                {emailError && <div className="text-danger">{emailError}</div>}
                             </FormGroup>
                         </form>
                     </ModalBody>

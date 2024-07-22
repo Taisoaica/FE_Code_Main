@@ -211,7 +211,7 @@ const SlotRegister = () => {
     if (selectedSlot) {
       try {
         const dentistInfoResponse = await getDentistInfo();
-        if (dentistInfoResponse.statusCode === 200) {
+        if (dentistInfoResponse) {
 
           let updatedSlotInfoModel = [...slotInforModel];
           const existingIndex = updatedSlotInfoModel.findIndex((slots) =>
@@ -251,7 +251,7 @@ const SlotRegister = () => {
       try {
         const dentistInfoResponse = await getDentistInfo();
 
-        if (dentistInfoResponse.statusCode === 200) {
+        if (dentistInfoResponse) {
 
           const stringId = selectedSlot.clinicSlotId.toString();
 

@@ -28,48 +28,39 @@ export interface UserInfo {
 
 
 export interface IUserAccount {
-    id?: number,
+    customerId: number,
     username: string,
-    passwordHash: '',
-    salt: "",
     email?: string,
     phone?: string,
     fullname?: string,
-    role?: string,
     isActive?: boolean,
-    isRemoved?: boolean,
     joinedDate?: string,
-    customerId?: number,
     birthdate?: string,
     sex?: string,
-    insurance?: string,
-    dentistId?: number,
-    clinicId?: number,
-    isOwner?: boolean,
-    status?: UserStatus,
+    insurance?: string
 }
 
-export const default_data: IUserAccount =
-{
-    "id": 0,
-    "username": "",
-    "passwordHash": "",
-    "salt": "",
-    "fullname": "",
-    "phone": "",
-    "sex": "",
-    "birthdate": "",
-    "email": "",
-    "insurance": "",
-    "customerId": 0,
-    "dentistId": 0,
-    "clinicId": 0,
-    "isOwner": false,
-    "isActive": false,
-    "role": "",
-    "isRemoved": false,
-    "joinedDate": ""
-}
+// export const default_data: IUserAccount =
+// {
+//     "id": 0,
+//     "username": "",
+//     "passwordHash": "",
+//     "salt": "",
+//     "fullname": "",
+//     "phone": "",
+//     "sex": "",
+//     "birthdate": "",
+//     "email": "",
+//     "insurance": "",
+//     "customerId": 0,
+//     "dentistId": 0,
+//     "clinicId": 0,
+//     "isOwner": false,
+//     "isActive": false,
+//     "role": "",
+//     "isRemoved": false,
+//     "joinedDate": ""
+// }
 
 export interface UserRegistrationModel {
     username?: string;

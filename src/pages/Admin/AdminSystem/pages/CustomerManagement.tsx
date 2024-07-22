@@ -193,7 +193,7 @@ const CustomerManagement = () => {
 
                     <Box className={styles.mainContainer}>
                         <div className={styles.tableContainer}>
-                            <div className={styles.tableHeader}>Người dùng của hệ thống - Khách hàng</div>
+                            <div className={styles.tableHeader}>Người dùng của hệ thống - Bệnh nhân</div>
                             {/* <Box className={styles.toolbar}>
                                 <Box className={styles.searchbar}>
                                     <input type="text" placeholder="Tìm kiếm người dùng" className={styles.searchInput} />

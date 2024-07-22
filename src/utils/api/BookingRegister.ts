@@ -121,7 +121,6 @@ export interface PaymentModel {
 }
 
 export const createPayment = async (paymentData: PaymentModel): Promise<any> => {
-    // const apiCall = async () => {
     const api_url = connection_path.base_url + connection_path.booking.create_payment;
 
     const config: AxiosRequestConfig = {
@@ -140,8 +139,6 @@ export const createPayment = async (paymentData: PaymentModel): Promise<any> => 
         console.error('Error creating payment:', error);
         throw error;
     }
-    // }
-    // return apiCallWithTokenRefresh(apiCall);
 }
 
 export const confirmPayment = async (paymentData: string): Promise<any> => {

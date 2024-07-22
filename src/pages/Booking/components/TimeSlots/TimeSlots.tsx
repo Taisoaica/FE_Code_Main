@@ -44,33 +44,16 @@ const TimeSlots = ({ formData, setFormData, onClose, onSlotSelect, date }: TimeS
             const clinicSlots = await getAllClinicSlots(clinicId);
             console.log('Clinic slots:', clinicSlots);
 
-            console.log('Fetching user appointments for userId:', userId, 'and date:', date);
-            const userAppointments = await getCustomerAppointments(userId, date);
-            console.log('User appointments:', userAppointments);
-
             const selectedDate = new Date(date);
             const weekdayIndex = selectedDate.getDay();
-
-            const appointmentCounts = userAppointments.reduce((acc, appointment) => {
-                acc[appointment.slotId] = (acc[appointment.slotId] || 0) + 1;
-                return acc;
-            }, {});
-
-            const updatedDaySlots = clinicSlots[weekdayIndex].map(slot => ({
-                ...slot,
-                maxCheckup: slot.maxCheckup - (appointmentCounts[slot.clinicSlotId] || 0)
-            }));
 
             const filterAndMapSlots = (slots, isBeforeNoon) => {
                 return slots
                     .filter(slot => {
                         const slotHour = new Date(`2000-01-01T${slot.startTime}`).getHours();
                         const isTimeCorrect = isBeforeNoon ? slotHour < 12 : slotHour >= 12;
-                        const hasAvailability = slot.maxCheckup > 0;
-                        const isNotBooked = !userAppointments.some(appointment =>
-                            appointment.slotId === slot.clinicSlotId
-                        );
-                        return isTimeCorrect && hasAvailability && isNotBooked;
+                        const hasAvailability = slot.maxCheckup > 0 || slot.maxTreatment > 0;
+                        return isTimeCorrect && hasAvailability;
                     })
                     .map(slot => {
                         const startTime = new Date(`2000-01-01T${slot.startTime}`);
@@ -80,18 +63,18 @@ const TimeSlots = ({ formData, setFormData, onClose, onSlotSelect, date }: TimeS
                             end: slot.endTime,
                             slotId: calculateSlotId(startTime),
                             displayTime: `${formatTime(slot.startTime)}-${formatTime(slot.endTime)}`,
-                            maxCheckup: slot.maxCheckup
+                            maxCheckup: slot.maxCheckup,
+                            maxTreatment: slot.maxTreatment
                         };
                     })
                     .sort((a, b) => a.displayTime.localeCompare(b.displayTime));
             };
 
-            const morning = filterAndMapSlots(updatedDaySlots, true);
-            const afternoon = filterAndMapSlots(updatedDaySlots, false);
+            const morning = filterAndMapSlots(clinicSlots[weekdayIndex], true);
+            const afternoon = filterAndMapSlots(clinicSlots[weekdayIndex], false);
 
             setMorningSlots(morning);
             setAfternoonSlots(afternoon);
-            setUpdatedSlots([...morning, ...afternoon]);
         } catch (error) {
             console.error('Error fetching clinic slots:', error);
         }

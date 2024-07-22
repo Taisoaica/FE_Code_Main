@@ -103,7 +103,7 @@ const AccountPage = () => {
     const [dentist, setDentist] = useState<DentistInfoViewModel>();
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
-    const [editMode, setEditMode] = useState(false); // New state for managing button text
+    const [editMode, setEditMode] = useState(false);
 
     const fetchData = async () => {
         const dentist = await getDentistInfo();

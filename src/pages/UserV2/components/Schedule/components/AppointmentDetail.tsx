@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { AppointmentViewModelFetch } from '../../../../../utils/api/ClinicOwnerUtils'
 import styles from './AppointmentDetail.module.css'
 import { createPayment, PaymentModel } from '../../../../../utils/api/BookingRegister';
+import { cancelAppointment } from '../../../../../utils/api/MiscUtils';
+import { getCustomerAppointments } from '../../../../../utils/api/UserAccountUtils';
 
 interface AppointmentDetailProps {
     appointmentId: string;
@@ -10,16 +12,18 @@ interface AppointmentDetailProps {
     source: number
 }
 
-const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, appointments, setActiveIndex, source  }) => {
-    const appointment = appointments.find(app => app.bookId === appointmentId);
-    
+const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, appointments, setActiveIndex, source }) => {
+    // const appointment = appointments.find(app => app.bookId === appointmentId);
+    const [appointment, setAppointment] = useState<AppointmentViewModelFetch>();
+    const id = localStorage.getItem('customerId');
+
     const getStatusText = (status: string) => {
         switch (status) {
             case 'booked':
                 return 'Đã đặt lịch';
             case 'pending':
                 return 'Đang chờ xác nhận';
-            case 'completed':
+            case 'finished':
                 return 'Đã hoàn thành';
             case 'canceled':
                 return 'Đã hủy';
@@ -31,14 +35,42 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
     const handleBackButtonClick = () => {
         if (source === 1) {
             setActiveIndex(2);
-        } else if(source === 0){
+        } else if (source === 0) {
             setActiveIndex(1);
         }
     }
 
-    const handleCancel = () => {
+    useEffect(() => {
+        setAppointment(appointments.find(app => app.bookId === appointmentId));
+    }, [appointments, appointmentId]);
 
-    }
+    const fetchData = async () => {
+        try {
+            const response = await getCustomerAppointments(id);
+            if (response) {
+                const appointment = response.find(app => app.bookId === appointmentId);
+                if (appointment) {
+                    setAppointment(appointment);
+                    console.log('Appointment fetched:', appointment);
+                } else {
+                    console.log('Appointment not found');
+                }
+            } else {
+                console.log('No content found in response');
+            }
+        } catch (error) {
+            console.error('Error fetching appointments:', error);
+        }
+    };
+
+    const handleCancel = async () => {
+        try {
+            await cancelAppointment(appointmentId);
+            await fetchData();
+        } catch (error) {
+            console.error('Failed to cancel appointment:', error);
+        }
+    };
 
     const getAppointmentTypeText = (type: string) => {
         switch (type) {
@@ -67,7 +99,7 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
             } else {
                 console.error('Payment failed:', response);
             }
-        } catch (error) { 
+        } catch (error) {
             console.log(error);
         }
     }
@@ -96,7 +128,7 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
             </div>
             <div className={styles.buttonContainer}>
                 <button className={styles.goBackButton} onClick={() => handleBackButtonClick()}>Trở về</button>
-                {appointment.bookingStatus !== 'finished' && ( 
+                {(appointment.bookingStatus !== 'finished' && appointment.bookingStatus !== 'canceled') && (
                     <button className={styles.cancelButton} onClick={handleCancel}>Hủy lịch</button>
                 )}
                 {appointment.bookingStatus === 'pending' && (
@@ -107,4 +139,4 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
     )
 }
 
-export default AppointmentDetail
+export default AppointmentDetail;

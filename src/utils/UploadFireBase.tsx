@@ -37,7 +37,7 @@ export const fetchClinicImages = async (folderPath: string) => {
   try {
     // List all images in the folder
     const { items } = await listAll(folderRef);
-
+    console.log(items)
     // Get download URLs for each image
     const imageUrls = await Promise.all(items.map(async (item) => {
       const imageUrl = await getDownloadURL(item);

@@ -15,7 +15,7 @@ export const getDentistAppointmentsWithFilter = async (
     const response = await getDentistInfo();
     let id;
     if (response) {
-        id = response.content?.dentistId;
+        id = response.dentistId;
     }
 
     const api_url = connection_path.base_url + connection_path.booking.get_dentist_booking.replace(':id', id);
@@ -126,7 +126,7 @@ export const getAllDentistAppointments = async (): Promise<AppointmentViewModel[
     const response = await getDentistInfo();
     let id;
     if (response) {
-        id = response.content?.dentistId;
+        id = response.dentistId;
     }
 
     const api_url = connection_path.base_url + connection_path.booking.get_dentist_booking.replace(':id', id);
@@ -196,6 +196,11 @@ export const noteAppointment = async (appointmentId: string, payload: string): P
 
     try {
         const response = await axios(config);
+        if (response.status === 200) { 
+            alert('Note appointment successfully');
+        } else {
+            alert('Note appointment failed');
+        }
         return response.data
     } catch (error) {
         console.log(error)
@@ -228,3 +233,28 @@ export const createRecurringAppointment = async (appointmentData, recurringSetti
     }
   };
   
+export const updateAccountInfo = async (payload) => { 
+    const api_url = connection_path.base_url + connection_path.invoker.put_dentist;
+
+    const config: AxiosRequestConfig = {
+        method: 'PUT',
+        url: api_url,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+        data: payload
+    }
+
+    try {
+        const response = await axios(config);
+        if (response.status === 200) { 
+            alert('Update account successfully');
+        } else {
+            alert('Update account failed');
+        }
+        return response.data;
+    } catch (error) {
+        console.log(error)
+    }
+}

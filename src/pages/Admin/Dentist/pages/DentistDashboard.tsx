@@ -84,9 +84,6 @@ const DentistDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [appointmentsPerPage] = useState(5);
 
-  const dentistId = localStorage.getItem('id');
-
-
   const sliderSettings = {
     dots: false,
     infinite: false,
@@ -180,11 +177,51 @@ const DentistDashboard = () => {
     fetchAppointments();
   }, [filter, sortBy]);
 
+  // const fetchAppointments = async () => {
+  //   try {
+  //     let fetchedAppointments;
+  //     if (filter === "all") {
+  //       fetchedAppointments = await getAllDentistAppointments();
+  //     } else {
+  //       fetchedAppointments = await getDentistAppointmentsWithFilter(filter);
+  //     }
+
+  //     const formattedAppointments = fetchedAppointments.map(appointment => ({
+  //       ...appointment,
+  //       appointmentDateObj: new Date(appointment.appointmentDate),
+  //     }));
+
+  //     if (sortBy === "date") {
+  //       formattedAppointments.sort((a, b) => a.appointmentDateObj - b.appointmentDateObj);
+  //     } else if (sortBy === "time") {
+  //       formattedAppointments.sort((a, b) => {
+  //         const dateComparison = a.appointmentDateObj - b.appointmentDateObj;
+  //         return dateComparison !== 0
+  //           ? dateComparison
+  //           : new Date(a.appointmentTime).getTime() - new Date(b.appointmentTime).getTime();
+  //       });
+  //     } else if (sortBy === "status") {
+  //       const statusOrder = {
+  //         pending: 1,
+  //         booked: 2,
+  //         completed: 3,
+  //         canceled: 4,
+  //         // "no show": 5,
+  //       };
+  //       formattedAppointments.sort((a, b) => statusOrder[a.bookingStatus] - statusOrder[b.bookingStatus]);
+  //     }
+
+  //     setAppointments(formattedAppointments);
+  //   } catch (error) {
+  //     console.error("Error fetching appointments:", error);
+  //   }
+  // };
+
   const fetchAppointments = async () => {
     try {
       let fetchedAppointments;
-      if (filter === "all") {
-        fetchedAppointments = await getAllDentistAppointments(dentistId);
+      if (filter === "all" || filter === "status") {
+        fetchedAppointments = await getAllDentistAppointments();
       } else {
         fetchedAppointments = await getDentistAppointmentsWithFilter(filter);
       }
@@ -194,7 +231,6 @@ const DentistDashboard = () => {
         appointmentDateObj: new Date(appointment.appointmentDate),
       }));
 
-      // Apply sorting
       if (sortBy === "date") {
         formattedAppointments.sort((a, b) => a.appointmentDateObj - b.appointmentDateObj);
       } else if (sortBy === "time") {
@@ -204,13 +240,15 @@ const DentistDashboard = () => {
             ? dateComparison
             : new Date(a.appointmentTime).getTime() - new Date(b.appointmentTime).getTime();
         });
-      } else if (sortBy === "status") {
+      }
+
+      if (filter === "status") {
         const statusOrder = {
           pending: 1,
           booked: 2,
           completed: 3,
           canceled: 4,
-          "no show": 5,
+          // "no show": 5,
         };
         formattedAppointments.sort((a, b) => statusOrder[a.bookingStatus] - statusOrder[b.bookingStatus]);
       }
@@ -384,9 +422,10 @@ const DentistDashboard = () => {
                   <MenuItem value="this_week">Tuần này</MenuItem>
                   <MenuItem value="next_week">Tuần tới</MenuItem>
                   <MenuItem value="next_month">Tháng tới</MenuItem>
+                  {/* <MenuItem value="status">Trạng thái</MenuItem> */}
                 </Select>
               </div>
-              <div className={styles.sortContainer}>
+              {/* <div className={styles.sortContainer}>
                 <Typography component="h2" variant="h6">
                   Sắp xếp theo:
                 </Typography>
@@ -395,14 +434,14 @@ const DentistDashboard = () => {
                   <MenuItem value="time">Giờ</MenuItem>
                   <MenuItem value="status">Trạng thái</MenuItem>
                 </Select>
-              </div>
+              </div> */}
             </div>
             <table className={styles.table}>
               <thead>
                 <tr>
                   <th style={{ width: '10%' }}>Ngày</th>
-                  <th style={{ width: '10%' }}>Slot</th>
-                  <th style={{ width: '30%' }}>Tên khách hàng</th>
+                  <th style={{ width: '15%' }}>Slot</th>
+                  <th style={{ width: '25%' }}>Tên khách hàng</th>
                   <th style={{ width: '30%' }}>Dịch vụ</th>
                   <th style={{ width: '20%' }}>Trạng thái</th>
                 </tr>

@@ -148,7 +148,7 @@ const UserSchedule = ({ setActiveIndex, setSource }: UserScheduleProps) => {
             if (dateFilter === 'closest') {
                 return new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime();
             } else if (dateFilter === 'latest') {
-                return new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime();
+                return new Date(b.creationTime).getTime() - new Date(a.creationTime).getTime();
             }
             return 0;
         });

@@ -8,9 +8,10 @@ interface CheckoutFormProps {
     paymentData: PaymentModel;
     setPaymentData: (value: SetStateAction<PaymentModel>) => void;
     setPaymentMethodCallback: (method: string) => void;
+    price: number
 }
 
-const CheckoutForm = ({ paymentData, setPaymentData, setPaymentMethodCallback }: CheckoutFormProps) => {
+const CheckoutForm = ({ paymentData, setPaymentData, setPaymentMethodCallback, price }: CheckoutFormProps) => {
     const [paymentMethod, setPaymentMethod] = useState<string>('Other');
     const [orderID, setOrderID] = useState<string>(paymentData.appointmentId);
     const [orderDetail, setOrderDetail] = useState<string>(paymentData.orderInfo);
@@ -22,7 +23,7 @@ const CheckoutForm = ({ paymentData, setPaymentData, setPaymentMethodCallback }:
 
     const handlePaymentMethodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
-        
+
         // setShowVNPayFields(value === 'VNPay');
 
         if (value === 'VNPay') {
@@ -104,8 +105,8 @@ const CheckoutForm = ({ paymentData, setPaymentData, setPaymentMethodCallback }:
                         {!paymentMethod && <FormHelperText error>Vui lòng chọn phương thức thanh toán</FormHelperText>}
                     </FormControl>
 
-                    {/* <Box className={styles.paymentInfoBox}>
-                        <Box className={styles.paymentInfoItem}>
+                    <Box className={styles.paymentInfoBox}>
+                        {/* <Box className={styles.paymentInfoItem}>
                             <span className={styles.paymentInfoLabel}>Tổng tiền dịch vụ:</span>
                             <span>{formatCurrency(totalAmount)}</span>
                         </Box>
@@ -116,8 +117,16 @@ const CheckoutForm = ({ paymentData, setPaymentData, setPaymentMethodCallback }:
                         <Box className={styles.paymentInfoItem}>
                             <span className={styles.paymentInfoLabel}>TỔNG CỘNG:</span>
                             <span>{formatCurrency(totalAmount)}</span>
+                        </Box> */}
+                        <Box className={styles.paymentInfoItem}>
+                            <span className={styles.paymentInfoLabel}>Tổng tiền dịch vụ:</span>
+                            <span>{formatCurrency(price)}</span>
                         </Box>
-                    </Box> */}
+                        <Box className={styles.paymentInfoItem}>
+                            <span className={styles.paymentInfoLabel}>TỔNG CỘNG:</span>
+                            <span>{formatCurrency(price)}</span>
+                        </Box>
+                    </Box>
                 </Box>
             </Box>
         </Box>

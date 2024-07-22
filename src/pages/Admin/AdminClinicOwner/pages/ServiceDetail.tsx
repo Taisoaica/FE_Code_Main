@@ -105,6 +105,7 @@ const ServiceDetail = () => {
         try {
             const sanitizedId = serviceId.replace(/%7D/g, '');
             const data = await getClinicServiceById(sanitizedId);
+            console.log(data);
             if (typeof data === "string") {
                 setError(data);
             } else {
@@ -222,9 +223,6 @@ const ServiceDetail = () => {
                         </IconButton>
                     </Toolbar>
                     <Divider />
-                    {/* <List component="nav">
-                        {mainListItems}
-                    </List> */}
                     <NestedListItems />
                 </Drawer>
                 <Box
@@ -261,7 +259,7 @@ const ServiceDetail = () => {
                                             onChange={handleInputChange}
                                             value={serviceInfo?.price} disabled={!isEditable} />
                                     </FormGroup>
-                                    <FormGroup>
+                                    {/* <FormGroup>
                                         <Label>Mô tả</Label>
                                         <Input
                                             type="textarea"
@@ -295,7 +293,7 @@ const ServiceDetail = () => {
                                                 </Button>
                                             </DialogActions>
                                         </Dialog>
-                                    </FormGroup>
+                                    </FormGroup> */}
                                 </Col>
                                 <Col md={6}>
                                     {/* <FormGroup>

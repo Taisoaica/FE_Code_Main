@@ -19,19 +19,19 @@ const GuideContent = () => {
 
             <Box className={styles.paperContainer}>
                 <Paper elevation={5} square={false} className={styles.paper}>
-                    <Box sx={{ fontSize: '20px', fontWeight: 700 }}>
+                    <Box sx={{ fontSize: '20px', fontWeight: 700, paddingBottom: '10px' }}>
                         CHỌN THÔNG TIN ĐẶT KHÁM
                     </Box>
                     <Typography>
                         <ul>
                             <li>Tạo hoặc đăng nhập tài khoản trên website</li>
-                            <li>Chọn Đặt khám tại cơ sở hoặc Đặt khám theo bác sĩ</li>
-                            <li>Chọn cơ sở khám bệnh</li>
-                            <li>Chọn thông tin khám: Chuyên khoa, bác sĩ, ngày khám, giờ khám và có BHYT hay không.</li>
-                            <li>Nhập thông tin bệnh nhân: Tạo mới hồ sơ mới hoặc chọn hồ sơ sẵn có</li>
+                            <li>Nhấn vào đặt khám ngay trên menu hoặc ở banner</li>
+                            <li>Chọn một trong những cơ sở để đặt khám</li>
+                            <li>Chọn thông tin khám: Chuyên khoa, bác sĩ, ngày khám, giờ khám</li>
+                            <li>Thanh toán phí khám</li>
                         </ul>
                     </Typography>
-                    <Box sx={{ fontSize: '20px', fontWeight: 700 }}>
+                    <Box sx={{ fontSize: '20px', fontWeight: 700, paddingBottom: '10px' }}>
                         THANH TOÁN PHÍ KHÁM
                     </Box>
                     <ul>
@@ -45,15 +45,15 @@ const GuideContent = () => {
                             Thực hiện thanh toán trên Ví điện tử hoặc Ứng dụng Ngân hàng hoặc Cổng thanh toán.
                         </li>
                     </ul>
-                    <Box sx={{ fontSize: '20px', fontWeight: 700 }}>
-                        CHỌN THÔNG TIN ĐẶT KHÁM
+                    <Box sx={{ fontSize: '20px', fontWeight: 700, paddingBottom: '10px' }}>
+                        CẬP NHẬT THÔNG TIN CÁ NHÂN
                     </Box>
                     <ul>
                         <li>Tạo hoặc đăng nhập tài khoản trên website hoặc ứng dụng di động.</li>
-                        <li>Chọn Đặt khám tại cơ sở hoặc Đặt khám theo bác sĩ</li>
-                        <li>Chọn cơ sở khám bệnh</li>
-                        <li>Chọn thông tin khám: Chuyên khoa, bác sĩ, ngày khám, giờ khám và có BHYT hay không.</li>
-                        <li>Nhập thông tin bệnh nhân: Tạo mới hồ sơ mới hoặc chọn hồ sơ sẵn có</li>
+                        <li>Nhấn vào biểu tượng người dùng ở góc bên phải trên cùng</li>
+                        <li>Chọn mục Tài Khoản</li>
+                        <li>Cập nhật thông tin cá nhân ở mục hồ sơ</li>
+                        <li>Xem lịch sử thanh toán và lịch khám sắp tới ở các mục tương ứng</li>
                     </ul>
                 </Paper>
 

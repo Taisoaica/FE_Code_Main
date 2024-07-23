@@ -49,7 +49,7 @@ const SignUpForm = () => {
 
   const validateUsername = (inputUsername: string): boolean => {
 
-    const regex = /^[A-Za-z0-9]{7,29}$/
+    const regex = /^(?=[A-Za-z])(?=.*[A-Z])(?=.*[a-z])[A-Za-z0-9_]{8,30}$/
   
     //const regex = /^(?=[A-Za-z])(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z0-9_]{8,30}$/
     return regex.test(inputUsername);
@@ -93,7 +93,7 @@ const SignUpForm = () => {
           error={!!username && !validateUsername(username)}
           helperText={
             username && !validateUsername(username)
-              ? "Tên đăng nhập phải bắt đầu bằng một ký tự chữ cái, có từ 8 đến 30 ký tự, và bao gồm ít nhất một chữ hoa, một chữ thường và một số."
+              ? "Tên đăng nhập phải bắt đầu bằng một ký tự chữ cái, có từ 8 đến 30 ký tự, và bao gồm ít nhất một chữ hoa, một chữ thường."
               : ""
           }
         />

@@ -35,7 +35,7 @@ const OwnerRegisterForm = ({ formData, setFormData, onStepComplete }: BasicFormP
             newErrors.OwnerUserName = 'Tên đăng nhập là bắt buộc.';
             isValid = false;
         } else if (
-            !/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z0-9_]{8,30}$/.test(localFormData.OwnerUserName)
+            !/^(?=[A-Za-z])(?=.*[A-Z])(?=.*[a-z])[A-Za-z0-9_]{8,30}$/.test(localFormData.OwnerUserName)
         ) {
             newErrors.OwnerUserName =
                 'Tên đăng nhập phải bắt đầu bằng một ký tự chữ cái, có từ 8 đến 30 ký tự, và bao gồm ít nhất một chữ hoa, một chữ thường hoặc một số.';

@@ -9,7 +9,7 @@ import ServiceList from './ServicesList/ServiceList';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { BookingInformation, SetBookingInformation, PaymentInformation, BookingRegistrationModel } from '../../../utils/interfaces/interfaces';
 import styles from './BookingPageContent.module.css';
-import { ArrowBack, ArrowForward } from '@mui/icons-material';
+import { ArrowBack } from '@mui/icons-material';
 import { AppointmentRegistrationModel, createNewCustomerAppointment, PaymentModel, createPayment } from '../../../utils/api/BookingRegister';
 import DentistList from './DentistList/DentistList';
 import HomeIcon from '@mui/icons-material/Home';

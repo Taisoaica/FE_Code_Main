@@ -170,7 +170,9 @@ export default function BasicDateCalendar({ formData, setFormData, onStepComplet
     });
     
     if (availableSlots.length === 0) {
+      alert(`All slots are booked for ${dateString}`);
       console.log(`All slots are booked for ${dateString}`);
+
       return;
     }
   

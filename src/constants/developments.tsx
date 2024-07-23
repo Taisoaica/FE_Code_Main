@@ -53,8 +53,8 @@ export const connection_path = {
         get_clinic_schedule: "/schedule/:id/slots",
         put_clinic_schedule: "/schedule/slot/update",
         post_clinic_service: "/service",
-        // service_categories: "/service/categories",
-        service_categories: "admin/service/categories",
+        service_categories: "/service/categories",
+        // service_categories: "admin/service/categories",
         service_category: "/service/category"
     },
 

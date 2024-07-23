@@ -54,10 +54,12 @@ const Header = () => {
         <Toolbar>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <Link href="/"><img src="/Logo.png" alt="Logo" style={{ height: '70px' }} /></Link>
-            <Box sx={{ display: 'flex', gap: .5, justifyContent: 'space-around', width: '40%' }}>
-              <Button variant='text' href='/' sx={{ color: ' #00aeeb', fontWeight: 'bold' }}>Trang chủ</Button>
-              <Button variant='text' href='/guide' sx={{ color: ' #00aeeb', fontWeight: 'bold' }}>Quy trình</Button>
-              <Button variant="text" href='/for-owner' sx={{ color: ' #00aeeb', fontWeight: 'bold' }}>Dành cho chủ phòng khám</Button>
+            <Box sx={{ display: 'flex', gap: .5, width: '62%', justifyContent: 'space-around' }}>
+              <Button variant='text' href='/' sx={{ color: '#00aeeb', fontWeight: 'bold', marginRight: '20px'  }}>Trang chủ</Button>
+              <Button variant='text' href='/guide' sx={{ color: ' #00aeeb', fontWeight: 'bold', marginRight: '20px' }}>Quy trình</Button>
+              {auth ? <></> : <Button variant="text" href='/for-owner' sx={{ color: ' #00aeeb', fontWeight: 'bold',  marginRight: '20px' }}>Dành cho chủ phòng khám</Button>}
+              <Button variant='text' href='/clinics' sx={{ color: ' #00aeeb', fontWeight: 'bold', }}>Đặt lịch ngay</Button>
+
             </Box>
             <Box>
               {auth ? (

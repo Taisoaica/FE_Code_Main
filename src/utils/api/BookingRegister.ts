@@ -1,5 +1,5 @@
 import { PaymentModel } from './BookingRegister';
-import { APIResponseModel, BookingInformation, BookingRegistrationModel, IAPIResponseModel, IPaymentModel } from "../interfaces/interfaces";
+import { APIResponseModel, BookingInformation, BookingRegistrationModel, IAPIResponseModel, IPaymentModel } from "../Interfaces/interfaces";
 import { connection_path } from "../../constants/developments";
 import axios, { AxiosRequestConfig } from "axios";
 import { useNavigate } from "react-router-dom";
